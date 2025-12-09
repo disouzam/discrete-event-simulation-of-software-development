@@ -2,7 +2,6 @@
 
 Discrete event simulation of software development
 
-
 ## Lessons
 
 <div id="lessons" markdown="1">

@@ -1,1 +1,22 @@
 # Introduction
+
+## Learner Profile
+
+-   Shae, 20, is starting the third year of an undergraduate degree in computer science
+    after doing a one-semester work placement at a local mobile application development company.
+-   Shae is comfortable with object-oriented programming in Python,
+    and did well in their introductory courses on databases and web programming.
+    They like working on homework assignments with friends,
+    but had a bad experience in the team project in the web programming class.
+    They use VS Code and Claude,
+    but still mostly debug with print statements.
+-   Shae found their work placement exciting because they got to work on real problems,
+    but bewildering because they felt they spent more time in meetings than they did doing "real" work.
+    They also heard senior programmers arguing about whether AI is a boon or a curse,
+    and would like to know how to answer questions like that.
+-   Shae is impatient with abstract theory;
+    they learn best when generalizing from practical examples.
+
+> These lessons teach Shae how to think analytically about software development processes,
+> how to model and analyze those processes,
+> and how to distinguish evidence-based claims from plausible punditry.
