@@ -1,7 +1,9 @@
-SRC=$(wildcard *.py)
-OUT=$(patsubst %.py,%.out,${SRC})
-
-all: ${OUT}
+all: \
+  fixed_work_and_break.out \
+  plot_log_normal.svg
 
 %.out: %.py
-	-python $< >& $@
+	python $< >& $@
+
+%.svg: %.py
+	python $< $@
