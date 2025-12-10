@@ -29,7 +29,7 @@
 
 -   Do all the steps manually
 
-```{data-file=char_from_string.py}
+```{.python data-file=char_from_string.py}
 def gen_char_from_string(text):
     i = 0
     while i < len(text):
@@ -47,7 +47,7 @@ try:
 except StopIteration:
     print("ended by exception")
 ```
-```{data-file=char_from_string.out}
+```{.out data-file=char_from_string.out}
 0: o
 1: n
 2: e
@@ -56,7 +56,7 @@ ended by exception
 
 -   How we'd actually write it
 
-```{data-file=char_with_loop.py}
+```{.python data-file=char_with_loop.py}
 def gen_char_from_string(text):
     for ch in text:
         yield ch
@@ -65,13 +65,13 @@ def gen_char_from_string(text):
 characters = [ch for ch in gen_char_from_string("two")]
 print(f"result as list: {characters}")
 ```
-```{data-file=char_with_loop.out}
+```{.out data-file=char_with_loop.out}
 result as list: ['t', 'w', 'o']
 ```
 
 -   Would otherwise use an object with state, but generators use the stack as state
 
-```{data-file=infinite.py}
+```{.python data-file=infinite.py}
 def gen_infinite(text):
     pos = 0
     while True:
@@ -84,7 +84,7 @@ for (i, ch) in enumerate(gen_infinite("three")):
         break
     print(i, ch)
 ```
-```{data-file=infinite.out}
+```{.out data-file=infinite.out}
 0 t
 1 h
 2 r
@@ -99,7 +99,7 @@ for (i, ch) in enumerate(gen_infinite("three")):
 
 -   Something that can't easily be done any other way
 
-```{data-file=combinations.py}
+```{.python data-file=combinations.py}
 def gen_combinations(left, right):
     for left_item in left:
         for right_item in right:
@@ -109,7 +109,7 @@ def gen_combinations(left, right):
 for pair in gen_combinations("abc", [1, 2, 3]):
     print(pair)
 ```
-```{data-file=combinations.out}
+```{.out data-file=combinations.out}
 ('a', 1)
 ('a', 2)
 ('a', 3)
@@ -123,7 +123,7 @@ for pair in gen_combinations("abc", [1, 2, 3]):
 
 -   Injecting values into a generator (which we need for simulations)
 
-```{data-file=send.py}
+```{.python data-file=send.py}
 def gen_upper_lower(text):
     lower = True
     i = 0
@@ -145,7 +145,7 @@ while True:
     except StopIteration:
         break
 ```
-```{data-file=send.out}
+```{.out data-file=send.out}
 a
 b
 C
@@ -164,7 +164,7 @@ G
 1.  Use `yield from` to generate a flat list from arbitrary nested lists.
 1.  Explain why `gen/send_buggy.py` doesn't work.
 
-```{data-file=send_buggy.py}
+```{.python data-file=send_buggy.py}
 def gen_upper_lower(text):
     lower = True
     i = 0
@@ -182,7 +182,7 @@ for ch in generator:
     flag = ch in vowels
     ch = generator.send(flag)
 ```
-```{data-file=send_buggy.out}
+```{.out data-file=send_buggy.out}
 a
 C
 E

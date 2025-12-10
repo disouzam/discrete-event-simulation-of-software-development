@@ -2,7 +2,7 @@
 
 -   FIXME
 
-## A Hobby Project
+## A Regular Schedule
 
 -   Shae works on their hobby project for 50 minutes and then takes a 10-minute break
 -   Import `Environment` from `simpy`
@@ -11,7 +11,7 @@
     -   `yield` suspends the worker and gives this object to [SimPy][simpy]
     -   SimPy advances its clock (does *not* actually "wait")
 
-```{data-file=fixed_work_and_break.py}
+```{.python data-file=fixed_work_and_break.py}
 T_WORK = 50
 T_BREAK = 10
 
@@ -31,7 +31,7 @@ def worker(env):
 	-   Pass in the environment so the generator can call `.timeout`
     -   Tell the environment how long to run
 
-```{data-file=fixed_work_and_break.py}
+```{.python data-file=fixed_work_and_break.py}
 T_MORNING = 4 * 60
 
 if __name__ == "__main__":
@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
 -   Output
 
-```{data-file=fixed_work-and_break.out}
+```{.out data-file=fixed_work-and_break.out}
 start work at 0
 start break at 50
 start work at 60
@@ -64,7 +64,7 @@ done at 240
     -   So we have to decide how to model those intervals
 -   [Uniform](g:random-uniform) is simplest
 
-```{data-file=uniform_work_and_break.py}
+```{.python data-file=uniform_work_and_break.py}
 T_MIN_WORK = 10
 T_MAX_WORK = 50
 
@@ -80,7 +80,7 @@ def worker(env):
         print(f"start break at {env.now}")
         yield env.timeout(T_BREAK)
 ```
-```{data-file=uniform_work_and_break.out}
+```{.out data-file=uniform_work_and_break.out}
 start work at 0
 start break at 26.67250326533211
 start work at 36.67250326533211
@@ -102,7 +102,7 @@ done at 240
 
 -   Create our own `Env` class with `rnow` property to report time to `PREC` decimal places
 
-```{data-file=monitor_uniform_work_and_break.py}
+```{.python data-file=monitor_uniform_work_and_break.py}
 PREC = 3
 
 
@@ -112,16 +112,15 @@ class Env(Environment):
         return round(self.now, PREC)
 ```
 
--   Record (start, end) work times in a list
-    -   Remember to get the last one
-    -   Which breaks encapsulation
+-   Record start and end events in a list of dictionaries
+    -   Easy to convert to a dataframe
 
-```{data-file=monitor_uniform_work_and_break.py}
+```{.python data-file=monitor_uniform_work_and_break.py}
 def worker(env, log):
     while True:
-        log.append([env.rnow, None])
+        log.append({"event": "start", "time": env.rnow})
         yield env.timeout(t_work())
-        log[-1][-1] = env.rnow
+        log.append({"event": "end", "time": env.rnow})
         yield env.timeout(T_BREAK)
 ```
 
@@ -131,11 +130,10 @@ def worker(env, log):
 -   Output a structured log
     -   Use JSON
 
-```{data-file=monitor_uniform_work_and_break.py}
+```{.python data-file=monitor_uniform_work_and_break.py}
 SEED = 12345
 
 def main():
-    """Make simulation reproducible and create structured log."""
     seed = int(sys.argv[1]) if len(sys.argv) > 1 else SEED
     random.seed(seed)
     env = Env()
@@ -143,27 +141,54 @@ def main():
     proc = worker(env, log)
     env.process(proc)
     env.run(until=T_MORNING)
-    log[-1][-1] = env.rnow
     json.dump(log, sys.stdout, indent=2)
 ```
-```{data-file=monitor_uniform_work_and_break.out[
-  [
-    0,
-    26.665
-  ],
-  [
-    36.665,
-    47.072
-  ],
-  …more output…
-  [
-    204.508,
-    240
-  ]
-]}
+```{data-file=monitor_uniform_work_and_break.json}
+[
+  {
+    "event": "start",
+    "time": 0
+  },
+  {
+    "event": "end",
+    "time": 26.665
+  },
+  …more events…
+  {
+    "event": "end",
+    "time": 237.149
+  }
+]]}
 ```
 
 ## Visualization
 
 -   Could put the visualization in the simulation
 -   But may want to visualize the data in many different ways
+
+```{.python data-file=visualize_uniform_work_and_break.py}
+import json
+import plotly.express as px
+import polars as pl
+import sys
+
+df = pl.from_dicts(json.load(sys.stdin)).with_columns(
+    pl.when(pl.col("event") == "start").then(1).otherwise(-1).alias("delta")
+)
+events = df.with_columns(
+    pl.col("delta").cum_sum().alias("state")
+)
+
+fig = px.line(events, x="time", y="state", line_shape="hv")
+fig.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0}).update_yaxes(tickvals=[0, 1])
+fig.write_image(sys.argv[1])
+```
+
+<div class="center">
+  <img src="visualize_uniform_work_and_break.svg" alt="time-series plot of work">
+</div>
+
+-   The visualization code is 2/3 the size of the simulation
+    -   And arguably harder to read if you're not familiar with [Polars][polars]
+        and [Plotly Express][plotly-express]
+-   *Understanding a simulation is as much work as building it*

@@ -24,9 +24,9 @@ def t_work():
 
 def worker(env, log):
     while True:
-        log.append([env.rnow, None])
+        log.append({"event": "start", "time": env.rnow})
         yield env.timeout(t_work())
-        log[-1][-1] = env.rnow
+        log.append({"event": "end", "time": env.rnow})
         yield env.timeout(T_BREAK)
 
 
@@ -38,7 +38,6 @@ def main():
     proc = worker(env, log)
     env.process(proc)
     env.run(until=T_MORNING)
-    log[-1][-1] = env.rnow
     json.dump(log, sys.stdout, indent=2)
 
 

@@ -37,7 +37,7 @@
 <ul>
 <li>FIXME</li>
 </ul>
-<h2>A Hobby Project</h2>
+<h2>A Regular Schedule</h2>
 <ul>
 <li>Shae works on their hobby project for 50 minutes and then takes a 10-minute break</li>
 <li>Import <code>Environment</code> from <code>simpy</code></li>
@@ -48,7 +48,7 @@
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="fixed_work_and_break.py">T_WORK = 50
+<pre class="language-python"><code class="language-python" data-file="fixed_work_and_break.py">T_WORK = 50
 T_BREAK = 10
 
 
@@ -71,7 +71,7 @@ def worker(env):
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="fixed_work_and_break.py">T_MORNING = 4 * 60
+<pre class="language-python"><code class="language-python" data-file="fixed_work_and_break.py">T_MORNING = 4 * 60
 
 if __name__ == "__main__":
     env = Environment()
@@ -83,7 +83,7 @@ if __name__ == "__main__":
 <ul>
 <li>Output</li>
 </ul>
-<pre class=""><code data-file="fixed_work-and_break.out">start work at 0
+<pre class="language-out"><code class="language-out" data-file="fixed_work-and_break.out">start work at 0
 start break at 50
 start work at 60
 start break at 110
@@ -104,7 +104,7 @@ done at 240
 </li>
 <li><a href="../glossary/#random-uniform">Uniform</a> is simplest</li>
 </ul>
-<pre class=""><code data-file="uniform_work_and_break.py">T_MIN_WORK = 10
+<pre class="language-python"><code class="language-python" data-file="uniform_work_and_break.py">T_MIN_WORK = 10
 T_MAX_WORK = 50
 
 
@@ -119,7 +119,7 @@ def worker(env):
         print(f"start break at {env.now}")
         yield env.timeout(T_BREAK)
 </code></pre>
-<pre class=""><code data-file="uniform_work_and_break.out">start work at 0
+<pre class="language-out"><code class="language-out" data-file="uniform_work_and_break.out">start work at 0
 start break at 26.67250326533211
 start work at 36.67250326533211
 start break at 54.79344793494629
@@ -142,7 +142,7 @@ done at 240
 <ul>
 <li>Create our own <code>Env</code> class with <code>rnow</code> property to report time to <code>PREC</code> decimal places</li>
 </ul>
-<pre class=""><code data-file="monitor_uniform_work_and_break.py">PREC = 3
+<pre class="language-python"><code class="language-python" data-file="monitor_uniform_work_and_break.py">PREC = 3
 
 
 class Env(Environment):
@@ -151,17 +151,16 @@ class Env(Environment):
         return round(self.now, PREC)
 </code></pre>
 <ul>
-<li>Record (start, end) work times in a list<ul>
-<li>Remember to get the last one</li>
-<li>Which breaks encapsulation</li>
+<li>Record start and end events in a list of dictionaries<ul>
+<li>Easy to convert to a dataframe</li>
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="monitor_uniform_work_and_break.py">def worker(env, log):
+<pre class="language-python"><code class="language-python" data-file="monitor_uniform_work_and_break.py">def worker(env, log):
     while True:
-        log.append([env.rnow, None])
+        log.append({"event": "start", "time": env.rnow})
         yield env.timeout(t_work())
-        log[-1][-1] = env.rnow
+        log.append({"event": "end", "time": env.rnow})
         yield env.timeout(T_BREAK)
 </code></pre>
 <ul>
@@ -175,10 +174,9 @@ class Env(Environment):
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="monitor_uniform_work_and_break.py">SEED = 12345
+<pre class="language-python"><code class="language-python" data-file="monitor_uniform_work_and_break.py">SEED = 12345
 
 def main():
-    """Make simulation reproducible and create structured log."""
     seed = int(sys.argv[1]) if len(sys.argv) &gt; 1 else SEED
     random.seed(seed)
     env = Env()
@@ -186,28 +184,55 @@ def main():
     proc = worker(env, log)
     env.process(proc)
     env.run(until=T_MORNING)
-    log[-1][-1] = env.rnow
     json.dump(log, sys.stdout, indent=2)
 </code></pre>
-<p><code>{data-file=monitor_uniform_work_and_break.out[
-  [
-    0,
-    26.665
-  ],
-  [
-    36.665,
-    47.072
-  ],
-  …more output…
-  [
-    204.508,
-    240
-  ]
-]}</code></p>
+<pre class=""><code data-file="monitor_uniform_work_and_break.json">[
+  {
+    "event": "start",
+    "time": 0
+  },
+  {
+    "event": "end",
+    "time": 26.665
+  },
+  …more events…
+  {
+    "event": "end",
+    "time": 237.149
+  }
+]]}
+</code></pre>
 <h2>Visualization</h2>
 <ul>
 <li>Could put the visualization in the simulation</li>
 <li>But may want to visualize the data in many different ways</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="visualize_uniform_work_and_break.py">import json
+import plotly.express as px
+import polars as pl
+import sys
+
+df = pl.from_dicts(json.load(sys.stdin)).with_columns(
+    pl.when(pl.col("event") == "start").then(1).otherwise(-1).alias("delta")
+)
+events = df.with_columns(
+    pl.col("delta").cum_sum().alias("state")
+)
+
+fig = px.line(events, x="time", y="state", line_shape="hv")
+fig.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0}).update_yaxes(tickvals=[0, 1])
+fig.write_image(sys.argv[1])
+</code></pre>
+<div class="center">
+<img alt="time-series plot of work" src="visualize_uniform_work_and_break.svg"/>
+</div>
+<ul>
+<li>The visualization code is 2/3 the size of the simulation<ul>
+<li>And arguably harder to read if you're not familiar with <a href="https://pola.rs/">Polars</a>
+    and <a href="https://plotly.com/python/plotly-express/">Plotly Express</a></li>
+</ul>
+</li>
+<li><em>Understanding a simulation is as much work as building it</em></li>
 </ul>
 </main>
 <footer>
