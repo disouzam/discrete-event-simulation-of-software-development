@@ -1,13 +1,13 @@
 import numpy as np
 import plotly.express as px
 import polars as pl
-from scipy.stats import lognorm
+from scipy.stats import expon
 import sys
 
-mu = 0.4  # median 1.5
-sigma = 0.5
+lam = 0.5
+scale = 1 / lam
 
-dist = lognorm(s=sigma, scale=np.exp(mu))
+dist = expon(scale=scale)
 x = np.linspace(dist.ppf(0.001), dist.ppf(0.99), 500)
 y = dist.pdf(x)
 

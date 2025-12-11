@@ -1,6 +1,7 @@
 # Simple Simulations
 
--   FIXME
+-   Start with a few simple simulations to illustrate [SimPy][simpy]
+-   The framework relies on generators, which are briefly summarized in [this appendix](@/generators/)
 
 ## A Regular Schedule
 
@@ -8,7 +9,7 @@
 -   Import `Environment` from `simpy`
 -   Define a generator to simulate work
     -   <code>env.timeout(<em>duration</em>)</code> creates an object that means "wait this long"
-    -   `yield` suspends the worker and gives this object to [SimPy][simpy]
+    -   `yield` suspends the worker and gives this object to SimPy
     -   SimPy advances its clock (does *not* actually "wait")
 
 ```{.python data-file=fixed_work_and_break.py}
@@ -27,8 +28,8 @@ def worker(env):
 -   To make this work:
     -   Create an `Environment`
     -   Call `worker` to create a generator object
-        -   Does *not* execute function yet
-	-   Pass in the environment so the generator can call `.timeout`
+        -   Does *not* execute the function (yet)
+	-   Pass in the environment so the generator can call `env.timeout`
     -   Tell the environment how long to run
 
 ```{.python data-file=fixed_work_and_break.py}
@@ -57,12 +58,17 @@ done at 240
 ```
 
 -   FIXME: diagram of execution
+-   `env.timeout()` doesn't actually pause the process
+-   It creates an object telling the framework how long the process wants to pause
+-   `yield` gives this object to the framework
+-   [Co-operative concurrency](g:coop-concurrency)
+    -   Completely deterministic unless we deliberately introduce randomness
 
 ## Introducing Randomness
 
 -   Shae starts at the same time but works for variable intervals
     -   So we have to decide how to model those intervals
--   [Uniform](g:random-uniform) is simplest
+-   [Uniform random distribution](g:random-uniform) is unrealistic, but simple
 
 ```{.python data-file=uniform_work_and_break.py}
 T_MIN_WORK = 10
@@ -95,23 +101,12 @@ start work at 203.03234415437063
 done at 240
 ```
 
--   The program runs, but it's not useful
-    -   Can't make sense of the output
+-   Is this working correctly?
+-   Hard for us to make sense of the output
 
 ## Monitoring
 
--   Create our own `Env` class with `rnow` property to report time to `PREC` decimal places
-
-```{.python data-file=monitor_uniform_work_and_break.py}
-PREC = 3
-
-
-class Env(Environment):
-    @property
-    def rnow(self):
-        return round(self.now, PREC)
-```
-
+-   Round the time to `PREC` decimal places
 -   Record start and end events in a list of dictionaries
     -   Easy to convert to a dataframe
 
@@ -127,8 +122,7 @@ def worker(env, log):
 -   Move main body into a function
 -   Initialize random number generation for reproducibility
     -   Testing and debugging are very difficult otherwise
--   Output a structured log
-    -   Use JSON
+-   Output a structured log as JSON
 
 ```{.python data-file=monitor_uniform_work_and_break.py}
 SEED = 12345
@@ -136,7 +130,7 @@ SEED = 12345
 def main():
     seed = int(sys.argv[1]) if len(sys.argv) > 1 else SEED
     random.seed(seed)
-    env = Env()
+    env = Environment()
     log = []
     proc = worker(env, log)
     env.process(proc)
@@ -145,20 +139,11 @@ def main():
 ```
 ```{data-file=monitor_uniform_work_and_break.json}
 [
-  {
-    "event": "start",
-    "time": 0
-  },
-  {
-    "event": "end",
-    "time": 26.665
-  },
+  {"event": "start", "time": 0},
+  {"event": "end", "time": 26.665},
   …more events…
-  {
-    "event": "end",
-    "time": 237.149
-  }
-]]}
+  {"event": "end", "time": 237.149}
+]
 ```
 
 ## Visualization
@@ -193,132 +178,95 @@ fig.write_image(sys.argv[1])
         and [Plotly Express][plotly-express]
 -   *Understanding a simulation is as much work as building it*
 
-## Logging via Instrumentation
+## Managers and Programmers
 
--   Use a [context manager](g:context-manager) to create log entries
-    -   `__enter__` adds a "start" event
-    -   `__exit__` adds an "end" event
--   Work backwards from desired change in `worker`
+-   Shae's manager gives them work
+    -   Need a process to generate tasks
+    -   And a way for the manager to give them to Shae
+-   Use `simpy.Store` to model a [job queue](g:job-queue)
+    -   First-in, first-out
+    -   Infinite capacity (for now)
+-   FIXME: diagram
+-   Setup
 
-```{.python data-file=context_manager_log.py}
-def worker(env, log):
+```{.python data-file=manager_developer_queue_fixed.py}
+T_JOB_ARRIVAL = (20, 30)
+T_WORK = (10, 50)
+PREC = 3
+
+def rt(env):
+    return round(env.now, PREC)
+
+def t_job_arrival():
+    return random.uniform(*T_JOB_ARRIVAL)
+
+def t_work():
+    return random.uniform(*T_WORK)
+```
+
+-   Manager puts things in queue
+    -   As with `env.timeout`,
+        `queue.put` creates an object that we `yield` to the framework
+-   Then wait a random interval before creating the next job
+-   Use `itertools.count` and `next()` to generate a sequence of integer job IDs
+
+```{.python data-file=manager_developer_queue_fixed.py}
+def manager(env, queue, log):
+    job_id = count()
     while True:
-        with LogWork(env, log):
-            yield env.timeout(t_work())
-        yield env.timeout(T_BREAK)
+        log.append({"time": rt(env), "id": "manager", "event": "create job"})
+        yield queue.put(next(job_id))
+        yield env.timeout(t_job_arrival())
 ```
 
--   Create the `LogWork` class
-    -   Don't need to save the instance in a variable
+-   Programmer takes jobs from the queue in order
+    -   The logging code makes this harder to read
 
-```{.python data-file=context_manager_log.py}
-class LogWork:
-    def __init__(self, env, log):
-        self.env = env
-        self.log = log
-
-    def __enter__(self):
-        self.log.append({"event": "start", "time": self.env.rnow})
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.log.append({"event": "end", "time": self.env.rnow})
+```{.python data-file=manager_developer_queue_fixed.py}
+def programmer(env, queue, log):
+    while True:
+        log.append({"time": rt(env), "id": "worker", "event": "start wait"})
+        job = yield queue.get()
+        log.append({"time": rt(env), "id": "worker", "event": "start work"})
+        yield env.timeout(t_work())
+        log.append({"time": rt(env), "id": "worker", "event": "end work"})
 ```
 
--   Accurate reporting
--   But we have to insert monitoring into our worker
-    -   And as it becomes more complex, that's going to be harder to read
+-   Main program sets things up, runs the simulation, and displays the log
 
-## Simulating with Objects
+```{.python data-file=manager_developer_queue_fixed.py}
+T_SIM = 100
+SEED = 12345
 
--   Create a class to represe the worker
-    -   Its `run` method is a generator
-    -   Its constructor creates the process 
-
-```{.python data-file=simulate_with_objects.py}
-class Worker:
-    def __init__(self, env):
-        self.env = env
-        self.env.process(self.run())
-
-    def run(self):
-        while True:
-            print(f"{self.env.rnow} start")
-            yield self.env.timeout(t_work())
-            print(f"{self.env.rnow} end")
-            yield self.env.timeout(T_BREAK)
-```
-
--   Main body just creates the object
-
-```{.python data-file=simulate_with_objects.py}
 def main():
     seed = int(sys.argv[1]) if len(sys.argv) > 1 else SEED
     random.seed(seed)
-    env = Env()
-    worker = Worker(env)
-    env.run(until=T_MORNING)
+
+    env = Environment()
+    queue = Store(env)
+    log = []
+
+    env.process(manager(env, queue, log))
+    env.process(programmer(env, queue, log))
+    env.run(until=T_SIM)
+
+    json.dump(log, sys.stdout, indent=2)
 ```
-```{.python data-file=simulate_with_objects.out}
-0 start
-26.665 end
-36.665 start
-47.072 end
-57.072 start
-100.08 end
-110.08 start
-132.025 end
-142.025 start
-166.762 end
-176.762 start
-194.508 end
-204.508 start
-237.149 end
-```
-
-## Logging via Sampling
-
--   Define another process that inspects the worker periodically and records its state
-
-```{.python data-file=sampling_log.py}
-class Logger:
-    def __init__(self, env, worker):
-        self.env = env
-        self.worker = worker
-        self.log = []
-        self.env.process(self.run())
-
-    def run(self):
-        while True:
-            self.log.append({"time": self.env.rnow, "state": self.worker.state})
-            yield self.env.timeout(T_LOG)
+```{.out data-file=manager_developer_queue_fixed.json}
+[
+  {"time": 0, "id": "manager", "event": "create job"},
+  {"time": 0, "id": "worker", "event": "start wait"},
+  {"time": 0, "id": "worker", "event": "start work"},
+  {"time": 10.407, "id": "worker", "event": "end work"},
+  {"time": 10.407, "id": "worker", "event": "start wait"},
+  …more events…
+  {"time": 92.57, "id": "worker", "event": "start wait"}
+]
 ```
 
--   Modify the worker to make its state explicit
-    -   Initialize in constructor and update in `run`
+## Interesting Questions
 
-```{.python data-file=sampling_log.py}
-class Worker:
-    def __init__(self, env):
-        self.env = env
-        self.state = "idle"
-        self.env.process(self.run())
-
-    def run(self):
-        while True:
-            self.state = "work"
-            yield self.env.timeout(t_work())
-            self.state = "idle"
-            yield self.env.timeout(T_BREAK)
-```
-
-<div class="center">
-  <img src="visualize_sampling_log.svg" alt="time-series plot of sampling">
-</div>
-
--   Instrumentation is easier in simple systems
--   Sampling is easier in complex ones
--   [Separation of concerns](g:separation-of-concerns)
-
-## Exercises
-
-1.  Why are the edges in the second plot not quite vertical?
+-   [Utilization](g:utilization): how busy is the programmer?
+-   [Throughput](g:throughput): how many jobs get done per unit time?
+-   [Delay](g:delay): how long from job creation to job completion?
+-   We need better data collection

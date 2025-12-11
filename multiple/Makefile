@@ -1,5 +1,7 @@
 all: \
-  m1_d1_fixed.out
+  m1_d1_fixed.out \
+  plot_exponential.svg \
+  plot_log_normal.svg
 
 %.out: %.py
 	python $< >& $@
@@ -7,5 +9,5 @@ all: \
 %.json: %.py
 	python $< >& $@
 
-plot_log_normal.svg: plot_log_normal.py
+plot_%.svg: plot_%.py
 	python $< $@

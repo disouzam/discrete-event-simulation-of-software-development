@@ -12,28 +12,22 @@ SEED = 12345
 PREC = 3
 
 
-class Env(Environment):
-    @property
-    def rnow(self):
-        return round(self.now, PREC)
-
-
 def t_work():
     return random.uniform(T_MIN_WORK, T_MAX_WORK)
 
 
 def worker(env, log):
     while True:
-        log.append({"event": "start", "time": env.rnow})
+        log.append({"event": "start", "time": round(env.now, PREC)})
         yield env.timeout(t_work())
-        log.append({"event": "end", "time": env.rnow})
+        log.append({"event": "end", "time": round(env.now, PREC)})
         yield env.timeout(T_BREAK)
 
 
 def main():
     seed = int(sys.argv[1]) if len(sys.argv) > 1 else SEED
     random.seed(seed)
-    env = Env()
+    env = Environment()
     log = []
     proc = worker(env, log)
     env.process(proc)

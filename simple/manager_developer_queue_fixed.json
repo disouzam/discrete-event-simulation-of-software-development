@@ -1,0 +1,87 @@
+[
+  {
+    "time": 0,
+    "id": "manager",
+    "event": "create job"
+  },
+  {
+    "time": 0,
+    "id": "worker",
+    "event": "start wait"
+  },
+  {
+    "time": 0,
+    "id": "worker",
+    "event": "start work"
+  },
+  {
+    "time": 10.407,
+    "id": "worker",
+    "event": "end work"
+  },
+  {
+    "time": 10.407,
+    "id": "worker",
+    "event": "start wait"
+  },
+  {
+    "time": 24.166,
+    "id": "manager",
+    "event": "create job"
+  },
+  {
+    "time": 24.166,
+    "id": "worker",
+    "event": "start work"
+  },
+  {
+    "time": 46.112,
+    "id": "worker",
+    "event": "end work"
+  },
+  {
+    "time": 46.112,
+    "id": "worker",
+    "event": "start wait"
+  },
+  {
+    "time": 52.418,
+    "id": "manager",
+    "event": "create job"
+  },
+  {
+    "time": 52.418,
+    "id": "worker",
+    "event": "start work"
+  },
+  {
+    "time": 70.165,
+    "id": "worker",
+    "event": "end work"
+  },
+  {
+    "time": 70.165,
+    "id": "worker",
+    "event": "start wait"
+  },
+  {
+    "time": 76.102,
+    "id": "manager",
+    "event": "create job"
+  },
+  {
+    "time": 76.102,
+    "id": "worker",
+    "event": "start work"
+  },
+  {
+    "time": 92.57,
+    "id": "worker",
+    "event": "end work"
+  },
+  {
+    "time": 92.57,
+    "id": "worker",
+    "event": "start wait"
+  }
+]

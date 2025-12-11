@@ -39,5 +39,6 @@ skips = [
     "*.sh",
     "Makefile",
     "extras/**",
+    "unused/**",
     "uv.lock"
 ]

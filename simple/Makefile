@@ -2,8 +2,7 @@ all: \
   fixed_work_and_break.out \
   uniform_work_and_break.out \
   visualize_uniform_work_and_break.svg \
-  simulate_with_objects.out \
-  visualize_sampling_log.svg
+  manager_developer_queue_fixed.json
 
 %.out: %.py
 	python $< >& $@
@@ -14,5 +13,5 @@ all: \
 visualize_uniform_work_and_break.svg: visualize_start_stop_json.py monitor_uniform_work_and_break.json
 	cat $(word 2, $^) | python $< $@
 
-visualize_sampling_log.svg: visualize_sampling_log.py sampling_log.json
-	cat $(word 2, $^) | python $< $@
+clean:
+	@rm -f *~ *.json *.out *.svg

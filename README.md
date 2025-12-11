@@ -17,6 +17,7 @@ Discrete event simulation of software development
 
 <div id="appendices" markdown="1">
 
+1.  [Generators](@/generators/)
 1.  [License](@/license/)
 1.  [Code of Conduct](@/conduct/)
 1.  [Contributing](@/contributing/)
