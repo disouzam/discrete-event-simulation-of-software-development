@@ -1,0 +1,92 @@
+{
+  "params": {
+    "n_programmer": 3,
+    "seed": 12345,
+    "t_develop_mu": 0.4,
+    "t_develop_sigma": 0.5,
+    "t_job_arrival": 1.0,
+    "t_sim": 10
+  },
+  "jobs": [
+    {
+      "id": 0,
+      "t_develop": 1.388,
+      "t_create": 0,
+      "t_start": 0,
+      "t_end": 1.388,
+      "worker_id": 0
+    },
+    {
+      "id": 1,
+      "t_develop": 1.135,
+      "t_create": 1.744,
+      "t_start": 1.744,
+      "t_end": 2.879,
+      "worker_id": 1
+    },
+    {
+      "id": 2,
+      "t_develop": 1.596,
+      "t_create": 1.959,
+      "t_start": 1.959,
+      "t_end": 3.555,
+      "worker_id": 2
+    },
+    {
+      "id": 3,
+      "t_develop": 1.308,
+      "t_create": 2.092,
+      "t_start": 2.092,
+      "t_end": 3.4,
+      "worker_id": 0
+    },
+    {
+      "id": 4,
+      "t_develop": 1.601,
+      "t_create": 2.284,
+      "t_start": 2.879,
+      "t_end": 4.48,
+      "worker_id": 1
+    },
+    {
+      "id": 5,
+      "t_develop": 1.282,
+      "t_create": 5.455,
+      "t_start": 5.455,
+      "t_end": 6.737,
+      "worker_id": 0
+    },
+    {
+      "id": 6,
+      "t_develop": 1.881,
+      "t_create": 5.616,
+      "t_start": 5.616,
+      "t_end": 7.497,
+      "worker_id": 2
+    },
+    {
+      "id": 7,
+      "t_develop": 0.803,
+      "t_create": 6.034,
+      "t_start": 6.034,
+      "t_end": 6.837,
+      "worker_id": 1
+    },
+    {
+      "id": 8,
+      "t_develop": 1.099,
+      "t_create": 9.459,
+      "t_start": 9.459,
+      "t_end": null,
+      "worker_id": 0
+    },
+    {
+      "id": 9,
+      "t_develop": 3.267,
+      "t_create": 9.995,
+      "t_start": 9.995,
+      "t_end": null,
+      "worker_id": 1
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 all: \
   plot_exponential.svg \
-  plot_log_normal.svg
+  plot_log_normal.svg \
+  multiple_programmers.json
 
 %.out: %.py
 	python $< >& $@

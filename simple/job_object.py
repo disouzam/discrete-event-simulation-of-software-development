@@ -17,11 +17,11 @@ def rt(env):
     return round(env.now, PREC)
 
 
-def t_job_arrival():
+def rand_job_arrival():
     return random.uniform(T_JOB_ARRIVAL_MIN, T_JOB_ARRIVAL_MAX)
 
 
-def t_work():
+def rand_work():
     return random.uniform(T_WORK_MIN, T_WORK_MAX)
 
 
@@ -41,14 +41,14 @@ class Job:
 def manager(env, queue):
     while True:
         yield queue.put(Job(env))
-        yield env.timeout(t_job_arrival())
+        yield env.timeout(rand_job_arrival())
 
 
 def programmer(env, queue):
     while True:
         job = yield queue.get()
         job.log("start")
-        yield env.timeout(t_work())
+        yield env.timeout(rand_work())
         job.log("end")
 
 

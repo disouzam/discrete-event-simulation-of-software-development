@@ -12,14 +12,14 @@ SEED = 12345
 PREC = 3
 
 
-def t_work():
+def rand_work():
     return random.uniform(T_MIN_WORK, T_MAX_WORK)
 
 
 def worker(env, log):
     while True:
         log.append({"event": "start", "time": round(env.now, PREC)})
-        yield env.timeout(t_work())
+        yield env.timeout(rand_work())
         log.append({"event": "end", "time": round(env.now, PREC)})
         yield env.timeout(T_BREAK)
 

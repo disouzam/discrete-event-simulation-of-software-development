@@ -75,14 +75,14 @@ T_MIN_WORK = 10
 T_MAX_WORK = 50
 
 
-def t_work():
+def rand_work():
     return random.uniform(T_MIN_WORK, T_MAX_WORK)
 
 
 def worker(env):
     while True:
         print(f"start work at {env.now}")
-        yield env.timeout(t_work())          # changed
+        yield env.timeout(rand_work())          # changed
         print(f"start break at {env.now}")
         yield env.timeout(T_BREAK)
 ```
@@ -114,7 +114,7 @@ done at 240
 def worker(env, log):
     while True:
         log.append({"event": "start", "time": env.rnow})
-        yield env.timeout(t_work())
+        yield env.timeout(rand_work())
         log.append({"event": "end", "time": env.rnow})
         yield env.timeout(T_BREAK)
 ```
@@ -199,10 +199,10 @@ PREC = 3
 def rt(env):
     return round(env.now, PREC)
 
-def t_job_arrival():
+def rand_job_arrival():
     return random.uniform(T_JOB_ARRIVAL_MIN, T_JOB_ARRIVAL_MAX)
 
-def t_work():
+def rand_work():
     return random.uniform(T_WORK_MIN, T_WORK_MAX)
 ```
 
@@ -218,7 +218,7 @@ def manager(env, queue, log):
     while True:
         log.append({"time": rt(env), "id": "manager", "event": "create job"})
         yield queue.put(next(job_id))
-        yield env.timeout(t_job_arrival())
+        yield env.timeout(rand_job_arrival())
 ```
 
 -   Programmer takes jobs from the queue in order
@@ -230,7 +230,7 @@ def programmer(env, queue, log):
         log.append({"time": rt(env), "id": "worker", "event": "start wait"})
         job = yield queue.get()
         log.append({"time": rt(env), "id": "worker", "event": "start work"})
-        yield env.timeout(t_work())
+        yield env.timeout(rand_work())
         log.append({"time": rt(env), "id": "worker", "event": "end work"})
 ```
 
@@ -296,14 +296,14 @@ class Job:
 def manager(env, queue):
     while True:
         yield queue.put(Job(env))
-        yield env.timeout(t_job_arrival())
+        yield env.timeout(rand_job_arrival())
 
 
 def programmer(env, queue):
     while True:
         job = yield queue.get()
         job.log("start")
-        yield env.timeout(t_work())
+        yield env.timeout(rand_work())
         job.log("end")
 ```
 

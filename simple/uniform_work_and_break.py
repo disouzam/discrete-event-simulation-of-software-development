@@ -7,14 +7,14 @@ T_BREAK = 10
 T_MORNING = 4 * 60
 
 
-def t_work():
+def rand_work():
     return random.uniform(T_MIN_WORK, T_MAX_WORK)
 
 
 def worker(env):
     while True:
         print(f"start work at {env.now}")
-        yield env.timeout(t_work())
+        yield env.timeout(rand_work())
         print(f"start break at {env.now}")
         yield env.timeout(T_BREAK)
 
