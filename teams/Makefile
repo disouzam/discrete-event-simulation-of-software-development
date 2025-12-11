@@ -1,5 +1,4 @@
 all: \
-  m1_d1_fixed.out \
   plot_exponential.svg \
   plot_log_normal.svg
 

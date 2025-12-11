@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MIT License</title>
+<title>Teams</title>
 <link href="../static/favicon.ico" rel="icon" type="image/x-icon"/>
 <link href="../static/page.css" rel="stylesheet" type="text/css"/>
 </head>
@@ -35,31 +35,34 @@
 </span>
 </nav>
 <main>
-<h1>MIT License</h1>
-<p>Permission is hereby granted, free of charge, to any person
-obtaining a copy of this software and associated documentation
-files (the "Software"), to deal in the Software without
-restriction, including without limitation the rights to use,
-copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following
-conditions:</p>
-<p>The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.</p>
-<p>Copyright (c) Greg Wilson.</p>
+<h1>Teams</h1>
+<ul>
+<li>Assume probability of manager generating a new job in any instant is fixed<ul>
+<li>I.e., doesn't depend on how long since the last job was generated</li>
+</ul>
+</li>
+<li>If the arrival rate (jobs per tick) is λ,
+    the time until the next job is an <a href="../glossary/#random-exponential">exponential</a> random variable
+    with mean 1/λ</li>
+</ul>
+<div class="center">
+<img alt="exponential distribution" src="plot_exponential.svg"/>
+</div>
+<ul>
+<li>Use a <a href="../glossary/#random-log-normal">log-normal</a> random variable to model job lengths<ul>
+<li>Most jobs are short but there are a few outliers</li>
+<li>If parameters are μ and σ, <a href="../glossary/#median">median</a> is e<sup>μ</sup></li>
+</ul>
+</li>
+</ul>
+<div class="center">
+<img alt="log-normal distribution" src="plot_log_normal.svg"/>
+</div>
 </main>
 <footer>
 <div class="row">
 <div class="col-3 left">
-	  ⇐ <a href="../generators/">Generators</a>
+	  ⇐ <a href="../simple/">Simple Simulations</a>
 </div>
 <div class="col-6 center">
 <a href="../"></a>
@@ -67,7 +70,7 @@ OTHER DEALINGS IN THE SOFTWARE.</p>
 	  <a href="../#acknowledgments">the authors</a>
 </div>
 <div class="col-3 right">
-<a href="../conduct/">Code of Conduct</a> ⇒
+<a href="../finale/">Conclusion</a> ⇒
 	</div>
 </div>
 </footer>
