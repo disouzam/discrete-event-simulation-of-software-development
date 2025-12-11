@@ -189,19 +189,21 @@ fig.write_image(sys.argv[1])
 -   FIXME: diagram
 -   Setup
 
-```{.python data-file=manager_developer_queue_fixed.py}
-T_JOB_ARRIVAL = (20, 30)
-T_WORK = (10, 50)
+```{.python data-file=manager_developer_queue.py}
+T_JOB_ARRIVAL_MIN = 20
+T_JOB_ARRIVAL_MAX = 30
+T_WORK_MIN = 10
+T_WORK_MAX = 50
 PREC = 3
 
 def rt(env):
     return round(env.now, PREC)
 
 def t_job_arrival():
-    return random.uniform(*T_JOB_ARRIVAL)
+    return random.uniform(T_JOB_ARRIVAL_MIN, T_JOB_ARRIVAL_MAX)
 
 def t_work():
-    return random.uniform(*T_WORK)
+    return random.uniform(T_WORK_MIN, T_WORK_MAX)
 ```
 
 -   Manager puts things in queue
@@ -210,7 +212,7 @@ def t_work():
 -   Then wait a random interval before creating the next job
 -   Use `itertools.count` and `next()` to generate a sequence of integer job IDs
 
-```{.python data-file=manager_developer_queue_fixed.py}
+```{.python data-file=manager_developer_queue.py}
 def manager(env, queue, log):
     job_id = count()
     while True:
@@ -222,7 +224,7 @@ def manager(env, queue, log):
 -   Programmer takes jobs from the queue in order
     -   The logging code makes this harder to read
 
-```{.python data-file=manager_developer_queue_fixed.py}
+```{.python data-file=manager_developer_queue.py}
 def programmer(env, queue, log):
     while True:
         log.append({"time": rt(env), "id": "worker", "event": "start wait"})
@@ -234,7 +236,7 @@ def programmer(env, queue, log):
 
 -   Main program sets things up, runs the simulation, and displays the log
 
-```{.python data-file=manager_developer_queue_fixed.py}
+```{.python data-file=manager_developer_queue.py}
 T_SIM = 100
 SEED = 12345
 
@@ -252,7 +254,7 @@ def main():
 
     json.dump(log, sys.stdout, indent=2)
 ```
-```{.out data-file=manager_developer_queue_fixed.json}
+```{.out data-file=manager_developer_queue.json}
 [
   {"time": 0, "id": "manager", "event": "create job"},
   {"time": 0, "id": "worker", "event": "start wait"},
@@ -266,7 +268,99 @@ def main():
 
 ## Interesting Questions
 
--   [Utilization](g:utilization): how busy is the programmer?
 -   [Throughput](g:throughput): how many jobs get done per unit time?
 -   [Delay](g:delay): how long from job creation to job completion?
+-   [Utilization](g:utilization): how busy is the programmer?
 -   We need better data collection
+-   So define a class `Job`
+    -   Every job has a unique ID
+    -   `Job` stores the log of job-related events
+
+```{.python data-file=job_object.py}
+class Job:
+    _id = count()
+    _log = []
+
+    def __init__(self, env):
+        self.env = env
+        self.id = next(Job._id)
+        self.log("created")
+
+    def log(self, message):
+        Job._log.append({"time": rt(self.env), "id": self.id, "event": message})
+```
+
+-   Manager and programmer
+
+```{.python data-file=job_object.py}
+def manager(env, queue):
+    while True:
+        yield queue.put(Job(env))
+        yield env.timeout(t_job_arrival())
+
+
+def programmer(env, queue):
+    while True:
+        job = yield queue.get()
+        job.log("start")
+        yield env.timeout(t_work())
+        job.log("end")
+```
+
+-   Save the parameters in the output for reproducibility
+
+```{.python data-file=job_object.py}
+def main():
+    …as before…
+    params = {
+        "seed": seed,
+        "t_sim": t_sim,
+        "t_job_arrival_min": T_JOB_ARRIVAL_MIN,
+        "t_job_arrival_max": T_JOB_ARRIVAL_MAX,
+        "t_work_min": T_WORK_MIN,
+        "t_work_max": T_WORK_MAX,
+    }
+    result = {
+        "params": params,
+        "tasks": Job._log,
+    }
+    json.dump(result, sys.stdout, indent=2)
+```
+
+| id | created | start  | end    |
+|----|---------|--------|--------|
+| 0  | 0.0     | 0.0    | 10.407 |
+| 1  | 18.332  | 18.332 | 40.278 |
+| 2  | 44.837  | 44.837 | 62.583 |
+| 3  | 62.205  | 62.583 | 79.05  |
+| 4  | 83.525  | 83.525 | null   |
+| 5  | 96.01   | null   | null   |
+
+
+-   Throughput: number of completed tasks over simulation time
+-   Delay: average of end time minus creation time for completed tasks
+-   Programmer utilization
+    -   Drop tasks that haven't been started
+    -   Fill `null` end values with simulation time
+    -   Sum the differences between end and start, and divide by simulation time
+
+| metric      | value  |
+| ----------- | -----: |
+| throughput  |  0.040 |
+| delay       | 16.736 |
+| utilization |  0.830 |
+
+-   But this is only for 100 ticks
+-   How do these figures change as we run the simulation for longer periods?
+
+| duration | throughput | delay     | utilization |
+| -------: | ---------: | --------: | ----------: | 
+|      100 |      0.040 |    16.736 |       0.830 |
+|     1000 |      0.038 |    76.904 |       0.961 |
+|    10000 |      0.034 |  1537.582 |       0.996 |
+|   100000 |      0.033 | 16412.712 |       1.000 |
+
+-   Throughput and utilization stabilize, delay steadily increases
+    -   The manager is creating work faster than the programmer can do it
+    -   So the programmer is busy all the time
+    -   Which is the limit on throughput  

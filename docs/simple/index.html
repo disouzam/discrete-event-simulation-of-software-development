@@ -25,6 +25,7 @@
       <span class="dropdown">
 <a href="#">Appendices</a>
 <span class="dropdown-content" id="nav-appendices">
+<a href="../generators/">Generators</a>
 <a href="../license/">License</a>
 <a href="../conduct/">Code of Conduct</a>
 <a href="../contributing/">Contributing</a>
@@ -36,7 +37,8 @@
 <main>
 <h1>Simple Simulations</h1>
 <ul>
-<li>FIXME</li>
+<li>Start with a few simple simulations to illustrate <a href="https://simpy.readthedocs.io/">SimPy</a></li>
+<li>The framework relies on generators, which are briefly summarized in <a href="../generators/">this appendix</a></li>
 </ul>
 <h2>A Regular Schedule</h2>
 <ul>
@@ -44,7 +46,7 @@
 <li>Import <code>Environment</code> from <code>simpy</code></li>
 <li>Define a generator to simulate work<ul>
 <li><code>env.timeout(<em>duration</em>)</code> creates an object that means "wait this long"</li>
-<li><code>yield</code> suspends the worker and gives this object to <a href="https://simpy.readthedocs.io/">SimPy</a></li>
+<li><code>yield</code> suspends the worker and gives this object to SimPy</li>
 <li>SimPy advances its clock (does <em>not</em> actually "wait")</li>
 </ul>
 </li>
@@ -64,10 +66,10 @@ def worker(env):
 <li>To make this work:<ul>
 <li>Create an <code>Environment</code></li>
 <li>Call <code>worker</code> to create a generator object<ul>
-<li>Does <em>not</em> execute function yet</li>
+<li>Does <em>not</em> execute the function (yet)</li>
 </ul>
 </li>
-<li>Pass in the environment so the generator can call <code>.timeout</code></li>
+<li>Pass in the environment so the generator can call <code>env.timeout</code></li>
 <li>Tell the environment how long to run</li>
 </ul>
 </li>
@@ -96,6 +98,13 @@ done at 240
 </code></pre>
 <ul>
 <li>FIXME: diagram of execution</li>
+<li><code>env.timeout()</code> doesn't actually pause the process</li>
+<li>It creates an object telling the framework how long the process wants to pause</li>
+<li><code>yield</code> gives this object to the framework</li>
+<li><a href="../glossary/#coop-concurrency">Co-operative concurrency</a><ul>
+<li>Completely deterministic unless we deliberately introduce randomness</li>
+</ul>
+</li>
 </ul>
 <h2>Introducing Randomness</h2>
 <ul>
@@ -103,7 +112,7 @@ done at 240
 <li>So we have to decide how to model those intervals</li>
 </ul>
 </li>
-<li><a href="../glossary/#random-uniform">Uniform</a> is simplest</li>
+<li><a href="../glossary/#random-uniform">Uniform random distribution</a> is unrealistic, but simple</li>
 </ul>
 <pre class="language-python"><code class="language-python" data-file="uniform_work_and_break.py">T_MIN_WORK = 10
 T_MAX_WORK = 50
@@ -134,24 +143,12 @@ start work at 203.03234415437063
 done at 240
 </code></pre>
 <ul>
-<li>The program runs, but it's not useful<ul>
-<li>Can't make sense of the output</li>
-</ul>
-</li>
+<li>Is this working correctly?</li>
+<li>Hard for us to make sense of the output</li>
 </ul>
 <h2>Monitoring</h2>
 <ul>
-<li>Create our own <code>Env</code> class with <code>rnow</code> property to report time to <code>PREC</code> decimal places</li>
-</ul>
-<pre class="language-python"><code class="language-python" data-file="monitor_uniform_work_and_break.py">PREC = 3
-
-
-class Env(Environment):
-    @property
-    def rnow(self):
-        return round(self.now, PREC)
-</code></pre>
-<ul>
+<li>Round the time to <code>PREC</code> decimal places</li>
 <li>Record start and end events in a list of dictionaries<ul>
 <li>Easy to convert to a dataframe</li>
 </ul>
@@ -170,17 +167,14 @@ class Env(Environment):
 <li>Testing and debugging are very difficult otherwise</li>
 </ul>
 </li>
-<li>Output a structured log<ul>
-<li>Use JSON</li>
-</ul>
-</li>
+<li>Output a structured log as JSON</li>
 </ul>
 <pre class="language-python"><code class="language-python" data-file="monitor_uniform_work_and_break.py">SEED = 12345
 
 def main():
     seed = int(sys.argv[1]) if len(sys.argv) &gt; 1 else SEED
     random.seed(seed)
-    env = Env()
+    env = Environment()
     log = []
     proc = worker(env, log)
     env.process(proc)
@@ -188,20 +182,11 @@ def main():
     json.dump(log, sys.stdout, indent=2)
 </code></pre>
 <pre class=""><code data-file="monitor_uniform_work_and_break.json">[
-  {
-    "event": "start",
-    "time": 0
-  },
-  {
-    "event": "end",
-    "time": 26.665
-  },
+  {"event": "start", "time": 0},
+  {"event": "end", "time": 26.665},
   …more events…
-  {
-    "event": "end",
-    "time": 237.149
-  }
-]]}
+  {"event": "end", "time": 237.149}
+]
 </code></pre>
 <h2>Visualization</h2>
 <ul>
@@ -235,137 +220,283 @@ fig.write_image(sys.argv[1])
 </li>
 <li><em>Understanding a simulation is as much work as building it</em></li>
 </ul>
-<h2>Logging via Instrumentation</h2>
+<h2>Managers and Programmers</h2>
 <ul>
-<li>Use a <a href="../glossary/#context-manager">context manager</a> to create log entries<ul>
-<li><code>__enter__</code> adds a "start" event</li>
-<li><code>__exit__</code> adds an "end" event</li>
+<li>Shae's manager gives them work<ul>
+<li>Need a process to generate tasks</li>
+<li>And a way for the manager to give them to Shae</li>
 </ul>
 </li>
-<li>Work backwards from desired change in <code>worker</code></li>
+<li>Use <code>simpy.Store</code> to model a <a href="../glossary/#job-queue">job queue</a><ul>
+<li>First-in, first-out</li>
+<li>Infinite capacity (for now)</li>
 </ul>
-<pre class="language-python"><code class="language-python" data-file="context_manager_log.py">def worker(env, log):
+</li>
+<li>FIXME: diagram</li>
+<li>Setup</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="manager_developer_queue.py">T_JOB_ARRIVAL_MIN = 20
+T_JOB_ARRIVAL_MAX = 30
+T_WORK_MIN = 10
+T_WORK_MAX = 50
+PREC = 3
+
+def rt(env):
+    return round(env.now, PREC)
+
+def t_job_arrival():
+    return random.uniform(T_JOB_ARRIVAL_MIN, T_JOB_ARRIVAL_MAX)
+
+def t_work():
+    return random.uniform(T_WORK_MIN, T_WORK_MAX)
+</code></pre>
+<ul>
+<li>Manager puts things in queue<ul>
+<li>As with <code>env.timeout</code>,
+    <code>queue.put</code> creates an object that we <code>yield</code> to the framework</li>
+</ul>
+</li>
+<li>Then wait a random interval before creating the next job</li>
+<li>Use <code>itertools.count</code> and <code>next()</code> to generate a sequence of integer job IDs</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="manager_developer_queue.py">def manager(env, queue, log):
+    job_id = count()
     while True:
-        with LogWork(env, log):
-            yield env.timeout(t_work())
-        yield env.timeout(T_BREAK)
+        log.append({"time": rt(env), "id": "manager", "event": "create job"})
+        yield queue.put(next(job_id))
+        yield env.timeout(t_job_arrival())
 </code></pre>
 <ul>
-<li>Create the <code>LogWork</code> class<ul>
-<li>Don't need to save the instance in a variable</li>
+<li>Programmer takes jobs from the queue in order<ul>
+<li>The logging code makes this harder to read</li>
 </ul>
 </li>
 </ul>
-<pre class="language-python"><code class="language-python" data-file="context_manager_log.py">class LogWork:
-    def __init__(self, env, log):
-        self.env = env
-        self.log = log
-
-    def __enter__(self):
-        self.log.append({"event": "start", "time": self.env.rnow})
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.log.append({"event": "end", "time": self.env.rnow})
+<pre class="language-python"><code class="language-python" data-file="manager_developer_queue.py">def programmer(env, queue, log):
+    while True:
+        log.append({"time": rt(env), "id": "worker", "event": "start wait"})
+        job = yield queue.get()
+        log.append({"time": rt(env), "id": "worker", "event": "start work"})
+        yield env.timeout(t_work())
+        log.append({"time": rt(env), "id": "worker", "event": "end work"})
 </code></pre>
 <ul>
-<li>Accurate reporting</li>
-<li>But we have to insert monitoring into our worker<ul>
-<li>And as it becomes more complex, that's going to be harder to read</li>
+<li>Main program sets things up, runs the simulation, and displays the log</li>
 </ul>
-</li>
-</ul>
-<h2>Simulating with Objects</h2>
-<ul>
-<li>Create a class to represe the worker<ul>
-<li>Its <code>run</code> method is a generator</li>
-<li>Its constructor creates the process </li>
-</ul>
-</li>
-</ul>
-<pre class="language-python"><code class="language-python" data-file="simulate_with_objects.py">class Worker:
-    def __init__(self, env):
-        self.env = env
-        self.env.process(self.run())
+<pre class="language-python"><code class="language-python" data-file="manager_developer_queue.py">T_SIM = 100
+SEED = 12345
 
-    def run(self):
-        while True:
-            print(f"{self.env.rnow} start")
-            yield self.env.timeout(t_work())
-            print(f"{self.env.rnow} end")
-            yield self.env.timeout(T_BREAK)
-</code></pre>
-<ul>
-<li>Main body just creates the object</li>
-</ul>
-<pre class="language-python"><code class="language-python" data-file="simulate_with_objects.py">def main():
+def main():
     seed = int(sys.argv[1]) if len(sys.argv) &gt; 1 else SEED
     random.seed(seed)
-    env = Env()
-    worker = Worker(env)
-    env.run(until=T_MORNING)
-</code></pre>
-<pre class="language-python"><code class="language-python" data-file="simulate_with_objects.out">0 start
-26.665 end
-36.665 start
-47.072 end
-57.072 start
-100.08 end
-110.08 start
-132.025 end
-142.025 start
-166.762 end
-176.762 start
-194.508 end
-204.508 start
-237.149 end
-</code></pre>
-<h2>Logging via Sampling</h2>
-<ul>
-<li>Define another process that inspects the worker periodically and records its state</li>
-</ul>
-<pre class="language-python"><code class="language-python" data-file="sampling_log.py">class Logger:
-    def __init__(self, env, worker):
-        self.env = env
-        self.worker = worker
-        self.log = []
-        self.env.process(self.run())
 
-    def run(self):
-        while True:
-            self.log.append({"time": self.env.rnow, "state": self.worker.state})
-            yield self.env.timeout(T_LOG)
+    env = Environment()
+    queue = Store(env)
+    log = []
+
+    env.process(manager(env, queue, log))
+    env.process(programmer(env, queue, log))
+    env.run(until=T_SIM)
+
+    json.dump(log, sys.stdout, indent=2)
 </code></pre>
+<pre class="language-out"><code class="language-out" data-file="manager_developer_queue.json">[
+  {"time": 0, "id": "manager", "event": "create job"},
+  {"time": 0, "id": "worker", "event": "start wait"},
+  {"time": 0, "id": "worker", "event": "start work"},
+  {"time": 10.407, "id": "worker", "event": "end work"},
+  {"time": 10.407, "id": "worker", "event": "start wait"},
+  …more events…
+  {"time": 92.57, "id": "worker", "event": "start wait"}
+]
+</code></pre>
+<h2>Interesting Questions</h2>
 <ul>
-<li>Modify the worker to make its state explicit<ul>
-<li>Initialize in constructor and update in <code>run</code></li>
+<li><a href="../glossary/#throughput">Throughput</a>: how many jobs get done per unit time?</li>
+<li><a href="../glossary/#delay">Delay</a>: how long from job creation to job completion?</li>
+<li><a href="../glossary/#utilization">Utilization</a>: how busy is the programmer?</li>
+<li>We need better data collection</li>
+<li>So define a class <code>Job</code><ul>
+<li>Every job has a unique ID</li>
+<li><code>Job</code> stores the log of job-related events</li>
 </ul>
 </li>
 </ul>
-<pre class="language-python"><code class="language-python" data-file="sampling_log.py">class Worker:
+<pre class="language-python"><code class="language-python" data-file="job_object.py">class Job:
+    _id = count()
+    _log = []
+
     def __init__(self, env):
         self.env = env
-        self.state = "idle"
-        self.env.process(self.run())
+        self.id = next(Job._id)
+        self.log("created")
 
-    def run(self):
-        while True:
-            self.state = "work"
-            yield self.env.timeout(t_work())
-            self.state = "idle"
-            yield self.env.timeout(T_BREAK)
+    def log(self, message):
+        Job._log.append({"time": rt(self.env), "id": self.id, "event": message})
 </code></pre>
-<div class="center">
-<img alt="time-series plot of sampling" src="visualize_sampling_log.svg"/>
-</div>
 <ul>
-<li>Instrumentation is easier in simple systems</li>
-<li>Sampling is easier in complex ones</li>
-<li><a href="../glossary/#separation-of-concerns">Separation of concerns</a></li>
+<li>Manager and programmer</li>
 </ul>
-<h2>Exercises</h2>
-<ol>
-<li>Why are the edges in the second plot not quite vertical?</li>
-</ol>
+<pre class="language-python"><code class="language-python" data-file="job_object.py">def manager(env, queue):
+    while True:
+        yield queue.put(Job(env))
+        yield env.timeout(t_job_arrival())
+
+
+def programmer(env, queue):
+    while True:
+        job = yield queue.get()
+        job.log("start")
+        yield env.timeout(t_work())
+        job.log("end")
+</code></pre>
+<ul>
+<li>Save the parameters in the output for reproducibility</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="job_object.py">def main():
+    …as before…
+    params = {
+        "seed": seed,
+        "t_sim": t_sim,
+        "t_job_arrival_min": T_JOB_ARRIVAL_MIN,
+        "t_job_arrival_max": T_JOB_ARRIVAL_MAX,
+        "t_work_min": T_WORK_MIN,
+        "t_work_max": T_WORK_MAX,
+    }
+    result = {
+        "params": params,
+        "tasks": Job._log,
+    }
+    json.dump(result, sys.stdout, indent=2)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>created</th>
+<th>start</th>
+<th>end</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>10.407</td>
+</tr>
+<tr>
+<td>1</td>
+<td>18.332</td>
+<td>18.332</td>
+<td>40.278</td>
+</tr>
+<tr>
+<td>2</td>
+<td>44.837</td>
+<td>44.837</td>
+<td>62.583</td>
+</tr>
+<tr>
+<td>3</td>
+<td>62.205</td>
+<td>62.583</td>
+<td>79.05</td>
+</tr>
+<tr>
+<td>4</td>
+<td>83.525</td>
+<td>83.525</td>
+<td>null</td>
+</tr>
+<tr>
+<td>5</td>
+<td>96.01</td>
+<td>null</td>
+<td>null</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Throughput: number of completed tasks over simulation time</li>
+<li>Delay: average of end time minus creation time for completed tasks</li>
+<li>Programmer utilization<ul>
+<li>Drop tasks that haven't been started</li>
+<li>Fill <code>null</code> end values with simulation time</li>
+<li>Sum the differences between end and start, and divide by simulation time</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>metric</th>
+<th style="text-align: right;">value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>throughput</td>
+<td style="text-align: right;">0.040</td>
+</tr>
+<tr>
+<td>delay</td>
+<td style="text-align: right;">16.736</td>
+</tr>
+<tr>
+<td>utilization</td>
+<td style="text-align: right;">0.830</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>But this is only for 100 ticks</li>
+<li>How do these figures change as we run the simulation for longer periods?</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">duration</th>
+<th style="text-align: right;">throughput</th>
+<th style="text-align: right;">delay</th>
+<th style="text-align: right;">utilization</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0.040</td>
+<td style="text-align: right;">16.736</td>
+<td style="text-align: right;">0.830</td>
+</tr>
+<tr>
+<td style="text-align: right;">1000</td>
+<td style="text-align: right;">0.038</td>
+<td style="text-align: right;">76.904</td>
+<td style="text-align: right;">0.961</td>
+</tr>
+<tr>
+<td style="text-align: right;">10000</td>
+<td style="text-align: right;">0.034</td>
+<td style="text-align: right;">1537.582</td>
+<td style="text-align: right;">0.996</td>
+</tr>
+<tr>
+<td style="text-align: right;">100000</td>
+<td style="text-align: right;">0.033</td>
+<td style="text-align: right;">16412.712</td>
+<td style="text-align: right;">1.000</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Throughput and utilization stabilize, delay steadily increases<ul>
+<li>The manager is creating work faster than the programmer can do it</li>
+<li>So the programmer is busy all the time</li>
+<li>Which is the limit on throughput  </li>
+</ul>
+</li>
+</ul>
 </main>
 <footer>
 <div class="row">
