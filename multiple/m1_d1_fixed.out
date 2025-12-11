@@ -1,0 +1,42 @@
+[
+  {
+    "id": "manager-0",
+    "time": 0,
+    "event": "create job 3"
+  },
+  {
+    "id": "programmer-0",
+    "time": 0,
+    "event": "get job 3"
+  },
+  {
+    "id": "programmer-0",
+    "time": 3,
+    "event": "complete job 3"
+  },
+  {
+    "id": "manager-0",
+    "time": 4,
+    "event": "create job 3"
+  },
+  {
+    "id": "programmer-0",
+    "time": 4,
+    "event": "get job 3"
+  },
+  {
+    "id": "programmer-0",
+    "time": 7,
+    "event": "complete job 3"
+  },
+  {
+    "id": "manager-0",
+    "time": 8,
+    "event": "create job 3"
+  },
+  {
+    "id": "programmer-0",
+    "time": 8,
+    "event": "get job 3"
+  }
+]

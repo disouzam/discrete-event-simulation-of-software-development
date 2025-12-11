@@ -1,5 +1,8 @@
 # Glossary
 
+<span id="context-manager">context manager</span>
+:   FIXME
+
 <span id="dataclass">dataclass</span>
 :   FIXME
 
@@ -24,6 +27,9 @@
 <span id="process">process</span>
 :   FIXME
 
+<span id="random-uniform">uniform random distribution</span>
+:   FIXME
+
 <span id="reproducibility">reproducibility</span>
 :   FIXME
 
@@ -34,6 +40,9 @@
 :   FIXME
 
 <span id="starvation">starvation</span>
+:   FIXME
+
+<span id="separation-of-concerns">separation of concerns</span>
 :   FIXME
 
 <span id="throughput">throughput</span>

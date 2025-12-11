@@ -4,7 +4,7 @@ import polars as pl
 from scipy.stats import lognorm
 import sys
 
-mu = 0.25
+mu = 0.4  # median 1.5
 sigma = 0.5
 
 dist = lognorm(s=sigma, scale=np.exp(mu))
