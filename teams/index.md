@@ -26,8 +26,8 @@
 PARAMS = {
     "n_programmer": 3,
     "seed": 12345,
-    "t_develop_mu": 0.4,
-    "t_develop_sigma": 0.5,
+    "t_develop_mu": 0.5,
+    "t_develop_sigma": 0.6,
     "t_job_arrival": 1.0,
     "t_sim": 10,
 }
@@ -53,10 +53,11 @@ class Simulation:
 
 -   Create a `Job` class to store details of jobs
     -   And teach it how to convert itself to a dictionary for JSON output
+    -   Don't save `t_develop` because that would be cheating
 
 ```{.python data-file=multiple_programmers.py}
 class Job:
-    SAVE = ("id", "t_develop", "t_create", "t_start", "t_end", "worker_id")
+    SAVE = ("id", "t_create", "t_start", "t_end", "worker_id")
     _id = count()
     _all = []
 
@@ -131,7 +132,6 @@ def main():
   "jobs": [
     {
       "id": 0,
-      "t_develop": 1.388,
       "t_create": 0,
       "t_start": 0,
       "t_end": 1.388,
@@ -140,7 +140,6 @@ def main():
     …other jobs…
     {
       "id": 9,
-      "t_develop": 3.267,
       "t_create": 9.995,
       "t_start": 9.995,
       "t_end": null,
@@ -149,3 +148,17 @@ def main():
   ]
 }
 ```
+
+-   Analysis after 5000 ticks
+
+| result                      | value |
+| :---------------------------|-----: |
+| mean inter-job arrival time | 0.983 |
+| mean job execution time     | 1.973 |
+| utilization                 | 0.668 |
+
+-   Job arrival time is pretty close to 1.0
+-   Job execution time is right on `exp(mu + (sigma ** 2 / 2))`
+-   Utilization is close to job time divided by number of programmers
+-   Queue is essentially empty
+    -   Manager isn't creating enough work to keep programmers busy

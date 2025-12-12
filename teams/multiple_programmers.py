@@ -7,8 +7,8 @@ import sys
 PARAMS = {
     "n_programmer": 3,
     "seed": 12345,
-    "t_develop_mu": 0.4,
-    "t_develop_sigma": 0.5,
+    "t_develop_mu": 0.5,
+    "t_develop_sigma": 0.6,
     "t_job_arrival": 1.0,
     "t_sim": 10,
 }
@@ -38,7 +38,7 @@ class Simulation:
 
 
 class Job:
-    SAVE = ("id", "t_develop", "t_create", "t_start", "t_end", "worker_id")
+    SAVE = ("id", "t_create", "t_start", "t_end", "worker_id")
     _id = count()
     _all = []
 

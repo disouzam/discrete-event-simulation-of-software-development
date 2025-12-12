@@ -65,8 +65,8 @@
 <pre class="language-python"><code class="language-python" data-file="multiple_programmers.py">PARAMS = {
     "n_programmer": 3,
     "seed": 12345,
-    "t_develop_mu": 0.4,
-    "t_develop_sigma": 0.5,
+    "t_develop_mu": 0.5,
+    "t_develop_sigma": 0.6,
     "t_job_arrival": 1.0,
     "t_sim": 10,
 }
@@ -91,11 +91,12 @@
 <ul>
 <li>Create a <code>Job</code> class to store details of jobs<ul>
 <li>And teach it how to convert itself to a dictionary for JSON output</li>
+<li>Don't save <code>t_develop</code> because that would be cheating</li>
 </ul>
 </li>
 </ul>
 <pre class="language-python"><code class="language-python" data-file="multiple_programmers.py">class Job:
-    SAVE = ("id", "t_develop", "t_create", "t_start", "t_end", "worker_id")
+    SAVE = ("id", "t_create", "t_start", "t_end", "worker_id")
     _id = count()
     _all = []
 
@@ -166,7 +167,6 @@
   "jobs": [
     {
       "id": 0,
-      "t_develop": 1.388,
       "t_create": 0,
       "t_start": 0,
       "t_end": 1.388,
@@ -175,7 +175,6 @@
     …other jobs…
     {
       "id": 9,
-      "t_develop": 3.267,
       "t_create": 9.995,
       "t_start": 9.995,
       "t_end": null,
@@ -184,6 +183,40 @@
   ]
 }
 </code></pre>
+<ul>
+<li>Analysis after 5000 ticks</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">result</th>
+<th style="text-align: right;">value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">mean inter-job arrival time</td>
+<td style="text-align: right;">0.983</td>
+</tr>
+<tr>
+<td style="text-align: left;">mean job execution time</td>
+<td style="text-align: right;">1.973</td>
+</tr>
+<tr>
+<td style="text-align: left;">utilization</td>
+<td style="text-align: right;">0.668</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Job arrival time is pretty close to 1.0</li>
+<li>Job execution time is right on <code>exp(mu + (sigma ** 2 / 2))</code></li>
+<li>Utilization is close to job time divided by number of programmers</li>
+<li>Queue is essentially empty<ul>
+<li>Manager isn't creating enough work to keep programmers busy</li>
+</ul>
+</li>
+</ul>
 </main>
 <footer>
 <div class="row">
