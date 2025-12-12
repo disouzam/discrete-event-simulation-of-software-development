@@ -217,6 +217,63 @@
 </ul>
 </li>
 </ul>
+<h2>Watch the Backlog Grow</h2>
+<ul>
+<li>Once Shae's manager realizes the programmers aren't busy 100% of the time,
+    she starts giving them more work</li>
+<li>Use <a href="../glossary/#parameter-sweeping">parameter sweeping</a> to Look at effect on <a href="../glossary/#backlog">backlog</a></li>
+<li>Move code to run simulation into <code>Simulation</code> class</li>
+<li>Add a monitoring process that records the queue length every <em>N</em> ticks<ul>
+<li>Observation rather than instrumentation</li>
+<li>Clear the log of all jobs each time the simulation starts</li>
+</ul>
+</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="queue_lengths.py">class Simulation:
+    def __init__(self, params):
+        …as before…
+        self.queue_lengths = []
+
+    def run(self):
+        Job.clear()
+        self.env.process(self.monitor())
+        self.env.process(manager(self))
+        for i in range(self.params["n_programmer"]):
+            self.env.process(programmer(self, i))
+        self.env.run(until=self.params["t_sim"])
+
+    def monitor(self):
+        while True:
+            self.queue_lengths.append({"time": rv(self.env.now), "length": len(self.queue.items)})
+            yield self.env.timeout(self.params["t_monitor"])
+</code></pre>
+<ul>
+<li>Look at queue length over time as a function of arrival times<ul>
+<li>Shorter arrival times = jobs arriving more frequently</li>
+</ul>
+</li>
+</ul>
+<div class="center">
+<img alt="queue length as a function of job arrival times" src="analyze_queue_lengths.svg"/>
+</div>
+<ul>
+<li>The faster jobs arrive, the larger the spikes in backlog</li>
+<li>But the programmers always seem to be able to clear the backlog…</li>
+<li>…until jobs are spaced out by about 0.6 ticks</li>
+<li>Do some math<ul>
+<li>Mean job execution time: 1.973 ticks</li>
+<li>Number of programmers: 3</li>
+<li>Jobs executed per tick: 3 / 1.973 = 1.52</li>
+<li>So programmers should be able to handle jobs arriving at a rate of 1 / 1.52 = 0.65 ticks</li>
+</ul>
+</li>
+</ul>
+<div class="center">
+<img alt="zoom in on queue length" src="analyze_queue_lengths_zoom.svg"/>
+</div>
+<ul>
+<li>Everything is fine until suddenly it's not</li>
+</ul>
 </main>
 <footer>
 <div class="row">

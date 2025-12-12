@@ -162,3 +162,55 @@ def main():
 -   Utilization is close to job time divided by number of programmers
 -   Queue is essentially empty
     -   Manager isn't creating enough work to keep programmers busy
+
+## Watch the Backlog Grow
+
+-   Once Shae's manager realizes the programmers aren't busy 100% of the time,
+    she starts giving them more work
+-   Use [parameter sweeping](g:parameter-sweeping) to Look at effect on [backlog](g:backlog)
+-   Move code to run simulation into `Simulation` class
+-   Add a monitoring process that records the queue length every *N* ticks
+    -   Observation rather than instrumentation
+    -   Clear the log of all jobs each time the simulation starts
+
+```{.python data-file=queue_lengths.py}
+class Simulation:
+    def __init__(self, params):
+        …as before…
+        self.queue_lengths = []
+
+    def run(self):
+        Job.clear()
+        self.env.process(self.monitor())
+        self.env.process(manager(self))
+        for i in range(self.params["n_programmer"]):
+            self.env.process(programmer(self, i))
+        self.env.run(until=self.params["t_sim"])
+
+    def monitor(self):
+        while True:
+            self.queue_lengths.append({"time": rv(self.env.now), "length": len(self.queue.items)})
+            yield self.env.timeout(self.params["t_monitor"])
+```
+
+-   Look at queue length over time as a function of arrival times
+    -   Shorter arrival times = jobs arriving more frequently
+
+<div class="center">
+  <img src="analyze_queue_lengths.svg" alt="queue length as a function of job arrival times">
+</div>
+
+-   The faster jobs arrive, the larger the spikes in backlog
+-   But the programmers always seem to be able to clear the backlog…
+-   …until jobs are spaced out by about 0.6 ticks
+-   Do some math
+    -   Mean job execution time: 1.973 ticks
+    -   Number of programmers: 3
+    -   Jobs executed per tick: 3 / 1.973 = 1.52
+    -   So programmers should be able to handle jobs arriving at a rate of 1 / 1.52 = 0.65 ticks
+
+<div class="center">
+  <img src="analyze_queue_lengths_zoom.svg" alt="zoom in on queue length">
+</div>
+
+-   Everything is fine until suddenly it's not
