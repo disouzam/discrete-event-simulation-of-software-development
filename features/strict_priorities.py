@@ -4,17 +4,18 @@ import argparse
 from itertools import count
 import json
 import random
-from simpy import Environment, Store
+from simpy import Environment, PriorityStore
 import sys
 
 PARAMS = {
     "n_programmer": 3,
+    "p_priority": (0.2, 0.8),
     "seed": 12345,
     "t_develop_mu": 0.5,
     "t_develop_sigma": 0.6,
-    "t_job_arrival": 1.0,
+    "t_job_arrival": 0.5,
     "t_monitor": 5,
-    "t_sim": 10,
+    "t_sim": 200,
 }
 
 PREC = 3
@@ -30,7 +31,7 @@ class Simulation:
     def __init__(self, params):
         self.params = params
         self.env = Environment()
-        self.queue = Store(self.env)
+        self.queue = PriorityStore(self.env)
         self.queue_lengths = []
 
     def run(self):
@@ -43,7 +44,13 @@ class Simulation:
 
     def monitor(self):
         while True:
-            self.queue_lengths.append({"time": rv(self.env.now), "length": len(self.queue.items)})
+            lengths = dict((i, 0) for i in range(len(self.params["p_priority"])))
+            for job in self.queue.items:
+                lengths[job.priority] += 1
+            for pri, num in lengths.items():
+                self.queue_lengths.append(
+                    {"time": rv(self.env.now), "priority": pri, "length": num}
+                )
             yield self.env.timeout(self.params["t_monitor"])
 
     def rand_job_arrival(self):
@@ -53,6 +60,10 @@ class Simulation:
         return random.lognormvariate(
             self.params["t_develop_mu"], self.params["t_develop_sigma"]
         )
+
+    def rand_priority(self):
+        pri = self.params["p_priority"]
+        return random.choices(list(range(len(pri))), pri, k=1)[0]
 
 
 class Job:
@@ -69,11 +80,17 @@ class Job:
         Job._all.append(self)
         self.sim = sim
         self.id = next(Job._id)
+        self.priority = sim.rand_priority()
         self.t_develop = sim.rand_develop()
         self.t_create = sim.env.now
         self.t_start = None
         self.t_end = None
         self.worker_id = None
+
+    def __lt__(self, other):
+        if self.priority == other.priority:
+            return self.t_create < other.t_create
+        return self.priority < other.priority
 
     def as_json(self):
         return {key: rv(getattr(self, key)) for key in Job.SAVE}
@@ -96,11 +113,8 @@ def programmer(sim, worker_id):
 
 def get_params():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--arrivals", nargs="+", help="arrival rates")
     parser.add_argument("--overrides", nargs="+", default=[], help="parameter overrides")
     args = parser.parse_args()
-
-    arrivals = [float(a) for a in args.arrivals] if args.arrivals else [PARAMS["t_job_arrival"]]
 
     params = PARAMS.copy()
     for arg in args.overrides:
@@ -115,21 +129,17 @@ def get_params():
         else:
             assert False
 
-    return params, arrivals
+    return params
 
 
 def main():
-    params, arrival_rates = get_params()
+    params = get_params()
     random.seed(params["seed"])
     result = []
 
-    for rate in arrival_rates:
-        p = {**params, "t_job_arrival": rate}
-        sim = Simulation(p)
-        sim.run()
-        result.append({"params": p, "lengths": sim.queue_lengths,})
-
-    json.dump(result, sys.stdout, indent=2)
+    sim = Simulation(params)
+    sim.run()
+    json.dump({"params": params, "lengths": sim.queue_lengths,}, sys.stdout, indent=2)
 
 
 if __name__ == "__main__":
