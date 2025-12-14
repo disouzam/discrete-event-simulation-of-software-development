@@ -38,32 +38,174 @@
 <main>
 <h1>More Features</h1>
 <ul>
-<li>FIXME</li>
+<li>Now that we have a useful simulation, let's start seeing if we can fix things</li>
 </ul>
 <h2>Strict Priorities</h2>
 <ul>
-<li>FIXME</li>
+<li>Introduce job priorities<ul>
+<li>Lower number is higher priority</li>
 </ul>
+</li>
+<li>Values are probabilities of choosing priorities<ul>
+<li>20% priority 0, 80% priority 1</li>
+</ul>
+</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="strict_priorities.py">PARAMS = {
+    …other parameters…
+    "p_priority": (0.2, 0.8),
+}
+
+class Simulation:
+    …other methods…
+    def rand_priority(self):
+        pri = self.params["p_priority"]
+        return random.choices(list(range(len(pri))), pri, k=1)[0]
+</code></pre>
+<ul>
+<li>Use a <code>PriorityStore</code> instead of a plain <code>Store</code><ul>
+<li>Keeps items sorted according to <code>&lt;</code></li>
+</ul>
+</li>
+<li>So add <code>__lt__</code> to <code>Job</code><ul>
+<li>If priorities are the same, sort by oldest first</li>
+</ul>
+</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="strict_priorities.py">class Simulation:
+    def __init__(self, params):
+        …as before…
+        self.queue = PriorityStore(self.env)
+
+class Job:
+    …as before…
+    def __lt__(self, other):
+        if self.priority == other.priority:
+            return self.t_create &lt; other.t_create
+        return self.priority &lt; other.priority
+</code></pre>
+<ul>
+<li>This implementation means that low-priority jobs are only done
+    when there aren't any high-priority jobs in queue</li>
+<li>Monitoring code keeps track of number of jobs in queue at each priority level</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="strict_priorities.py">    def monitor(self):
+        while True:
+            lengths = dict((i, 0) for i in range(len(self.params["p_priority"])))
+            for job in self.queue.items:
+                lengths[job.priority] += 1
+            for pri, num in lengths.items():
+                self.queue_lengths.append(
+                    {"time": rv(self.env.now), "priority": pri, "length": num}
+                )
+            yield self.env.timeout(self.params["t_monitor"])
+</code></pre>
 <div class="center">
 <img alt="queue length with strict priorities" src="strict_priorities.svg"/>
 </div>
+<ul>
+<li>High-priority jobs are getting done</li>
+<li>Backlog of low-priority job is steadily increasing</li>
+</ul>
 <h2>Weighted Priorities</h2>
 <ul>
-<li>FIXME</li>
+<li>More realistic scenario is that programmers are more likely to do high-priority work,
+    but will occasionally do low-priority work instead</li>
+<li>So choose a job at random, with probability weighted by inverse priority<ul>
+<li>Priority 0 has weight 2, priority 1 has weight 1</li>
+</ul>
+</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="strict_priorities.py">class Job:
+    def __init__(self, sim):
+        …as before…
+        self.weight = len(sim.params["p_priority"]) - self.priority
+
+class WeightedStore(Store):
+    def __init__(self, env):
+        super().__init__(env)
+
+    def _do_get(self, event):
+        # Block if nothing available.
+        if not self.items:
+            return
+
+        # Choose and return.
+        item = random.choices(self.items, weights=[job.weight for job in self.items], k=1)[0]
+        self.items.remove(item)
+        event.succeed(item)
+</code></pre>
+<ul>
+<li>Note that the <code>WeightedStore</code> defined above doesn't care about task age<ul>
+<li>Add that in the exercises</li>
+</ul>
+</li>
+<li>Doesn't seem to make much difference over 200 ticks</li>
 </ul>
 <div class="center">
 <img alt="queue length with weighted priorities" src="weighted_priorities_200.svg"/>
 </div>
+<ul>
+<li>Run the simulation longer
+    and it looks like the backlog of high-priority jobs is steadily increasing</li>
+<li>I.e., we've made things worse</li>
+</ul>
 <div class="center">
 <img alt="queue length with weighted priorities and long time" src="weighted_priorities_1000.svg"/>
 </div>
 <h2>Periodic Triage</h2>
+<ul>
+<li>What if we <a href="../glossary/#triage">triage</a> periodically?<ul>
+<li>Set a target of (for example) no more than 100 low-priority jobs in the backlog</li>
+<li>Go through and clear jobs out periodically (e.g., every 50 ticks)</li>
+</ul>
+</li>
+<li>Do this probabilistically<ul>
+<li>If the number of jobs <em>N</em> is greater than the desired number <em>T</em>,
+    discard jobs with probability <em>1 - T/N</em></li>
+</ul>
+</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="weighted_triage.py">PARAMS = {
+    …as before…
+    "n_triage": 100,
+    "t_triage": 50,
+}
+
+class Triage:
+    def run(self):
+        while True:
+            yield self.sim.env.timeout(self.sim.params["t_triage"])
+            p_triage = self.calculate_prob()
+            if p_triage is not None:
+                self.discard_items(p_triage)
+
+    …other methods to calculate probability and discard jobs…
+</code></pre>
+<ul>
+<li>Predictable impact on backlog of low-priority jobs</li>
+<li>But stabilizes backlog of high-priority jobs<ul>
+<li>Remember, still using weighted selection</li>
+</ul>
+</li>
+<li>This is plausible, but several other outcomes would also have been plausible<ul>
+<li>Which is why we do simulation</li>
+</ul>
+</li>
+</ul>
 <div class="center">
 <img alt="queue length with weighted priorities and regular triage" src="weighted_triage_1000.svg"/>
 </div>
+<ul>
+<li>What happens to completion rates?</li>
+</ul>
 <div class="center">
 <img alt="completion rates with weighted priorites and regular triage" src="weighted_triage_completion_1001.svg"/>
 </div>
+<ul>
+<li>Completing more high-priority jobs than low-priority ones</li>
+<li>Number of low-priority jobs that are discarded slowly overtakes the number completed</li>
+</ul>
 </main>
 <footer>
 <div class="row">
