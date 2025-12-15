@@ -13,6 +13,7 @@ PARAMS = {
     "t_develop_mu": 0.5,
     "t_develop_sigma": 0.6,
     "t_interrupt_arrival": 5.0,
+    "t_interrupt_len": 5.0,
     "t_job_arrival": 1.0,
     "t_monitor": 5,
     "t_sim": 20,
@@ -34,6 +35,7 @@ class Simulation:
         self.queue = Store(self.env)
         self.queue_length = []
         self.programmers = []
+        self.interrupts = []
 
     def run(self):
         Job.clear()
@@ -63,7 +65,7 @@ class Simulation:
 
 
 class Job:
-    SAVE = ("id", "t_create", "t_start", "t_end", "discarded", "worker_id")
+    SAVE = ("id", "t_create", "t_start", "t_end", "t_done", "n_interrupt", "worker_id")
     _id = count()
     _all = []
 
@@ -78,9 +80,10 @@ class Job:
         self.id = next(Job._id)
         self.t_develop = sim.rand_develop()
         self.t_create = sim.env.now
+        self.t_done = 0
+        self.n_interrupt = 0
         self.t_start = None
         self.t_end = None
-        self.discarded = False
         self.worker_id = None
 
     def as_json(self):
@@ -97,22 +100,39 @@ def interruptor(sim):
     while True:
         yield sim.env.timeout(sim.rand_interrupt())
         programmer = random.choice(sim.programmers)
-        programmer.interrupt()
+        sim.interrupts.append(sim.env.now)
+        programmer.interrupt(sim.params["t_interrupt_len"])
 
 
 def programmer(sim, worker_id):
+    pending = None
     while True:
         job = None
+        started = None
         try:
-            job = yield sim.queue.get()
-            job.t_start = sim.env.now
-            job.worker_id = worker_id
-            yield sim.env.timeout(job.t_develop)
+            # Try to get job.
+            if pending is None:
+                job = yield sim.queue.get()
+                job.t_start = sim.env.now
+                job.worker_id = worker_id
+            else:
+                job = pending
+                pending = None
+
+            # Work on job.
+            started = sim.env.now
+            remaining = job.t_develop - job.t_done
+            yield sim.env.timeout(remaining)
+            job.t_done += remaining
             job.t_end = sim.env.now
-        except Interrupt:
+            pending = None
+
+        except Interrupt as exc:
             if job is not None:
-                job.t_end = sim.env.now
-                job.discarded = True
+                job.n_interrupt += 1
+                job.t_done += sim.env.now - started
+                pending = job
+            yield sim.env.timeout(exc.cause)
 
 
 def get_params():
@@ -141,11 +161,17 @@ def main():
     random.seed(params["seed"])
 
     sim = Simulation(params)
-    sim.run()
+    status = "completed"
+    try:
+        sim.run()
+    except Interrupt:
+        status = f"uncaught interruption at {sim.env.now:.3f}"
     result = {
         "params": params,
         "lengths": sim.queue_length,
-        "jobs": [job.as_json() for job in Job._all]
+        "jobs": [job.as_json() for job in Job._all],
+        "interrupts": [rv(i) for i in sim.interrupts],
+        "status": status,
     }
     json.dump(result, sys.stdout, indent=2)
 

@@ -185,7 +185,6 @@ def get_params():
 def main():
     params = get_params()
     random.seed(params["seed"])
-    result = []
 
     sim = Simulation(params)
     sim.run()

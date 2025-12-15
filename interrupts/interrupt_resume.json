@@ -1,0 +1,246 @@
+{
+  "params": {
+    "n_programmer": 1,
+    "seed": 12345,
+    "t_develop_mu": 0.5,
+    "t_develop_sigma": 0.6,
+    "t_interrupt_arrival": 5.0,
+    "t_interrupt_len": 5.0,
+    "t_job_arrival": 1.0,
+    "t_monitor": 5,
+    "t_sim": 20
+  },
+  "lengths": [
+    {
+      "time": 0,
+      "length": 0
+    },
+    {
+      "time": 5,
+      "length": 3
+    },
+    {
+      "time": 10,
+      "length": 5
+    },
+    {
+      "time": 15,
+      "length": 12
+    }
+  ],
+  "jobs": [
+    {
+      "id": 0,
+      "t_create": 0,
+      "t_start": 0,
+      "t_end": 1.512,
+      "t_done": 1.512,
+      "n_interrupt": 0,
+      "worker_id": 0
+    },
+    {
+      "id": 1,
+      "t_create": 0.355,
+      "t_start": 1.512,
+      "t_end": 2.906,
+      "t_done": 1.394,
+      "n_interrupt": 0,
+      "worker_id": 0
+    },
+    {
+      "id": 2,
+      "t_create": 1.189,
+      "t_start": 2.906,
+      "t_end": 4.013,
+      "t_done": 1.108,
+      "n_interrupt": 0,
+      "worker_id": 0
+    },
+    {
+      "id": 3,
+      "t_create": 1.757,
+      "t_start": 4.013,
+      "t_end": 5.795,
+      "t_done": 1.781,
+      "n_interrupt": 0,
+      "worker_id": 0
+    },
+    {
+      "id": 4,
+      "t_create": 2.562,
+      "t_start": 5.795,
+      "t_end": 7.169,
+      "t_done": 1.374,
+      "n_interrupt": 0,
+      "worker_id": 0
+    },
+    {
+      "id": 5,
+      "t_create": 2.723,
+      "t_start": 7.169,
+      "t_end": 14.346,
+      "t_done": 2.178,
+      "n_interrupt": 1,
+      "worker_id": 0
+    },
+    {
+      "id": 6,
+      "t_create": 3.141,
+      "t_start": 14.346,
+      "t_end": 15.131,
+      "t_done": 0.785,
+      "n_interrupt": 0,
+      "worker_id": 0
+    },
+    {
+      "id": 7,
+      "t_create": 6.567,
+      "t_start": 15.131,
+      "t_end": 16.273,
+      "t_done": 1.142,
+      "n_interrupt": 0,
+      "worker_id": 0
+    },
+    {
+      "id": 8,
+      "t_create": 7.102,
+      "t_start": 16.273,
+      "t_end": null,
+      "t_done": 0.676,
+      "n_interrupt": 1,
+      "worker_id": 0
+    },
+    {
+      "id": 9,
+      "t_create": 8.436,
+      "t_start": null,
+      "t_end": null,
+      "t_done": 0,
+      "n_interrupt": 0,
+      "worker_id": null
+    },
+    {
+      "id": 10,
+      "t_create": 9.672,
+      "t_start": null,
+      "t_end": null,
+      "t_done": 0,
+      "n_interrupt": 0,
+      "worker_id": null
+    },
+    {
+      "id": 11,
+      "t_create": 10.482,
+      "t_start": null,
+      "t_end": null,
+      "t_done": 0,
+      "n_interrupt": 0,
+      "worker_id": null
+    },
+    {
+      "id": 12,
+      "t_create": 11.212,
+      "t_start": null,
+      "t_end": null,
+      "t_done": 0,
+      "n_interrupt": 0,
+      "worker_id": null
+    },
+    {
+      "id": 13,
+      "t_create": 11.472,
+      "t_start": null,
+      "t_end": null,
+      "t_done": 0,
+      "n_interrupt": 0,
+      "worker_id": null
+    },
+    {
+      "id": 14,
+      "t_create": 11.863,
+      "t_start": null,
+      "t_end": null,
+      "t_done": 0,
+      "n_interrupt": 0,
+      "worker_id": null
+    },
+    {
+      "id": 15,
+      "t_create": 12.999,
+      "t_start": null,
+      "t_end": null,
+      "t_done": 0,
+      "n_interrupt": 0,
+      "worker_id": null
+    },
+    {
+      "id": 16,
+      "t_create": 13.062,
+      "t_start": null,
+      "t_end": null,
+      "t_done": 0,
+      "n_interrupt": 0,
+      "worker_id": null
+    },
+    {
+      "id": 17,
+      "t_create": 14.004,
+      "t_start": null,
+      "t_end": null,
+      "t_done": 0,
+      "n_interrupt": 0,
+      "worker_id": null
+    },
+    {
+      "id": 18,
+      "t_create": 14.229,
+      "t_start": null,
+      "t_end": null,
+      "t_done": 0,
+      "n_interrupt": 0,
+      "worker_id": null
+    },
+    {
+      "id": 19,
+      "t_create": 15.042,
+      "t_start": null,
+      "t_end": null,
+      "t_done": 0,
+      "n_interrupt": 0,
+      "worker_id": null
+    },
+    {
+      "id": 20,
+      "t_create": 15.813,
+      "t_start": null,
+      "t_end": null,
+      "t_done": 0,
+      "n_interrupt": 0,
+      "worker_id": null
+    },
+    {
+      "id": 21,
+      "t_create": 15.816,
+      "t_start": null,
+      "t_end": null,
+      "t_done": 0,
+      "n_interrupt": 0,
+      "worker_id": null
+    },
+    {
+      "id": 22,
+      "t_create": 16.751,
+      "t_start": null,
+      "t_end": null,
+      "t_done": 0,
+      "n_interrupt": 0,
+      "worker_id": null
+    }
+  ],
+  "interrupts": [
+    8.721,
+    16.949,
+    17.291
+  ],
+  "status": "uncaught interruption at 17.291"
+}

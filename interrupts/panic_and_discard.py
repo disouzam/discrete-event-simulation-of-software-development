@@ -12,7 +12,7 @@ PARAMS = {
     "seed": 12345,
     "t_develop_mu": 0.5,
     "t_develop_sigma": 0.6,
-    "t_interrupt": 5.0,
+    "t_interrupt_arrival": 5.0,
     "t_job_arrival": 1.0,
     "t_monitor": 5,
     "t_sim": 20,
@@ -56,7 +56,7 @@ class Simulation:
         )
 
     def rand_interrupt(self):
-        return random.expovariate(1.0 / self.params["t_interrupt"])
+        return random.expovariate(1.0 / self.params["t_interrupt_arrival"])
 
     def rand_job_arrival(self):
         return random.expovariate(1.0 / self.params["t_job_arrival"])
@@ -137,7 +137,6 @@ def get_params():
 def main():
     params = get_params()
     random.seed(params["seed"])
-    result = []
 
     sim = Simulation(params)
     sim.run()

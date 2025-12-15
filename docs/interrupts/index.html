@@ -38,7 +38,7 @@
 </nav>
 <main>
 <h1>Interruptions</h1>
-<h2>A Simple Model</h2>
+<h2>Throwing Work Away</h2>
 <ul>
 <li>Jobs don't have priorities</li>
 <li>The manager interrupts</li>
@@ -53,7 +53,7 @@
     "seed": 12345,
     "t_develop_mu": 0.5,
     "t_develop_sigma": 0.6,
-    "t_interrupt": 5.0,       # new
+    "t_interrupt_arrival": 5.0,  # new
     "t_job_arrival": 1.0,
     "t_monitor": 5,
     "t_sim": 20,
@@ -157,6 +157,112 @@
                 job.t_end = sim.env.now
                 job.discarded = True
 </code></pre>
+<h2>Resuming Interrupted Work</h2>
+<ul>
+<li>Put current task aside when interrupted, then resume it<ul>
+<li>No penalty for resumption (unrealistic, but we'll fix that later)</li>
+</ul>
+</li>
+<li>For the moment, every interrupt is 5 ticks long</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="interrupt_resume.py">PARAMS = {
+    …as before…
+    "t_interrupt_arrival": 5.0,
+    "t_interrupt_len": 5.0,
+}
+</code></pre>
+<ul>
+<li>Happy path<ul>
+<li>If there's a pending job, resume it</li>
+<li>Otherwise, get a new job</li>
+<li>Figure out how much work is left and wait that long</li>
+</ul>
+</li>
+<li>If interrupted<ul>
+<li>Save the current job as <code>pending</code> to be picked up later</li>
+<li>Wait as long as the time specified in the interruption as its <code>cause</code></li>
+<li>Remember to record the time worked until the interruption</li>
+</ul>
+</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="interrupt_resume.py">def programmer(sim, worker_id):
+    pending = None
+    while True:
+        job = None
+        started = None
+        try:
+            # Try to get job.
+            if pending is None:
+                job = yield sim.queue.get()
+                job.t_start = sim.env.now
+                job.worker_id = worker_id
+            else:
+                job = pending
+                pending = None
+
+            # Work on job.
+            started = sim.env.now
+            remaining = job.t_develop - job.t_done
+            yield sim.env.timeout(remaining)
+            job.t_done += remaining
+            job.t_end = sim.env.now
+            pending = None
+
+        except Interrupt as exc:
+            if job is not None:
+                job.n_interrupt += 1
+                job.t_done += sim.env.now - started
+                pending = job
+            yield sim.env.timeout(exc.cause)
+</code></pre>
+<ul>
+<li>This is the most complicated process we've seen so far</li>
+<li>And it contains a bug</li>
+<li>Keep track of interruption times</li>
+<li>And modify <code>main</code> to record exit status:</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="interrupt_resume.py">    sim = Simulation(params)
+    status = "completed"
+    try:
+        sim.run()
+    except Interrupt:
+        status = f"uncaught interruption at {sim.env.now:.3f}"
+    result = {
+        …as before…
+        "interrupts": [rv(i) for i in sim.interrupts],
+        "status": status,
+    }
+    json.dump(result, sys.stdout, indent=2)
+</code></pre>
+<pre class="language-json"><code class="language-json" data-file="interrupt_resume.json">{
+  "params": {
+    …parameters…
+  },
+  "lengths": [
+    …queue lengths…
+  ],
+  "jobs": [
+    …jobs…
+  ],
+  "interrupts": [
+    8.721,
+    16.949,
+    17.291
+  ],
+  "status": "uncaught interruption at 17.291"
+}
+</code></pre>
+<ul>
+<li>What if we're interrupted while we're handling an interruption?<ul>
+<li>The <code>except</code> block only handles an <code>Interrupt</code> raised during its <code>try</code></li>
+<li>We can be hit by another interruption while we're inside it</li>
+</ul>
+</li>
+<li>We're actually lucky this happened so soon<ul>
+<li>Timing bugs can lurk in code for decades</li>
+</ul>
+</li>
+</ul>
 </main>
 <footer>
 <div class="row">
