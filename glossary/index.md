@@ -72,5 +72,8 @@
 <span id="throughput">throughput</span>
 :   FIXME
 
+<span id="triage">triage</span>
+:   FIXME
+
 <span id="utilization">utilization</span>
 :   FIXME

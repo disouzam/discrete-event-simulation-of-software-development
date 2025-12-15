@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Interruptions</title>
+<link href="../static/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="../static/page.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<nav>
+<a href="../">Home</a>
+      ·
+      <span class="dropdown">
+<a href="#">Lessons</a>
+<span class="dropdown-content" id="nav-lessons">
+<a href="../intro/">Introduction</a>
+<a href="../simple/">Simple Simulations</a>
+<a href="../teams/">Teams</a>
+<a href="../features/">More Features</a>
+<a href="../interrupts/">Interruptions</a>
+<a href="../finale/">Conclusion</a>
+</span>
+</span>
+      ·
+      <span class="dropdown">
+<a href="#">Appendices</a>
+<span class="dropdown-content" id="nav-appendices">
+<a href="../generators/">Generators</a>
+<a href="../license/">License</a>
+<a href="../conduct/">Code of Conduct</a>
+<a href="../contributing/">Contributing</a>
+<a href="../bibliography/">Bibliography</a>
+<a href="../glossary/">Glossary</a>
+</span>
+</span>
+</nav>
+<main>
+<h1>Interruptions</h1>
+<h2>A Simple Model</h2>
+<ul>
+<li>Jobs don't have priorities</li>
+<li>The manager interrupts</li>
+<li>Any work done on the current job is lost<ul>
+<li>We'll fix this later</li>
+</ul>
+</li>
+<li>Parameters</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="panic_and_discard.py">PARAMS = {
+    "n_programmer": 1,
+    "seed": 12345,
+    "t_develop_mu": 0.5,
+    "t_develop_sigma": 0.6,
+    "t_interrupt": 5.0,       # new
+    "t_job_arrival": 1.0,
+    "t_monitor": 5,
+    "t_sim": 20,
+}
+</code></pre>
+<ul>
+<li>Simulation<ul>
+<li>Go back to a regular <code>Store</code> (first in, first out, no priority, no triage)</li>
+<li>Keep a list of programmers' processes</li>
+<li>Rename <code>manager</code> to <code>creator</code> and add <code>interruptor</code></li>
+</ul>
+</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="panic_and_discard.py">class Simulation:
+    def __init__(self, params):
+        self.params = params
+        self.env = Environment()
+        self.queue = Store(self.env)
+        self.queue_length = []
+        self.programmers = []
+
+    def run(self):
+        Job.clear()
+        self.env.process(self.monitor())
+        self.env.process(creator(self))
+        self.env.process(interruptor(self))
+        self.programmers = [
+            self.env.process(programmer(self, i)) for i in range(self.params["n_programmer"])
+        ]
+        self.env.run(until=self.params["t_sim"])
+</code></pre>
+<ul>
+<li><code>Job</code> keeps track of whether it was discarded or not</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="panic_and_discard.py">    def __init__(self, sim):
+        …as before…
+        self.discarded = False
+</code></pre>
+<ul>
+<li><code>interruptor</code> waits a random interval, chooses a programmer at random, and interrupts her<ul>
+<li>Need the generator object</li>
+<li>Call its <code>interrupt</code> method to send a <code>simpy.Interrupt</code> exception into the generator</li>
+</ul>
+</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="panic_and_discard.py">def interruptor(sim):
+    while True:
+        yield sim.env.timeout(sim.rand_interrupt())
+        programmer = random.choice(sim.programmers)
+        programmer.interrupt()
+</code></pre>
+<ul>
+<li><code>programmer</code> needs to handle these interruption exceptions<ul>
+<li>Throw away current job and start again</li>
+</ul>
+</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="panic_and_discard.py">def programmer(sim, worker_id):
+    while True:
+        try:
+            job = yield sim.queue.get()
+            job.t_start = sim.env.now
+            job.worker_id = worker_id
+            yield sim.env.timeout(job.t_develop)
+            job.t_end = sim.env.now
+        except Interrupt:
+            job.t_end = sim.env.now
+            job.discarded = True
+</code></pre>
+<ul>
+<li>Works fine until we add one line to clear the job each time around the loop</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="panic_and_discard_reset.py">def programmer(sim, worker_id):
+    while True:
+        job = None
+        try:
+            job = yield sim.queue.get()
+            job.t_start = sim.env.now
+            job.worker_id = worker_id
+            yield sim.env.timeout(job.t_develop)
+            job.t_end = sim.env.now
+        except Interrupt:
+            job.t_end = sim.env.now
+            job.discarded = True
+</code></pre>
+<ul>
+<li>Problem is that the interruption can occur inside <code>sim.queue.get()</code></li>
+<li>Only update the job if we got one</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="panic_and_discard_corrected.py">def programmer(sim, worker_id):
+    while True:
+        job = None
+        try:
+            job = yield sim.queue.get()
+            job.t_start = sim.env.now
+            job.worker_id = worker_id
+            yield sim.env.timeout(job.t_develop)
+            job.t_end = sim.env.now
+        except Interrupt:
+            if job is not None:
+                job.t_end = sim.env.now
+                job.discarded = True
+</code></pre>
+</main>
+<footer>
+<div class="row">
+<div class="col-3 left">
+	  ⇐ <a href="../features/">More Features</a>
+</div>
+<div class="col-6 center">
+<a href="../"></a>
+	  © 2025
+	  <a href="../#acknowledgments">the authors</a>
+</div>
+<div class="col-3 right">
+<a href="../finale/">Conclusion</a> ⇒
+	</div>
+</div>
+</footer>
+</body>
+</html>
