@@ -63,7 +63,6 @@ class Job:
 
     def __init__(self, sim):
         Job._all.append(self)
-        self.sim = sim
         self.id = next(Job._id)
         self.t_develop = sim.rand_develop()
         self.t_create = sim.env.now

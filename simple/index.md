@@ -279,8 +279,7 @@ class Job:
     _id = count()
     _log = []
 
-    def __init__(self, env):
-        self.env = env
+    def __init__(self):
         self.id = next(Job._id)
         self.log("created")
 
@@ -293,7 +292,7 @@ class Job:
 ```{.python data-file=job_object.py}
 def manager(env, queue):
     while True:
-        yield queue.put(Job(env))
+        yield queue.put(Job())
         yield env.timeout(rand_job_arrival())
 
 

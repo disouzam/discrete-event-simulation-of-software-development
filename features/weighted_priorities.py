@@ -93,7 +93,6 @@ class Job:
 
     def __init__(self, sim):
         Job._all.append(self)
-        self.sim = sim
         self.id = next(Job._id)
         self.priority = sim.rand_priority()
         self.weight = len(sim.params["p_priority"]) - self.priority

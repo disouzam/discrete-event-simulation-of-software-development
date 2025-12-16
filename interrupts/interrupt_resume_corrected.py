@@ -42,9 +42,7 @@ class Simulation:
         self.env.process(self.monitor())
         self.env.process(creator(self))
         self.env.process(interruptor(self))
-        self.programmers = [
-            self.env.process(programmer(self, i)) for i in range(self.params["n_programmer"])
-        ]
+        self.programmers = [Programmer(sim, i) for i in range(self.params["n_programmer"])]
         self.env.run(until=self.params["t_sim"])
 
     def monitor(self):
@@ -65,7 +63,7 @@ class Simulation:
 
 
 class Job:
-    SAVE = ("id", "t_create", "t_start", "t_end", "t_done", "n_interrupt", "worker_id")
+    SAVE = ("id", "kind", "t_create", "t_start", "t_end", "t_done", "n_interrupt", "worker_id")
     _id = count()
     _all = []
 
@@ -74,10 +72,11 @@ class Job:
         Job._id = count()
         Job._all = []
 
-    def __init__(self, sim):
+    def __init__(self, sim, kind, develop):
         Job._all.append(self)
+        self.kind = kind
         self.id = next(Job._id)
-        self.t_develop = sim.rand_develop()
+        self.t_develop = develop
         self.t_create = sim.env.now
         self.t_done = 0
         self.n_interrupt = 0
@@ -91,7 +90,7 @@ class Job:
 
 def creator(sim):
     while True:
-        yield sim.queue.put(Job(sim))
+        yield sim.queue.put(Job(sim, "regular", sim.rand_develop()))
         yield sim.env.timeout(sim.rand_job_arrival())
 
 
@@ -100,39 +99,13 @@ def interruptor(sim):
         yield sim.env.timeout(sim.rand_interrupt())
         programmer = random.choice(sim.programmers)
         sim.interrupts.append(sim.env.now)
-        programmer.interrupt(sim.params["t_interrupt_len"])
+        programmer.proc.interrupt(Job(sim, "interrupt", sim.params["t_interrupt_len"]))
 
 
 def programmer(sim, worker_id):
-    pending = None
+    stack = []
     while True:
-        job = None
-        started = None
-        try:
-            # Try to get job.
-            if pending is None:
-                job = yield sim.queue.get()
-                job.t_start = sim.env.now
-                job.worker_id = worker_id
-            else:
-                job = pending
-                pending = None
-
-            # Work on job.
-            started = sim.env.now
-            remaining = job.t_develop - job.t_done
-            yield sim.env.timeout(remaining)
-            job.t_done += remaining
-            job.t_end = sim.env.now
-            pending = None
-
-        except Interrupt as exc:
-            if job is not None:
-                job.n_interrupt += 1
-                job.t_done += sim.env.now - started
-                pending = job
-            yield sim.env.timeout(exc.cause)
-
+        pass
 
 def get_params():
     parser = argparse.ArgumentParser()
