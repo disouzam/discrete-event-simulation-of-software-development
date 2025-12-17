@@ -166,7 +166,7 @@ def main():
 
 -   Once Shae's manager realizes the programmers aren't busy 100% of the time,
     she starts giving them more work
--   Use [parameter sweeping](g:parameter-sweeping) to Look at effect on [backlog](g:backlog)
+-   Use [parameter sweeping](g:parameter-sweeping) to look at effect on [backlog](g:backlog)
 -   Move code to run simulation into `Simulation` class
 -   Add a monitoring process that records the queue length every *N* ticks
     -   Observation rather than instrumentation

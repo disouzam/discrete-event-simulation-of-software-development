@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Feedback</title>
+<link href="../static/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="../static/page.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<nav>
+<a href="../">Home</a>
+      ·
+      <span class="dropdown">
+<a href="#">Lessons</a>
+<span class="dropdown-content" id="nav-lessons">
+<a href="../intro/">Introduction</a>
+<a href="../simple/">Simple Simulations</a>
+<a href="../teams/">Teams</a>
+<a href="../features/">More Features</a>
+<a href="../interrupts/">Interruptions</a>
+<a href="../feedback/">Feedback</a>
+<a href="../finale/">Conclusion</a>
+</span>
+</span>
+      ·
+      <span class="dropdown">
+<a href="#">Appendices</a>
+<span class="dropdown-content" id="nav-appendices">
+<a href="../generators/">Generators</a>
+<a href="../license/">License</a>
+<a href="../conduct/">Code of Conduct</a>
+<a href="../contributing/">Contributing</a>
+<a href="../bibliography/">Bibliography</a>
+<a href="../glossary/">Glossary</a>
+</span>
+</span>
+</nav>
+<main>
+<h1>Feedback</h1>
+<ul>
+<li>Because programmers don't always get it right the first time</li>
+</ul>
+<h2>Adding Testers</h2>
+<ul>
+<li>Parameter sweeping once again</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="simple_testing.py">PARAMS = {
+    "n_programmer": (2, 3, 4),
+    "n_tester": (2, 3, 4),
+    "p_rework": (0.2, 0.4, 0.6, 0.8),
+    …as before…
+}
+
+def main():
+    random.seed(PARAMS["seed"])
+    result = []
+    combinations = product(PARAMS["n_programmer"], PARAMS["n_tester"], PARAMS["p_rework"])
+    for (n_programmer, n_tester, p_rework) in combinations:
+        sweep = {"n_programmer": n_programmer, "n_tester": n_tester, "p_rework": p_rework}
+        params = {**PARAMS, **sweep}
+        sim = Simulation(params)
+        sim.run()
+        result.append({
+            "params": params,
+            "lengths": sim.lengths,
+            "jobs": [job.as_json() for job in Job._all],
+        })
+    json.dump(result, sys.stdout, indent=2)
+</code></pre>
+<ul>
+<li>Two queues</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="simple_testing.py">class Simulation:
+    def __init__(self, params):
+        self.params = params
+        self.env = Environment()
+        self.prog_queue = Store(self.env)
+        self.test_queue = Store(self.env)
+        self.lengths = []
+</code></pre>
+<ul>
+<li>Programmers get from one queue and add to another</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="simple_testing.py">def programmer(sim, worker_id):
+    while True:
+        job = yield sim.prog_queue.get()
+        start = sim.env.now
+        yield sim.env.timeout(sim.rand_dev())
+        job.n_prog += 1
+        job.t_prog += sim.env.now - start
+        yield sim.test_queue.put(job)
+</code></pre>
+<ul>
+<li>Testers get from the second queue and either recirculate the job or mark it as done</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="simple_testing.py">def tester(sim, tester_id):
+    while True:
+        job = yield sim.test_queue.get()
+        start = sim.env.now
+        yield sim.env.timeout(sim.rand_dev())
+        job.n_test += 1
+        job.t_test += sim.env.now - start
+        if sim.rand_rework():
+            yield sim.prog_queue.put(job)
+        else:
+            job.done = True
+</code></pre>
+<ul>
+<li>Queue lengths</li>
+</ul>
+<div class="center">
+<img alt="queue lengths" src="analyze_simple_testing_queues_1000.svg"/>
+</div>
+<ul>
+<li>Times for jobs that were started</li>
+</ul>
+<p>
+<img alt="Programming and testing times" src="analyze_simple_testing_times_1000.svg"/>
+</p>
+<ul>
+<li>Gosh, this is hard to understand…</li>
+</ul>
+</main>
+<footer>
+<div class="row">
+<div class="col-3 left">
+	  ⇐ <a href="../interrupts/">Interruptions</a>
+</div>
+<div class="col-6 center">
+<a href="../"></a>
+	  © 2025
+	  <a href="../#acknowledgments">the authors</a>
+</div>
+<div class="col-3 right">
+<a href="../finale/">Conclusion</a> ⇒
+	</div>
+</div>
+</footer>
+</body>
+</html>
