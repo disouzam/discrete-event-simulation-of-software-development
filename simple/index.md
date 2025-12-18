@@ -279,7 +279,8 @@ class Job:
     _id = count()
     _log = []
 
-    def __init__(self):
+    def __init__(self, env):
+        self.env = env
         self.id = next(Job._id)
         self.log("created")
 
