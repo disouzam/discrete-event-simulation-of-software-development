@@ -48,6 +48,7 @@ def add_columns(params, df):
 
 
 def show(fig, which):
+    fig.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0})
     if len(sys.argv) == 1:
         fig.show()
     else:
