@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Interruptions</title>
+<title>Handling Interrupts</title>
 <link href="../static/favicon.ico" rel="icon" type="image/x-icon"/>
 <link href="../static/page.css" rel="stylesheet" type="text/css"/>
 </head>
@@ -16,11 +16,11 @@
 <a href="#">Lessons</a>
 <span class="dropdown-content" id="nav-lessons">
 <a href="../intro/">Introduction</a>
-<a href="../simple/">Simple Simulations</a>
-<a href="../teams/">Teams</a>
-<a href="../features/">More Features</a>
-<a href="../interrupts/">Interruptions</a>
-<a href="../feedback/">Feedback</a>
+<a href="../des/">Discrete Event Simulation</a>
+<a href="../metrics/">Simple Metrics</a>
+<a href="../scenarios/">Exploring Scenarios</a>
+<a href="../interrupts/">Handling Interrupts</a>
+<a href="../insight/">Insights</a>
 <a href="../finale/">Conclusion</a>
 </span>
 </span>
@@ -28,7 +28,6 @@
       <span class="dropdown">
 <a href="#">Appendices</a>
 <span class="dropdown-content" id="nav-appendices">
-<a href="../generators/">Generators</a>
 <a href="../license/">License</a>
 <a href="../conduct/">Code of Conduct</a>
 <a href="../contributing/">Contributing</a>
@@ -38,7 +37,7 @@
 </span>
 </nav>
 <main>
-<h1>Interruptions</h1>
+<h1>Handling Interrupts</h1>
 <h2>Throwing Work Away</h2>
 <ul>
 <li>Jobs don't have priorities</li>
@@ -47,425 +46,358 @@
 <li>We'll fix this later</li>
 </ul>
 </li>
-<li>Parameters</li>
+<li>Parameters and simulation class</li>
 </ul>
-<pre class="language-python"><code class="language-python" data-file="panic_and_discard.py">PARAMS = {
-    "n_programmer": 1,
-    "seed": 12345,
-    "t_develop_mu": 0.5,
-    "t_develop_sigma": 0.6,
-    "t_interrupt_arrival": 5.0,  # new
-    "t_job_arrival": 1.0,
-    "t_monitor": 5,
-    "t_sim": 20,
-}
-</code></pre>
-<ul>
-<li>Simulation<ul>
-<li>Go back to a regular <code>Store</code> (first in, first out, no priority, no triage)</li>
-<li>Keep a list of programmers' processes</li>
-<li>Rename <code>manager</code> to <code>creator</code> and add <code>interruptor</code></li>
-</ul>
-</li>
-</ul>
-<pre class="language-python"><code class="language-python" data-file="panic_and_discard.py">class Simulation:
-    def __init__(self, params):
-        self.params = params
-        self.env = Environment()
-        self.queue = Store(self.env)
-        self.queue_length = []
-        self.programmers = []
-
-    def run(self):
-        Job.clear()
-        self.env.process(self.monitor())
-        self.env.process(creator(self))
-        self.env.process(interruptor(self))
-        self.programmers = [
-            self.env.process(programmer(self, i)) for i in range(self.params["n_programmer"])
-        ]
-        self.env.run(until=self.params["t_sim"])
-</code></pre>
-<ul>
-<li><code>Job</code> keeps track of whether it was discarded or not</li>
-</ul>
-<pre class="language-python"><code class="language-python" data-file="panic_and_discard.py">    def __init__(self, sim):
-        …as before…
-        self.discarded = False
-</code></pre>
-<ul>
-<li><code>interruptor</code> waits a random interval, chooses a programmer at random, and interrupts her<ul>
-<li>Need the generator object</li>
-<li>Call its <code>interrupt</code> method to send a <code>simpy.Interrupt</code> exception into the generator</li>
-</ul>
-</li>
-</ul>
-<pre class="language-python"><code class="language-python" data-file="panic_and_discard.py">def interruptor(sim):
-    while True:
-        yield sim.env.timeout(sim.rand_interrupt())
-        programmer = random.choice(sim.programmers)
-        programmer.interrupt()
-</code></pre>
-<ul>
-<li><code>programmer</code> needs to handle these interruption exceptions<ul>
-<li>Throw away current job and start again</li>
-</ul>
-</li>
-</ul>
-<pre class="language-python"><code class="language-python" data-file="panic_and_discard.py">def programmer(sim, worker_id):
-    while True:
-        try:
-            job = yield sim.queue.get()
-            job.t_start = sim.env.now
-            job.worker_id = worker_id
-            yield sim.env.timeout(job.t_develop)
-            job.t_end = sim.env.now
-        except Interrupt:
-            job.t_end = sim.env.now
-            job.discarded = True
-</code></pre>
-<ul>
-<li>Works fine until we add one line to clear the job each time around the loop</li>
-</ul>
-<pre class="language-python"><code class="language-python" data-file="panic_and_discard_reset.py">def programmer(sim, worker_id):
-    while True:
-        job = None
-        try:
-            job = yield sim.queue.get()
-            job.t_start = sim.env.now
-            job.worker_id = worker_id
-            yield sim.env.timeout(job.t_develop)
-            job.t_end = sim.env.now
-        except Interrupt:
-            job.t_end = sim.env.now
-            job.discarded = True
-</code></pre>
-<ul>
-<li>Problem is that the interruption can occur inside <code>sim.queue.get()</code></li>
-<li>Only update the job if we got one</li>
-</ul>
-<pre class="language-python"><code class="language-python" data-file="panic_and_discard_corrected.py">def programmer(sim, worker_id):
-    while True:
-        job = None
-        try:
-            job = yield sim.queue.get()
-            job.t_start = sim.env.now
-            job.worker_id = worker_id
-            yield sim.env.timeout(job.t_develop)
-            job.t_end = sim.env.now
-        except Interrupt:
-            if job is not None:
-                job.t_end = sim.env.now
-                job.discarded = True
-</code></pre>
-<h2>Resuming Interrupted Work</h2>
-<ul>
-<li>Put current task aside when interrupted, then resume it<ul>
-<li>No penalty for resumption (unrealistic, but we'll fix that later)</li>
-</ul>
-</li>
-<li>For the moment, every interrupt is 5 ticks long</li>
-</ul>
-<pre class="language-python"><code class="language-python" data-file="interrupt_resume.py">PARAMS = {
+<pre class="language-python"><code class="language-python" data-file="discard.py">class Params:
     …as before…
-    "t_interrupt_arrival": 5.0,
-    "t_interrupt_len": 5.0,
-}
-</code></pre>
-<ul>
-<li>Happy path<ul>
-<li>If there's a pending job, resume it</li>
-<li>Otherwise, get a new job</li>
-<li>Figure out how much work is left and wait that long</li>
-</ul>
-</li>
-<li>If interrupted<ul>
-<li>Save the current job as <code>pending</code> to be picked up later</li>
-<li>Wait as long as the time specified in the interruption as its <code>cause</code></li>
-<li>Remember to record the time worked until the interruption</li>
-</ul>
-</li>
-</ul>
-<pre class="language-python"><code class="language-python" data-file="interrupt_resume.py">def programmer(sim, worker_id):
-    pending = None
-    while True:
-        job = None
-        started = None
-        try:
-            # Try to get job.
-            if pending is None:
-                job = yield sim.queue.get()
-                job.t_start = sim.env.now
-                job.worker_id = worker_id
-            else:
-                job = pending
-                pending = None
+    t_interrupt_arrival: float = 5.0
 
-            # Work on job.
-            started = sim.env.now
-            remaining = job.t_develop - job.t_done
-            yield sim.env.timeout(remaining)
-            job.t_done += remaining
-            job.t_end = sim.env.now
-            pending = None
+class Simulation(Environment):
+    …as before…
+    def rand_interrupt_arrival(self):
+        return random.expovariate(1.0 / self.params.t_interrupt_arrival)
+</code></pre>
+<ul>
+<li>But we need a way to get at the coder's process (i.e., the generator) in order to interrupt it<ul>
+<li>The <code>Coder</code> instance is something we've built around the generator</li>
+<li><code>Environment.process(…)</code> returns the generator, so we can store that</li>
+</ul>
+</li>
+</ul>
+<pre class="language-python"><code class="language-python" data-file="discard.py">class Simulation(Environment):
+    def simulate(self):
+        …queue, manager, and monitor as before…
 
-        except Interrupt as exc:
-            if job is not None:
-                job.n_interrupt += 1
-                job.t_done += sim.env.now - started
-                pending = job
-            yield sim.env.timeout(exc.cause)
+        self.process(Interrupter(self).run())
+
+        self.coders = []
+        for _ in range(self.params.n_coder):
+            coder = Coder(self)
+            coder.proc = self.process(coder.run())
+            self.coders.append(coder)
+
+        self.run(until=self.params.t_sim)
 </code></pre>
 <ul>
-<li>This is the most complicated process we've seen so far</li>
-<li>And it contains a bug</li>
-<li>Keep track of interruption times</li>
-<li>And modify <code>main</code> to record exit status:</li>
+<li>Our new <code>Interrupter</code> reaches inside a coder to get its process</li>
 </ul>
-<pre class="language-python"><code class="language-python" data-file="interrupt_resume.py">    sim = Simulation(params)
-    status = "completed"
-    try:
-        sim.run()
-    except Interrupt:
-        status = f"uncaught interruption at {sim.env.now:.3f}"
-    result = {
-        …as before…
-        "interrupts": [rv(i) for i in sim.interrupts],
-        "status": status,
-    }
-    json.dump(result, sys.stdout, indent=2)
+<pre class=""><code data-file="discard.py">class Interrupter(Recorder):
+    def run(self):
+        while True:
+            yield self.sim.timeout(self.sim.rand_interrupt_arrival())
+            coder = random.choice(self.sim.coders)
+            coder.proc.interrupt()
 </code></pre>
-<pre class="language-json"><code class="language-json" data-file="interrupt_resume.json">{
-  "params": {
-    …parameters…
-  },
-  "lengths": [
-    …queue lengths…
-  ],
-  "jobs": [
-    …jobs…
-  ],
-  "interrupts": [
-    8.721,
-    16.949,
-    17.291
-  ],
-  "status": "uncaught interruption at 17.291"
-}
-</code></pre>
+<div class="callout">
 <ul>
-<li>What if we're interrupted while we're handling an interruption?<ul>
-<li>The <code>except</code> block only handles an <code>Interrupt</code> raised during its <code>try</code></li>
-<li>We can be hit by another interruption while we're inside it</li>
+<li>When we call <code>proc.interrupt()</code>, SimPy raises an <code>Interrupt</code> exception inside the generator</li>
+<li>But it can only do this while the framework is running, <em>not</em> while the process is running<ul>
+<li>Because only one thing runs at a time</li>
 </ul>
 </li>
-<li>We're actually lucky this happened so soon<ul>
-<li>Timing bugs can lurk in code for decades</li>
+<li>So the exception is only raised when the process interacts with the environment<ul>
+<li>I.e., at <code>queue.get()</code>, <code>timeout()</code>, or other <code>yield</code> points</li>
 </ul>
 </li>
 </ul>
-<h2>Resuming Interrupted Work Correctly</h2>
-<ul>
-<li><code>programmer</code> is too complicated</li>
-<li>Model interrupts as jobs</li>
-</ul>
-<pre class="language-python"><code class="language-python" data-file="interrupt_resume_corrected.py">def interruptor(sim):
-    while True:
-        yield sim.env.timeout(sim.rand_interrupt())
-        programmer = random.choice(sim.programmers)
-        programmer.interrupt(Job(sim, "interrupt", sim.params["t_interrupt_len"]))
-</code></pre>
-<ul>
-<li>Modify <code>Job</code> to keep track of kind</li>
-</ul>
-<pre class="language-python"><code class="language-python" data-file="interrupt_resume_corrected.py">class Job:
-    def __init__(self, sim, kind, develop):
-        …as before…
-        self.kind = kind
-</code></pre>
-<ul>
-<li>Modify <code>programmer</code> to:<ol>
-<li>Keep a stack of work</li>
-<li>Only use <code>yield</code> inside the <code>try</code> block</li>
-</ol>
-</li>
-</ul>
-<pre class="language-python"><code class="language-python" data-file="interrupt_resume_corrected.py">def programmer(sim, worker_id):
-    stack = []
-    while True:
-        started = None
-        try:
-            if len(stack) == 0:
-                # try to get a new regular job
-            else:
-                # try to finish the top job on the stack
-        except Interrupt as exc:
-            # save work done so far and push interruption on the stack
-</code></pre>
-<pre class="language-python"><code class="language-python" data-file="interrupt_resume_corrected.py">def programmer(sim, worker_id):
-    stack = []
-    while True:
-        started = None
-        try:
-            if len(stack) == 0:
-                # try to get a new regular job
-                job = yield sim.queue.get()
-                job.worker_id = worker_id
-                stack.append(job)
-            else:
-                # try to finish the top job on the stack
-        except Interrupt as exc:
-            # save work done so far and push interruption on the stack
-</code></pre>
-<pre class="language-python"><code class="language-python" data-file="interrupt_resume_corrected.py">def programmer(sim, worker_id):
-    stack = []
-    while True:
-        started = None
-        try:
-            if len(stack) == 0:
-                # try to get a new regular job
-            else:
-                # try to finish the top job on the stack
-                job = stack[-1]
-                if job.t_start is None:
-                    job.t_start = sim.env.now
-                started = sim.env.now
-                yield sim.env.timeout(job.t_develop - job.t_done)
-                job.t_done = job.t_develop
-                job.t_end = sim.env.now
-                stack.pop()
-        except Interrupt as exc:
-            # save work done so far and push interruption on the stack
-</code></pre>
-<pre class="language-python"><code class="language-python" data-file="interrupt_resume_corrected.py">def programmer(sim, worker_id):
-    stack = []
-    while True:
-        started = None
-        try:
-            if len(stack) == 0:
-                # try to get a new regular job
-            else:
-                # try to finish the top job on the stack
-        except Interrupt as exc:
-            # save work done so far and push interruption on the stack
-            if (len(stack) &gt; 0) and (started is not None):
-                job = stack[-1]
-                job.n_interrupt += 1
-                job.t_done += sim.env.now - started
-            stack.append(exc.cause)
-</code></pre>
-<ul>
-<li>What happens as we increase the number of programmers?</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th style="text-align: right;">n_programmer</th>
-<th style="text-align: right;">n_regular</th>
-<th style="text-align: right;">…started</th>
-<th style="text-align: right;">…completed</th>
-<th style="text-align: right;">n_interrupt</th>
-<th style="text-align: right;">…started</th>
-<th style="text-align: right;">…completed</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1031</td>
-<td style="text-align: right;">32</td>
-<td style="text-align: right;">31</td>
-<td style="text-align: right;">198</td>
-<td style="text-align: right;">198</td>
-<td style="text-align: right;">181</td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">1031</td>
-<td style="text-align: right;">527</td>
-<td style="text-align: right;">525</td>
-<td style="text-align: right;">198</td>
-<td style="text-align: right;">198</td>
-<td style="text-align: right;">195</td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">1010</td>
-<td style="text-align: right;">971</td>
-<td style="text-align: right;">968</td>
-<td style="text-align: right;">220</td>
-<td style="text-align: right;">220</td>
-<td style="text-align: right;">220</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>More regular jobs are started</li>
-<li>Fraction that are completed stays the same</li>
-<li>Fraction of interrupts completed stays the same</li>
-<li>Now let's double the frequency of interruptions</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th style="text-align: right;">n_programmer</th>
-<th style="text-align: right;">n_regular</th>
-<th style="text-align: right;">…started</th>
-<th style="text-align: right;">…completed</th>
-<th style="text-align: right;">n_interrupt</th>
-<th style="text-align: right;">…started</th>
-<th style="text-align: right;">…completed</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1025</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">383</td>
-<td style="text-align: right;">383</td>
-<td style="text-align: right;">78</td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">1025</td>
-<td style="text-align: right;">84</td>
-<td style="text-align: right;">82</td>
-<td style="text-align: right;">383</td>
-<td style="text-align: right;">383</td>
-<td style="text-align: right;">355</td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">998</td>
-<td style="text-align: right;">547</td>
-<td style="text-align: right;">544</td>
-<td style="text-align: right;">378</td>
-<td style="text-align: right;">378</td>
-<td style="text-align: right;">376</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>Number of regular jobs completed is 10% with 1 programmer, 15% with 2, and 56% with 3</li>
-<li>Number of self-interruptions climbs as expected</li>
-</ul>
-<div class="center">
-<img alt="self-interruption frequency vs. job arrival rate and number of programmers" src="analyze_self_interrupt.svg"/>
 </div>
 <ul>
-<li>Key points<ol>
-<li>Everything that yields must be inside the <code>try</code> block</li>
-<li>Keep state simple or you'll never debug it</li>
+<li>Write a <code>Coder</code> that throws away whatever job it's doing when it is interrupted<ul>
+<li>Not realistic, but it gives us a chance to learn about interrupts</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="discard.py">from simpy import Interrupt
+
+class Coder(Recorder):
+    def run(self):
+        while True:
+            try:
+                job = yield self.sim.queue.get()
+                job.t_start = self.sim.now
+                yield self.sim.timeout(job.duration)
+                job.t_end = self.sim.now
+                self.t_work += job.t_end - job.t_start
+            except Interrupt:
+                self.n_interrupt += 1
+                job.t_end = self.sim.now
+                job.discarded = True
+            self.t_work += job.t_end - job.t_start
+</code></pre>
+<ul>
+<li>Exercise: how does the percentage of discarded jobs change as the interrupt rate changes?</li>
+</ul>
+<h2>Resuming Work</h2>
+<ul>
+<li>General idea: coders have a stack of work<ul>
+<li>At most one regular job</li>
+<li>And zero or more interrupts stacked on top of it</li>
+<li>When an interrupt arrives, it goes on the top of the stack</li>
+</ul>
+</li>
+<li>Do the simple bits first<ul>
+<li>Subclass <code>Job</code> so that we can call different methods for defining duration</li>
+</ul>
+</li>
+<li>Notice that we're piling up a bunch of parameters whose values we probably don't know</li>
+</ul>
+<pre class=""><code data-file="interrupts.py">class Params:
+    …as before…
+    t_interrupt_arrival: float = 5.0
+    t_interrupt_mean: float = 0.2
+    t_interrupt_std: float = 0.1
+
+class JobRegular(Job):
+    def __init__(self, sim):
+        super().__init__(sim)
+        self.duration = self.sim.rand_job_duration()
+
+
+class JobInterrupt(Job):
+    def __init__(self, sim):
+        super().__init__(sim)
+        self.duration = self.sim.rand_interrupt_duration()
+</code></pre>
+<ul>
+<li><code>Manager</code> creates <code>JobRegular</code>, <code>Interrupter</code> creates <code>JobInterrupt</code></li>
+<li>Note that <code>Interrupter</code> passes the new job to <code>.interrupt()</code> so that it becomes the exception's <code>.cause</code></li>
+</ul>
+<pre class=""><code data-file="interrupts.py">class Interrupter(Recorder):
+    def run(self):
+        while True:
+            yield self.sim.timeout(self.sim.rand_interrupt_arrival())
+            coder = random.choice(self.sim.coders)
+            coder.proc.interrupt(JobInterrupt(self.sim))
+</code></pre>
+<ul>
+<li>It took several tries to get the <code>Coder</code> right</li>
+<li>The problem is that interrupts can occur whenever the coder interacts with SimPy<ul>
+<li>So if the coder does anything with SimPy in the <code>except</code> block,
+    we can have an interrupt while we're handling an interrupt</li>
+</ul>
+</li>
+<li>Solution is to implement a <a href="../glossary/#state-machine">state machine</a><ol>
+<li>No work, so get a new job from the coding queue.</li>
+<li>Job on top of the stack is incomplete, so do some work.</li>
+<li>Job on top of the stack is complete, so pop it.</li>
 </ol>
+</li>
+<li>If an interrupt occurs:<ul>
+<li>Add some time to the current job <em>if we actually started it</em></li>
+<li>Push the new job on the stack</li>
+<li>Note: the new job arrives as the <code>Interrupt</code> exception's cause</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="interrupts.py">class Coder(Recorder):
+    def __init__(self, sim):
+        super().__init__(sim)
+        self.proc = None
+        self.stack = []
+
+    def run(self):
+        while True:
+            started = None
+            try:
+                # No work in hand, so get a new job.
+                if len(self.stack) == 0:
+                    job = yield self.sim.code_queue.get()
+                    job.start()
+                    self.stack.append(job)
+                # Current job is incomplete, so try to finish it.
+                elif self.stack[-1].done &lt; self.stack[-1].duration:
+                    job = self.stack[-1]
+                    started = self.sim.now
+                    yield self.sim.timeout(job.duration - job.done)
+                    job.done = job.duration
+                # Current job is complete.
+                else:
+                    job = self.stack.pop()
+                    job.complete()
+            except Interrupt as exc:
+                # Some work has been done on the current job, so save it.
+                if (len(self.stack) &gt; 0) and (started is not None):
+                    now = self.sim.now
+                    job = self.stack[-1]
+                    job.interrupt()
+                    job.done += now - started
+                # Put the interrupting job on the stack.
+                job = exc.cause
+                job.start()
+                self.stack.append(job)
+</code></pre>
+<ul>
+<li>This works, but the code is hard to understand, debug, and extend</li>
+</ul>
+<h2>Decomposing Jobs</h2>
+<ul>
+<li>Design has two parts:<ul>
+<li>Treat interrupts as high-priority jobs</li>
+<li>Break regular jobs into short fragments so that interrupts are handled promptly (but not immediately)</li>
+</ul>
+</li>
+<li>Define three priorities:<ul>
+<li>High: interrupt</li>
+<li>Medium: fragments of regular job</li>
+<li>Low: regular jobs</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="decompose.py">class Priority:
+    HIGH = 0
+    MEDIUM = 1
+    LOW = 2
+</code></pre>
+<ul>
+<li>Generic <code>Job</code> has a few <a href="../glossary/#lifecycle-method">lifecycle methods</a> for child classes to override<ul>
+<li><code>Job.start</code> is called when work starts on a job</li>
+<li><code>Job.complete</code> is called when the job is completed</li>
+<li><code>Job.is_complete</code> tells us whether the job has been completed or not</li>
+<li><code>Job.needs_decomp</code> tells us whether the job needs to be decomposed</li>
+</ul>
+</li>
+<li>We will explain <code>sim.do_nothing()</code> shortly</li>
+</ul>
+<pre class=""><code data-file="decompose.py">class Job(Recorder):
+    def __init__(self, sim, priority):
+        super().__init__(sim)
+        self.priority = priority
+        self.t_create = self.sim.now
+        self.t_start = None
+        self.t_complete = None
+
+    def start(self):
+        self.t_start = self.sim.now
+
+    def complete(self):
+        self.t_complete = self.sim.now
+        return self.sim.do_nothing()
+
+    def is_complete(self):
+        return self.t_complete is not None
+
+    def needs_decomp(self):
+        return False
+
+    def __lt__(self, other):
+        if self.priority == other.priority:
+            return self.t_create &lt; other.t_create
+        return self.priority &lt; other.priority
+</code></pre>
+<ul>
+<li><code>JobInterrupt</code> is the simplest child class</li>
+</ul>
+<pre class=""><code data-file="decompose.py">class JobInterrupt(Job):
+    def __init__(self, sim):
+        super().__init__(sim, Priority.HIGH)
+        self.duration = self.sim.rand_interrupt_duration()
+</code></pre>
+<ul>
+<li><code>JobRegular</code> overrides <code>.needs_decomp()</code><ul>
+<li>If this job isn't complete <em>and</em> the time required is greater than the decomposition threshold</li>
+<li>The latter parameter is another completely arbitrary number</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="decompose.py">class JobRegular(Job):
+    def __init__(self, sim):
+        super().__init__(sim, Priority.LOW)
+        self.duration = self.sim.rand_job_duration()
+
+    def needs_decomp(self):
+        return (not self.is_complete()) and (self.duration &gt; self.sim.params.t_decomposition)
+</code></pre>
+<ul>
+<li><code>JobFragment</code> is the most complex<ul>
+<li>Duration is specified by its creator (part of the total time required by a regular job)</li>
+<li>And it has a reference to a placeholder that keeps track of undone fragments</li>
+</ul>
+</li>
+<li>When then fragment is completed, it checks to see if it is the last one in its group<ul>
+<li>If so, it bumps the priority of the completed job to medium and puts it back in the coder's queue</li>
+<li>If not, it does nothing</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="decompose.py">class JobFragment(Job):
+    def __init__(self, coder, placeholder, duration):
+        super().__init__(coder.sim, Priority.MEDIUM)
+        self.coder = coder
+        self.placeholder = placeholder
+        self.duration = duration
+
+    def complete(self):
+        super().complete()
+        self.placeholder.count -= 1
+        if self.placeholder.count == 0:
+            self.placeholder.job.complete()
+            self.placeholder.job.priority = Priority.MEDIUM
+            return self.coder.queue.put(self.placeholder.job)
+        else:
+            return self.sim.do_nothing()
+</code></pre>
+<div class="callout">
+<ul>
+<li>When <code>.complete</code> wants to put the original (regular) job back in the coder's queue,
+    it would be natural to call <code>yield self.code.queue.put(…)</code></li>
+<li>But what if it doesn't?</li>
+<li>Solution:<ul>
+<li><code>.complete</code> always returns something that can be yielded</li>
+<li>Either "put this job in queue" <em>or</em> "wait for 0 ticks"</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="decompose.py">class Simulation(Environment):
+    def do_nothing(self):
+        return self.timeout(0)
+</code></pre>
+</div>
+<ul>
+<li><code>Coder.run</code> gets a job from the general "new work" queue or from its priority queue<ul>
+<li>Gives preference to the latter so that interrupts and fragments are done before regular work</li>
+<li>Always yields result of <code>job.complete()</code></li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="decompose.py">    def run(self):
+        while True:
+            job = yield from self.get()
+            job.start()
+            if job.needs_decomp():
+                yield from self.decompose(job)
+            elif not job.is_complete():
+                yield self.sim.timeout(job.duration)
+                yield job.complete()
+</code></pre>
+<ul>
+<li>To decompose a job:<ul>
+<li>Figure out the durations of the fragments</li>
+<li>Create a placeholder to keep track of them and the original job</li>
+<li>Put the fragments in the coder's priority queue</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="decompose.py">    def decompose(self, job):
+        size = self.sim.params.t_decomposition
+        num = int(job.duration / size)
+        extra = job.duration - (num * size)
+        durations = [extra, *[size for _ in range(num)]]
+        placeholder = Placeholder(job=job, count=len(durations))
+        for d in durations:
+            yield self.queue.put(JobFragment(self, placeholder, d))
+</code></pre>
+<ul>
+<li>So is this better than using interrupts?<ul>
+<li>250 lines for decomposition vs. 212 for interrupts</li>
+<li>Decomposition approach was a lot simpler to debug</li>
+</ul>
 </li>
 </ul>
 </main>
 <footer>
 <div class="row">
 <div class="col-3 left">
-	  ⇐ <a href="../features/">More Features</a>
+	  ⇐ <a href="../scenarios/">Exploring Scenarios</a>
 </div>
 <div class="col-6 center">
 <a href="../"></a>
@@ -473,7 +405,7 @@
 	  <a href="../#acknowledgments">the authors</a>
 </div>
 <div class="col-3 right">
-<a href="../feedback/">Feedback</a> ⇒
+<a href="../insight/">Insights</a> ⇒
 	</div>
 </div>
 </footer>

@@ -1,0 +1,4 @@
+manager creates job-0 at 0
+manager creates job-1 at 6
+manager creates job-2 at 12
+manager creates job-3 at 18

@@ -1,0 +1,17 @@
+## throughput
+
+| policy   | t_sim | num_jobs | throughput |
+|----------|-------|----------|------------|
+| longest  | 1000  | 481      | 0.48       |
+| newest   | 1000  | 484      | 0.48       |
+| oldest   | 1000  | 491      | 0.49       |
+| shortest | 1000  | 505      | 0.5        |
+
+## utilization
+
+| policy   | t_sim | total_work | utilization |
+|----------|-------|------------|-------------|
+| newest   | 1000  | 968.7      | 0.97        |
+| longest  | 1000  | 987.08     | 0.99        |
+| shortest | 1000  | 976.35     | 0.98        |
+| oldest   | 1000  | 979.2      | 0.98        |

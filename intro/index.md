@@ -9,6 +9,24 @@
 -   This tutorial uses [SimPy][simpy] to model a software development team
     -   And to illustrate how hard it is to collect and interpret useful data
 
+<div class="callout" markdown="1">
+
+-   DES refers to active entities as processes
+-   These are *not* the same as operating system processes (or threads)
+-   Terminology can be confusing, but we're stuck with it
+
+</div>
+
+## Interesting Questions
+
+-   Many proposals for tracking software development teams
+    -   E.g., [DORA metrics][dora]
+-   We'll build up to some simple ones:
+    -   [Backlog](g:backlog): how much work is waiting to start over time?
+    -   [Delay](g:delay): how long from job creation to job start?
+    -   [Throughput](g:throughput): how many jobs are completed per unit time?
+    -   [Utilization](g:utilization): how busy are the people on the team?
+
 ## Learner Profile
 
 -   Shae, 20, is starting the third year of an undergraduate degree in computer science

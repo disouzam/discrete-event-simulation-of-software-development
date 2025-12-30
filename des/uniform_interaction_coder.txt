@@ -1,0 +1,4 @@
+coder waits at 0.00
+coder gets job-0 at 0.00
+coder waits at 8.52
+coder gets job-1 at 8.52

@@ -7,15 +7,9 @@ build:
 	@mccole build --src . --dst docs
 	@touch docs/.nojekyll
 
-## check: check code and project
+## check: check project
 check:
 	@mccole check --src . --dst docs
-
-## commands: show available commands (*)
-commands:
-	@grep -h -E '^##' ${MAKEFILE_LIST} \
-	| sed -e 's/## //g' \
-	| column -t -s ':'
 
 ## clean: clean up
 clean:
@@ -24,6 +18,12 @@ clean:
 	@find . -type d -name .pytest_cache | xargs rm -r
 	@find . -type d -name .ruff_cache | xargs rm -r
 
+## commands: show available commands (*)
+commands:
+	@grep -h -E '^##' ${MAKEFILE_LIST} \
+	| sed -e 's/## //g' \
+	| column -t -s ':'
+
 ## format: format code
 format:
 	@ruff format .
@@ -31,3 +31,7 @@ format:
 ## lint: check code
 lint:
 	@ruff check .
+
+## serve: serve local website
+serve:
+	@python -m http.server --directory docs

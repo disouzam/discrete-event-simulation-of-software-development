@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Discrete Event Simulation</title>
+<link href="../static/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="../static/page.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<nav>
+<a href="../">Home</a>
+      ·
+      <span class="dropdown">
+<a href="#">Lessons</a>
+<span class="dropdown-content" id="nav-lessons">
+<a href="../intro/">Introduction</a>
+<a href="../des/">Discrete Event Simulation</a>
+<a href="../metrics/">Simple Metrics</a>
+<a href="../scenarios/">Exploring Scenarios</a>
+<a href="../interrupts/">Handling Interrupts</a>
+<a href="../insight/">Insights</a>
+<a href="../finale/">Conclusion</a>
+</span>
+</span>
+      ·
+      <span class="dropdown">
+<a href="#">Appendices</a>
+<span class="dropdown-content" id="nav-appendices">
+<a href="../license/">License</a>
+<a href="../conduct/">Code of Conduct</a>
+<a href="../contributing/">Contributing</a>
+<a href="../bibliography/">Bibliography</a>
+<a href="../glossary/">Glossary</a>
+</span>
+</span>
+</nav>
+<main>
+<h1>Discrete Event Simulation</h1>
+<h2>Our First Simulation</h2>
+<ul>
+<li>Create a SimPy <code>Environment</code></li>
+<li>Create one or more <a href="../glossary/#generator">generators</a> for it to run<ul>
+<li>These will almost always need the environment</li>
+</ul>
+</li>
+<li>Pass each generator to <code>env.process(…)</code></li>
+<li>Call <code>env.run(…)</code> and specify simulation duration</li>
+</ul>
+<pre class=""><code data-file="ask_for_work.py">from simpy import Environment
+
+T_SIM = 30
+T_WAIT = 8
+
+
+def coder(env):
+    while True:
+        print(f"{env.now}: Is there any work?")
+        yield env.timeout(T_WAIT)
+
+
+if __name__ == "__main__":
+    env = Environment()
+    env.process(coder(env))
+    env.run(until=T_SIM)
+</code></pre>
+<ul>
+<li>Output</li>
+</ul>
+<pre class=""><code data-file="ask_for_work.txt">0: Is there any work?
+8: Is there any work?
+16: Is there any work?
+24: Is there any work?
+</code></pre>
+<h2>Interaction</h2>
+<ul>
+<li>Manager creates jobs and puts them in a queue<ul>
+<li>Jobs arrive at regular intervals</li>
+<li>Each job has a duration</li>
+<li>Give each job an ID for tracking</li>
+</ul>
+</li>
+<li>Coder takes jobs from the queue in order and does them</li>
+<li>Queue is implemented as a SimPy <code>Store</code> with <code>.put()</code> and <code>.get()</code> methods</li>
+</ul>
+<div class="callout">
+<ul>
+<li>A process (generator) only gives control back to SimPy when it yields</li>
+<li>So processes must <code>yield</code> the results of <code>queue.put()</code> and <code>queue.get()</code><ul>
+<li>Writing <code>job = queue.get()</code> rather than <code>job = yield queue.get()</code> is a common mistake</li>
+</ul>
+</li>
+</ul>
+</div>
+<ul>
+<li>Parameters</li>
+</ul>
+<pre class=""><code data-file="simple_interaction.py">T_CREATE = 6
+T_JOB = 8
+T_SIM = 20
+</code></pre>
+<ul>
+<li><code>Job</code> class</li>
+</ul>
+<pre class=""><code data-file="simple_interaction.py">from itertools import count
+
+class Job:
+    _next_id = count()
+
+    def __init__(self):
+        self.id = next(Job._next_id)
+        self.duration = T_JOB
+
+    def __str__(self):
+        return f"job-{self.id}"
+</code></pre>
+<ul>
+<li><code>manager</code> process</li>
+</ul>
+<pre class=""><code data-file="simple_interaction.py">def manager(env, queue):
+    while True:
+        job = Job()
+        print(f"manager creates {job} at {env.now}")
+        yield queue.put(job)
+        yield env.timeout(T_CREATE)
+</code></pre>
+<ul>
+<li><code>coder</code> process</li>
+</ul>
+<pre class=""><code data-file="simple_interaction.py">def coder(env, queue):
+    while True:
+        print(f"coder waits at {env.now}")
+        job = yield queue.get()
+        print(f"coder gets {job} at {env.now}")
+        yield env.timeout(job.duration)
+        print(f"code completes {job} at {env.now}")
+</code></pre>
+<ul>
+<li>Set up and run</li>
+</ul>
+<pre class=""><code data-file="simple_interaction.py">if __name__ == "__main__":
+    env = Environment()
+    queue = Store(env)
+    env.process(manager(env, queue))
+    env.process(coder(env, queue))
+    env.run(until=T_SIM)
+</code></pre>
+<ul>
+<li>Output</li>
+</ul>
+<pre class=""><code data-file="simple_interaction.txt">manager creates job-0 at 0
+coder waits at 0
+coder gets job-0 at 0
+manager creates job-1 at 6
+code completes job-0 at 8
+coder waits at 8
+coder gets job-1 at 8
+manager creates job-2 at 12
+code completes job-1 at 16
+coder waits at 16
+coder gets job-2 at 16
+manager creates job-3 at 18
+</code></pre>
+<ul>
+<li>Easier to see as columns</li>
+</ul>
+<div class="row">
+<div class="col-5">
+<pre class=""><code data-file="simple_interaction_manager.txt">manager creates job-0 at 0
+manager creates job-1 at 6
+manager creates job-2 at 12
+manager creates job-3 at 18
+</code></pre>
+</div>
+<div class="col-1">
+</div>
+<div class="col-5">
+<pre class=""><code data-file="simple_interaction_coder.txt">coder waits at 0
+coder gets job-0 at 0
+coder waits at 8
+coder gets job-1 at 8
+coder waits at 16
+coder gets job-2 at 16
+</code></pre>
+</div>
+</div>
+<ul>
+<li>But even this is hard to read</li>
+</ul>
+<h2>Uniform Rates</h2>
+<ul>
+<li>Use ranges for creation times and job durations</li>
+</ul>
+<pre class=""><code data-file="uniform_interaction.py">RNG_SEED = 98765
+T_CREATE = (6, 10)
+T_JOB = (8, 12)
+T_SIM = 20
+</code></pre>
+<ul>
+<li><code>Job</code> has a random duration</li>
+</ul>
+<pre class=""><code data-file="uniform_interaction.py">class Job:
+    def __init__(self):
+        self.id = next(Job._next_id)
+        self.duration = random.uniform(*T_JOB)
+</code></pre>
+<ul>
+<li><code>manager</code> waits a random time before creating the next job<ul>
+<li>Format time to two decimal places for readability</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="uniform_interaction.py">def manager(env, queue):
+    while True:
+        job = Job()
+        print(f"manager creates {job} at {env.now:.2f}")
+        yield queue.put(job)
+        yield env.timeout(random.uniform(*T_CREATE))
+</code></pre>
+<ul>
+<li>Always initialize the random number generator to ensure reproducibility<ul>
+<li>Hard to debug if the program behaves differently each time we run it</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="uniform_interaction.py">if __name__ == "__main__":
+    random.seed(RNG_SEED)
+    …as before…
+</code></pre>
+<div class="row">
+<div class="col-5">
+<pre class=""><code data-file="uniform_interaction_manager.txt">manager creates job-0 at 0.00
+manager creates job-1 at 8.36
+manager creates job-2 at 14.73
+</code></pre>
+</div>
+<div class="col-1">
+</div>
+<div class="col-5">
+<pre class=""><code data-file="uniform_interaction_coder.txt">coder waits at 0.00
+coder gets job-0 at 0.00
+coder waits at 8.52
+coder gets job-1 at 8.52
+</code></pre>
+</div>
+</div>
+<h2>Better Random Distributions</h2>
+<ul>
+<li>Assume probability of manager generating a new job in any instant is fixed<ul>
+<li>I.e., doesn't depend on how long since the last job was generated</li>
+</ul>
+</li>
+<li>If the arrival rate (jobs per tick) is λ,
+    the time until the next job is an <a href="../glossary/#random-exponential">exponential</a> random variable
+    with mean 1/λ</li>
+</ul>
+<div class="center">
+<img alt="exponential distribution" src="exponential.svg"/>
+</div>
+<ul>
+<li>Use a <a href="../glossary/#random-log-normal">log-normal</a> random variable to model job lengths<ul>
+<li>All job lengths are positive</li>
+<li>Most jobs are short but there are a few outliers</li>
+<li>If parameters are μ and σ, the <a href="../glossary/#median">median</a> is e<sup>μ</sup></li>
+</ul>
+</li>
+</ul>
+<div class="center">
+<img alt="log-normal distribution" src="lognormal.svg"/>
+</div>
+<h2>Better Random Interaction</h2>
+<ul>
+<li>Parameters and randomization functions</li>
+</ul>
+<pre class=""><code data-file="random_interaction.py">…other parameters as before…
+T_JOB_ARRIVAL = 2.0
+T_JOB_MEAN = 0.5
+T_JOB_STD = 0.6
+
+def rand_job_arrival():
+    return random.expovariate(1.0 / T_JOB_ARRIVAL)
+
+def rand_job_duration():
+    return random.lognormvariate(T_JOB_MEAN, T_JOB_STD)
+</code></pre>
+<ul>
+<li>Corresponding changes to <code>Job</code> and <code>manager</code></li>
+</ul>
+<pre class=""><code data-file="random_interaction.py">class Job:
+    def __init__(self):
+        self.id = next(Job._next_id)
+        self.duration = rand_job_duration()
+
+def manager(env, queue):
+    while True:
+        job = Job()
+        t_delay = rand_job_arrival()
+        print(f"manager creates {job} at {env.now:.2f} waits for {t_delay:.2f}")
+        yield queue.put(job)
+        yield env.timeout(t_delay)
+</code></pre>
+<ul>
+<li>Results</li>
+</ul>
+<div class="row">
+<div class="col-5">
+<pre class=""><code data-file="random_interaction_manager.txt">manager creates job-0 at 0.00 waits for 7.96
+manager creates job-1 at 7.96 waits for 0.60
+manager creates job-2 at 8.56 waits for 3.70
+</code></pre>
+</div>
+<div class="col-1">
+</div>
+<div class="col-5">
+<pre class=""><code data-file="random_interaction_coder.txt">coder waits at 0.00
+coder gets job-0 at 0.00
+coder waits at 0.65
+coder gets job-1 at 7.96
+coder waits at 8.75
+coder gets job-2 at 8.75
+</code></pre>
+</div>
+</div>
+<ul>
+<li>But this is still hard to read and analyze</li>
+</ul>
+<h2>Introduce Structure</h2>
+<ul>
+<li>Requirements<ul>
+<li>Save results as JSON to simplify analysis</li>
+<li>Simulation may have several pieces, so put them in one object</li>
+<li>Support <a href="../glossary/#parameter-sweeping">parameter sweeping</a></li>
+</ul>
+</li>
+<li>Store parameters in a <a href="../glossary/#dataclass">dataclass</a><ul>
+<li>Each parameter must have a default value so utilities can construct instances
+    without knowing anything about specific parameters</li>
+<li>Use <code>@dataclass_json</code> decorator so that utilities can <a href="../glossary/#serialize">serialize</a> as JSON</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="introduce_structure.py">@dataclass_json
+@dataclass
+class Params:
+    """Simulation parameters."""
+
+    n_seed: int = 13579
+    t_sim: float = 30
+    t_wait: float = 8
+</code></pre>
+<ul>
+<li>Define another class to store the entire simulation<ul>
+<li>Derive from SimPy <code>Environment</code></li>
+<li>Store simulation parameters as <code>.params</code></li>
+<li>May have other structures (e.g., a log to record output)</li>
+<li>Give it a <code>.result()</code> method that returns simulation result (e.g., the log)</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="introduce_structure.py">class Simulation(Environment):
+    """Complete simulation."""
+
+    def __init__(self):
+        super().__init__()
+        self.params = Params()
+        self.log = []
+
+    def result(self):
+        return {"log": self.log}
+</code></pre>
+<ul>
+<li>All of the simulation process generator functions take an instance of the simulation class as an argument<ul>
+<li><code>sim.whatever</code> for elements of the SimPy <code>Environment</code></li>
+<li><code>sim.params.whatever</code> for parameters</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="introduce_structure.py">def coder(sim):
+    """Simulate a single coder."""
+
+    while True:
+        sim.log.append(f"{sim.now}: Is there any work?")
+        yield sim.timeout(sim.params.t_wait)
+</code></pre>
+<ul>
+<li>Define a <code>Simulation.simulate</code> method that creates processes and runs the simulation<ul>
+<li>Can't call it <code>run</code> because we need that method from the parent class <code>Environment</code></li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="introduce_structure.py">class Simulation
+    def simulate(self):
+        self.process(coder(self))
+        self.run(until=self.params.t_sim)
+</code></pre>
+<ul>
+<li>Use <code>util.run(…)</code> to run scenarios with varying parameters and get result as JSON<ul>
+<li>Look in project's <code>utilities</code> directory for implementation</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="introduce_structure.py">if __name__ == "__main__":
+    args, results = util.run(Params, Simulation)
+    if args.json:
+        json.dump(results, sys.stdout, indent=2)
+    else:
+        results = util.as_frames(results)
+        for key, frame in results.items():
+            print(f"## {key}")
+            print(frame)
+</code></pre>
+<ul>
+<li>Sample command line invocation</li>
+</ul>
+<pre class=""><code data-file="introduce_structure_json.sh">python introduce_structure.py --json t_wait=12,20 t_sim=20,30
+</code></pre>
+<ul>
+<li>Output</li>
+</ul>
+<pre class=""><code data-file="introduce_structure_json.json">{
+  "results": [
+    {
+      "params": {"n_seed": 13579, "t_sim": 20, "t_wait": 12},
+      "log": [
+        {"time": 0, "message": "loop 0"},
+        {"time": 12, "message": "loop 1"}
+      ]
+    },
+    {
+      "params": {"n_seed": 13579, "t_sim": 30, "t_wait": 12},
+      "log": [
+        {"time": 0, "message": "loop 0"},
+        {"time": 12, "message": "loop 1"},
+        {"time": 24, "message": "loop 2"}
+      ]
+    },
+    {
+      "params": {"n_seed": 13579, "t_sim": 20, "t_wait": 20},
+      "log": [
+        {"time": 0, "message": "loop 0"}
+      ]
+    },
+    {
+      "params": {"n_seed": 13579, "t_sim": 30, "t_wait": 20},
+      "log": [
+        {"time": 0, "message": "loop 0"},
+        {"time": 20, "message": "loop 1"}
+      ]
+    }
+  ]
+}
+</code></pre>
+<ul>
+<li>Convert to <a href="https://pola.rs/">Polars</a> dataframes)<ul>
+<li>Include all parameters in each dataframe to simplify later analysis</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="introduce_structure_df.sh">python introduce_structure.py --tables t_wait=12,20 t_sim=20,30
+</code></pre>
+<pre class=""><code data-file="introduce_structure_df.txt">## log
+shape: (8, 5)
+## log
+shape: (8, 6)
+┌──────┬─────────┬─────┬────────┬───────┬────────┐
+│ time ┆ message ┆ id  ┆ n_seed ┆ t_sim ┆ t_wait │
+│ ---  ┆ ---     ┆ --- ┆ ---    ┆ ---   ┆ ---    │
+│ i64  ┆ str     ┆ i32 ┆ i32    ┆ i32   ┆ i32    │
+╞══════╪═════════╪═════╪════════╪═══════╪════════╡
+│ 0    ┆ loop 0  ┆ 0   ┆ 13579  ┆ 20    ┆ 12     │
+│ 12   ┆ loop 1  ┆ 0   ┆ 13579  ┆ 20    ┆ 12     │
+│ 0    ┆ loop 0  ┆ 1   ┆ 13579  ┆ 30    ┆ 12     │
+│ 12   ┆ loop 1  ┆ 1   ┆ 13579  ┆ 30    ┆ 12     │
+│ 24   ┆ loop 2  ┆ 1   ┆ 13579  ┆ 30    ┆ 12     │
+│ 0    ┆ loop 0  ┆ 2   ┆ 13579  ┆ 20    ┆ 20     │
+│ 0    ┆ loop 0  ┆ 3   ┆ 13579  ┆ 30    ┆ 20     │
+│ 20   ┆ loop 1  ┆ 3   ┆ 13579  ┆ 30    ┆ 20     │
+└──────┴─────────┴─────┴────────┴───────┴────────┘
+</code></pre>
+</main>
+<footer>
+<div class="row">
+<div class="col-3 left">
+	  ⇐ <a href="../intro/">Introduction</a>
+</div>
+<div class="col-6 center">
+<a href="../"></a>
+	  © 2025
+	  <a href="../#acknowledgments">the authors</a>
+</div>
+<div class="col-3 right">
+<a href="../metrics/">Simple Metrics</a> ⇒
+	</div>
+</div>
+</footer>
+</body>
+</html>

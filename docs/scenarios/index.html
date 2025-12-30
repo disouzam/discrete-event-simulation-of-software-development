@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Exploring Scenarios</title>
+<link href="../static/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="../static/page.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<nav>
+<a href="../">Home</a>
+      ·
+      <span class="dropdown">
+<a href="#">Lessons</a>
+<span class="dropdown-content" id="nav-lessons">
+<a href="../intro/">Introduction</a>
+<a href="../des/">Discrete Event Simulation</a>
+<a href="../metrics/">Simple Metrics</a>
+<a href="../scenarios/">Exploring Scenarios</a>
+<a href="../interrupts/">Handling Interrupts</a>
+<a href="../insight/">Insights</a>
+<a href="../finale/">Conclusion</a>
+</span>
+</span>
+      ·
+      <span class="dropdown">
+<a href="#">Appendices</a>
+<span class="dropdown-content" id="nav-appendices">
+<a href="../license/">License</a>
+<a href="../conduct/">Code of Conduct</a>
+<a href="../contributing/">Contributing</a>
+<a href="../bibliography/">Bibliography</a>
+<a href="../glossary/">Glossary</a>
+</span>
+</span>
+</nav>
+<main>
+<h1>Exploring Scenarios</h1>
+<h2>Smoothing Over Multiple Runs</h2>
+<ul>
+<li>We have been showing results from individual runs</li>
+<li>What do results look like when averaged over many runs?</li>
+<li>Plot job ages vs. time averaged over 1, 10, 100, and 1000 simulations</li>
+</ul>
+<div class="row">
+<div class="col-6">
+<figure id="f:smoothing_ages_1">
+<img alt="ages from 1 run" src="smoothing_ages_1.svg" width="90%"/>
+<figcaption>Figure 1: Ages From 1 Run</figcaption>
+</figure>
+</div>
+<div class="col-6">
+<figure id="f:smoothing_ages_10">
+<img alt="ages smoothed over 10 runs" src="smoothing_ages_10.svg" width="90%"/>
+<figcaption>Figure 2: Ages Smoothed Over 10 Runs</figcaption>
+</figure>
+</div>
+</div>
+<div class="row">
+<div class="col-6">
+<figure id="f:smoothing_ages_100">
+<img alt="ages smoothed over 100 runs" src="smoothing_ages_100.svg" width="90%"/>
+<figcaption>Figure 3: Ages Smoothed Over 100 Runs</figcaption>
+</figure>
+</div>
+<div class="col-6">
+<figure id="f:smoothing_ages_1000">
+<img alt="ages smoothed over 1000 runs" src="smoothing_ages_1000.svg" width="90%"/>
+<figcaption>Figure 4: Ages Smoothed Over 1000 Runs</figcaption>
+</figure>
+</div>
+</div>
+<ul>
+<li>Work is piling up<ul>
+<li>Toward an asymptote or just slowing down?</li>
+</ul>
+</li>
+<li>We only get to experience one curve in real life</li>
+</ul>
+<h2>Choosing Jobs</h2>
+<ul>
+<li>Four policies:<ul>
+<li>Oldest job first (same as regular queue)</li>
+<li>Newest job first</li>
+<li>Longest job first</li>
+<li>Shortest job first</li>
+</ul>
+</li>
+<li>Implement by:<ul>
+<li>Replacing <code>Store</code> with <code>PriorityStore</code></li>
+<li>Adding <code>__lt__</code> to <code>Job</code> for comparison</li>
+<li>Actual comparison depends on policy</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="job_priority.py">class Params:
+    …as before…
+    policy: str = "shortest"
+
+class Job(Recorder):
+    …as before…
+    def __lt__(self, other):
+        match self.sim.params.policy:
+            case "oldest":
+                return self.t_create &lt; other.t_create
+            case "newest":
+                return other.t_create &lt; self.t_create
+            case "shortest":
+                return self.duration &lt; other.duration
+            case "longest":
+                return other.duration &lt; self.duration
+            case _:
+                assert False, f"unknown policy {self.sim.params.policy}"
+</code></pre>
+<ul>
+<li>Look at effect on backlog over time</li>
+</ul>
+<figure id="f:job_priority_backlog">
+<img alt="job backlog over time" src="job_priority_backlog.svg"/>
+<figcaption>Figure 5: Job backlog vs. time</figcaption>
+</figure>
+<figure id="f:job_priority_ages">
+<img alt="job age over time" src="job_priority_ages.svg"/>
+<figcaption>Figure 6: Age of jobs in queue vs. time</figcaption>
+</figure>
+<div class="row">
+<div class="col-6">
+<div data-caption="Throughput" id="t:job_priority_throughput">
+<table><caption>Table 1: Throughput</caption>
+<thead>
+<tr>
+<th>policy</th>
+<th>t_sim</th>
+<th>num_jobs</th>
+<th>throughput</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>longest</td>
+<td>1000</td>
+<td>485</td>
+<td>0.48</td>
+</tr>
+<tr>
+<td>newest</td>
+<td>1000</td>
+<td>457</td>
+<td>0.46</td>
+</tr>
+<tr>
+<td>oldest</td>
+<td>1000</td>
+<td>497</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>shortest</td>
+<td>1000</td>
+<td>509</td>
+<td>0.51</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="col-6">
+<div data-caption="Utilization" id="t:job_priority_utilization">
+<table><caption>Table 2: Utilization</caption>
+<thead>
+<tr>
+<th>policy</th>
+<th>t_sim</th>
+<th>total_work</th>
+<th>utilization</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oldest</td>
+<td>1000</td>
+<td>934.48</td>
+<td>0.93</td>
+</tr>
+<tr>
+<td>shortest</td>
+<td>1000</td>
+<td>961.69</td>
+<td>0.96</td>
+</tr>
+<tr>
+<td>newest</td>
+<td>1000</td>
+<td>888.03</td>
+<td>0.89</td>
+</tr>
+<tr>
+<td>longest</td>
+<td>1000</td>
+<td>974.04</td>
+<td>0.97</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<h2>Multiple Workers Redoing Work</h2>
+<ul>
+<li>Our models so far have assumed that when a job is done, it's done</li>
+<li>In real life, testing often reveals bugs that need rework</li>
+<li>Start by modeling with a second queue and a group of testers</li>
+</ul>
+<pre class=""><code data-file="rework_any.py">class Params:
+    …as before…
+    n_tester: int = 1
+    p_rework: float = 0.5
+
+class Simulation(Environment):
+    def __init__(self):
+        …as before…
+        self.test_queue = None
+
+    def simulate(self):
+        …as before…
+        self.test_queue = Store(self)
+        for _ in range(self.params.n_tester):
+            self.process(Tester(self).run())
+
+class Tester(Recorder):
+    def __init__(self, sim):
+        super().__init__(sim)
+        self.t_work = 0
+
+    def run(self):
+        while True:
+            job = yield self.sim.test_queue.get()
+            yield self.sim.timeout(job.duration)
+            if self.sim.rand_rework():
+                yield self.sim.code_queue.put(job)
+            else:
+                job.t_complete = self.sim.now
+</code></pre>
+<ul>
+<li>Any tester can test any job</li>
+<li>All jobs needing rework go back in the same queue as new work<ul>
+<li>And are handled in arrival order, i.e., not given priority</li>
+</ul>
+</li>
+<li>But this isn't realistic</li>
+<li>Give each <code>Coder</code> its own queue</li>
+</ul>
+<pre class=""><code data-file="rework_same.py">class Coder(Recorder):
+    def __init__(self, sim):
+        …as before…
+        self.queue = Store(self.sim)
+</code></pre>
+<ul>
+<li>Have testers give work back to the coder who did the work<ul>
+<li>Need to add a <code>coder_id</code> field to jobs to keep track of this</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="rework_same.py">class Tester(Recorder):
+    def run(self):
+        while True:
+            job = yield self.sim.test_queue.get()
+            assert job.coder_id is not None
+            yield self.sim.timeout(job.duration)
+            if self.sim.rand_rework():
+                yield self.sim.coders[job.coder_id].queue.put(job)
+            else:
+                job.t_complete = self.sim.now
+</code></pre>
+<ul>
+<li>Now the hard part: coders selecting jobs</li>
+<li>Put it in a method of its own</li>
+<li>And use <code>yield from</code> to yield its results back to SimPy</li>
+</ul>
+<pre class=""><code data-file="rework_same.py">class Coder(Recorder):
+    def run(self):
+        while True:
+            job = yield from self.get()
+            yield self.sim.timeout(job.duration)
+            yield self.sim.test_queue.put(job)
+</code></pre>
+<ul>
+<li>So how does <code>Coder.get(…)</code> work?<ul>
+<li>Create <em>but do not immediately <code>yield</code></em> a request for an item from each queue</li>
+<li><code>yield</code> the combination of those items using <code>|</code> (a short form for <code>simpy.AnyOf</code>)</li>
+<li><code>result</code> is dictionary-like object whose keys are the requests
+    and whose values are the items that we got</li>
+<li>If we got something from our own queue, take that</li>
+<li>If not, take what we got from the shared queue</li>
+</ul>
+</li>
+<li>Important: we have to cancel the other request or we can't make another one from that queue<ul>
+<li>Yes, this took a while to figure out</li>
+<li>And yes, it's safe to cancel a request that wasn't satisfied</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="rework_same.py">    def get(self):
+        new_req = self.sim.code_queue.get()
+        rework_req = self.queue.get()
+        result = yield (new_req | rework_req)
+        if (len(result.events) == 2) or (rework_req in result):
+            new_req.cancel()
+            job = result[rework_req]
+            assert job.coder_id == self.id
+        else:
+            rework_req.cancel()
+            job = result[new_req]
+            assert job.coder_id is None
+            job.coder_id = self.id
+        return job
+</code></pre>
+<ul>
+<li>We can now build a graph showing the <a href="../glossary/#transition-probability">transition probabilities</a>
+    for each state that a job might be in<ul>
+<li>Introduce a state <code>incomplete</code> for jobs that aren't finished by the end of the simulation</li>
+</ul>
+</li>
+</ul>
+<figure id="f:rework_same">
+<img alt="transition probability graph" src="rework_same.svg"/>
+<figcaption>Figure 7: Transition Probability Graph</figcaption>
+</figure>
+</main>
+<footer>
+<div class="row">
+<div class="col-3 left">
+	  ⇐ <a href="../metrics/">Simple Metrics</a>
+</div>
+<div class="col-6 center">
+<a href="../"></a>
+	  © 2025
+	  <a href="../#acknowledgments">the authors</a>
+</div>
+<div class="col-3 right">
+<a href="../interrupts/">Handling Interrupts</a> ⇒
+	</div>
+</div>
+</footer>
+</body>
+</html>

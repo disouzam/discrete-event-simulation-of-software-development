@@ -10,7 +10,7 @@
 
 <span id="Downey2023">Downey2023</span>
 :   Allen B. Downey:
-    [*Modeling and Simulation in Python An Introduction for Scientists and Engineers*](https://allendowney.github.io/ModSimPy/).
+    *Modeling and Simulation in Python An Introduction for Scientists and Engineers*.
     No Starch Press,
     2023,
     9781718502161.

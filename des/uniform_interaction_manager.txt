@@ -1,0 +1,3 @@
+manager creates job-0 at 0.00
+manager creates job-1 at 8.36
+manager creates job-2 at 14.73

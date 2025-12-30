@@ -16,11 +16,11 @@
 <a href="#">Lessons</a>
 <span class="dropdown-content" id="nav-lessons">
 <a href="../intro/">Introduction</a>
-<a href="../simple/">Simple Simulations</a>
-<a href="../teams/">Teams</a>
-<a href="../features/">More Features</a>
-<a href="../interrupts/">Interruptions</a>
-<a href="../feedback/">Feedback</a>
+<a href="../des/">Discrete Event Simulation</a>
+<a href="../metrics/">Simple Metrics</a>
+<a href="../scenarios/">Exploring Scenarios</a>
+<a href="../interrupts/">Handling Interrupts</a>
+<a href="../insight/">Insights</a>
 <a href="../finale/">Conclusion</a>
 </span>
 </span>
@@ -28,7 +28,6 @@
       <span class="dropdown">
 <a href="#">Appendices</a>
 <span class="dropdown-content" id="nav-appendices">
-<a href="../generators/">Generators</a>
 <a href="../license/">License</a>
 <a href="../conduct/">Code of Conduct</a>
 <a href="../contributing/">Contributing</a>
@@ -50,6 +49,27 @@
 </li>
 <li>This tutorial uses <a href="https://simpy.readthedocs.io/">SimPy</a> to model a software development team<ul>
 <li>And to illustrate how hard it is to collect and interpret useful data</li>
+</ul>
+</li>
+</ul>
+<div class="callout">
+<ul>
+<li>DES refers to active entities as processes</li>
+<li>These are <em>not</em> the same as operating system processes (or threads)</li>
+<li>Terminology can be confusing, but we're stuck with it</li>
+</ul>
+</div>
+<h2>Interesting Questions</h2>
+<ul>
+<li>Many proposals for tracking software development teams<ul>
+<li>E.g., <a href="https://dora.dev/guides/dora-metrics-four-keys/">DORA metrics</a></li>
+</ul>
+</li>
+<li>We'll build up to some simple ones:<ul>
+<li><a href="../glossary/#backlog">Backlog</a>: how much work is waiting to start over time?</li>
+<li><a href="../glossary/#delay">Delay</a>: how long from job creation to job start?</li>
+<li><a href="../glossary/#throughput">Throughput</a>: how many jobs are completed per unit time?</li>
+<li><a href="../glossary/#utilization">Utilization</a>: how busy are the people on the team?</li>
 </ul>
 </li>
 </ul>
@@ -86,7 +106,7 @@ and how to distinguish evidence-based claims from plausible punditry.</p>
 	  <a href="../#acknowledgments">the authors</a>
 </div>
 <div class="col-3 right">
-<a href="../simple/">Simple Simulations</a> ⇒
+<a href="../des/">Discrete Event Simulation</a> ⇒
 	</div>
 </div>
 </footer>

@@ -1,8 +1,0 @@
-a
-C
-E
-G
-Traceback (most recent call last):
-  File "/Users/gvwilson/sim/generators/send_buggy.py", line 18, in <module>
-    ch = generator.send(flag)
-StopIteration

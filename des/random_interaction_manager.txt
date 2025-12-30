@@ -1,0 +1,3 @@
+manager creates job-0 at 0.00 waits for 7.96
+manager creates job-1 at 7.96 waits for 0.60
+manager creates job-2 at 8.56 waits for 3.70

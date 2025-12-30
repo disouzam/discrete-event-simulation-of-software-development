@@ -21,6 +21,3 @@ coverage.json
 
 # MacOS
 .DS_store
-
-# Junk
-tmp/

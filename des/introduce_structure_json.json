@@ -1,0 +1,70 @@
+[
+  {
+    "params": {
+      "n_seed": 13579,
+      "t_sim": 20,
+      "t_wait": 12
+    },
+    "log": [
+      {
+        "time": 0,
+        "message": "loop 0"
+      },
+      {
+        "time": 12,
+        "message": "loop 1"
+      }
+    ]
+  },
+  {
+    "params": {
+      "n_seed": 13579,
+      "t_sim": 30,
+      "t_wait": 12
+    },
+    "log": [
+      {
+        "time": 0,
+        "message": "loop 0"
+      },
+      {
+        "time": 12,
+        "message": "loop 1"
+      },
+      {
+        "time": 24,
+        "message": "loop 2"
+      }
+    ]
+  },
+  {
+    "params": {
+      "n_seed": 13579,
+      "t_sim": 20,
+      "t_wait": 20
+    },
+    "log": [
+      {
+        "time": 0,
+        "message": "loop 0"
+      }
+    ]
+  },
+  {
+    "params": {
+      "n_seed": 13579,
+      "t_sim": 30,
+      "t_wait": 20
+    },
+    "log": [
+      {
+        "time": 0,
+        "message": "loop 0"
+      },
+      {
+        "time": 20,
+        "message": "loop 1"
+      }
+    ]
+  }
+]

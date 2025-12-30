@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Insights</title>
+<link href="../static/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="../static/page.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<nav>
+<a href="../">Home</a>
+      ·
+      <span class="dropdown">
+<a href="#">Lessons</a>
+<span class="dropdown-content" id="nav-lessons">
+<a href="../intro/">Introduction</a>
+<a href="../des/">Discrete Event Simulation</a>
+<a href="../metrics/">Simple Metrics</a>
+<a href="../scenarios/">Exploring Scenarios</a>
+<a href="../interrupts/">Handling Interrupts</a>
+<a href="../insight/">Insights</a>
+<a href="../finale/">Conclusion</a>
+</span>
+</span>
+      ·
+      <span class="dropdown">
+<a href="#">Appendices</a>
+<span class="dropdown-content" id="nav-appendices">
+<a href="../license/">License</a>
+<a href="../conduct/">Code of Conduct</a>
+<a href="../contributing/">Contributing</a>
+<a href="../bibliography/">Bibliography</a>
+<a href="../glossary/">Glossary</a>
+</span>
+</span>
+</nav>
+<main>
+<h1>Insights</h1>
+<h2>A General-Purpose Simulator</h2>
+<ul>
+<li>Combine pieces from previous chapters and clean up a little</li>
+<li>A generic <code>Actor</code> as parent for coders, managers, testers, etc.<ul>
+<li>Constructor calls a lifecycle method <code>post_init</code> for extra initialization</li>
+<li>Saves the process in case we do want to interrupt it</li>
+<li>Automatically schedules the process to be run</li>
+<li>Provides a <code>.log</code> method for recording events</li>
+</ul>
+</li>
+</ul>
+<pre class=""><code data-file="base.py">class Actor(Recorder):
+    def __init__(self, sim):
+        super().__init__(sim)
+        self.post_init()
+        proc = self.run()
+        self.sim.process(proc)
+
+    def post_init(self):
+        pass
+
+    def log(self, state):
+        self.sim.log.actor(self.__class__.__name__, self.id, state)
+</code></pre>
+<ul>
+<li>Define a <code>Log</code> class to store collected data</li>
+</ul>
+<pre class=""><code data-file="log.py">@dataclass
+class Log:
+    env: Environment | None = None
+    queue_events: list = field(default_factory=list)
+    actor_events: list = field(default_factory=list)
+
+    def queue(self, name, length):
+        self.queue_events.append({"time": self.env.now, "name": name, "length": length})
+
+    def actor(self, kind, id, state):
+        self.actor_events.append({"time": self.env.now, "kind": kind, "id": id, "state": state})
+</code></pre>
+<ul>
+<li>Use job fragmentation as discussed in <a href="../interrupts/">previous chapter</a></li>
+<li>Testers can send jobs back for rework</li>
+<li>Or for integration<ul>
+<li>In which case every programmer has to do some work</li>
+</ul>
+</li>
+</ul>
+<h2>The Parameterization Problem</h2>
+<ul>
+<li>There are now 15 parameters controlling the behavior of our simulation</li>
+</ul>
+<pre class=""><code data-file="params.py">class Params:
+    t_code_arrival: float = 2.0
+    t_code_mean: float = 0.5
+    t_code_std: float = 0.6
+    t_decomposition: float = 0.5
+    t_integration: float = 0.2
+    t_interrupt_arrival: float = 5.0
+    t_interrupt_mean: float = 0.2
+    t_interrupt_std: float = 0.1
+    t_queue_monitor: float = 5.0
+    t_sim: float = 20
+    n_coders: int = 2
+    n_iter: int = 1
+    n_seed: int = 97531
+    n_testers: int = 2
+    p_rework: float = 0.5
+</code></pre>
+<ul>
+<li>Some are completely synthetic (number of testers, queue monitoring interval, etc.)</li>
+<li>But job and interrupt arrival rates, rework probability, integration times, etc. are not</li>
+<li>One of the reasons to build simulations like this is to figure out
+    what numbers we need to know in order to characterize our development process</li>
+<li>Limited value in building a more complicated simulation if we can't get numbers for this one</li>
+</ul>
+</main>
+<footer>
+<div class="row">
+<div class="col-3 left">
+	  ⇐ <a href="../interrupts/">Handling Interrupts</a>
+</div>
+<div class="col-6 center">
+<a href="../"></a>
+	  © 2025
+	  <a href="../#acknowledgments">the authors</a>
+</div>
+<div class="col-3 right">
+<a href="../finale/">Conclusion</a> ⇒
+	</div>
+</div>
+</footer>
+</body>
+</html>

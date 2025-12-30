@@ -33,6 +33,9 @@
 <span id="lazy">lazy</span>
 :   FIXME
 
+<span id="lifecycle-method">lifecycle method</span>
+:   FIXME
+
 <span id="littles-law">Little's Law</span>
 :   FIXME
 
@@ -66,13 +69,22 @@
 <span id="rng-seed">RNG seed</span>
 :   FIXME
 
+<span id="serialize">serialize</span>
+:   FIXME
+
 <span id="starvation">starvation</span>
+:   FIXME
+
+<span id="state-machine">state machine</span>
 :   FIXME
 
 <span id="separation-of-concerns">separation of concerns</span>
 :   FIXME
 
 <span id="throughput">throughput</span>
+:   FIXME
+
+<span id="transition-probability">transition probability</span>
 :   FIXME
 
 <span id="triage">triage</span>
