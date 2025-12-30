@@ -212,6 +212,11 @@ p.subtitle {
     font-style: italic;
 }
 
+/* Image sizing */
+img.img-90 {
+    width: 90%;
+}
+
 /* Navigation */
 nav {
     margin-top: var(--len-half);

@@ -9,13 +9,13 @@
 <div class="row">
   <div class="col-6">
     <figure id="f:smoothing_ages_1">
-      <img src="smoothing_ages_1.svg" alt="ages from 1 run" width="90%">
+      <img src="smoothing_ages_1.svg" alt="ages from 1 run" class="img-90">
       <figcaption>Ages From 1 Run</figcaption>
     </figure>
   </div>
   <div class="col-6">
     <figure id="f:smoothing_ages_10">
-      <img src="smoothing_ages_10.svg" alt="ages smoothed over 10 runs" width="90%">
+      <img src="smoothing_ages_10.svg" alt="ages smoothed over 10 runs" class="img-90">
       <figcaption>Ages Smoothed Over 10 Runs</figcaption>
     </figure>
   </div>
@@ -23,13 +23,13 @@
 <div class="row">
   <div class="col-6">
     <figure id="f:smoothing_ages_100">
-      <img src="smoothing_ages_100.svg" alt="ages smoothed over 100 runs" width="90%">
+      <img src="smoothing_ages_100.svg" alt="ages smoothed over 100 runs" class="img-90">
       <figcaption>Ages Smoothed Over 100 Runs</figcaption>
     </figure>
   </div>
   <div class="col-6">
     <figure id="f:smoothing_ages_1000">
-      <img src="smoothing_ages_1000.svg" alt="ages smoothed over 1000 runs" width="90%">
+      <img src="smoothing_ages_1000.svg" alt="ages smoothed over 1000 runs" class="img-90">
       <figcaption>Ages Smoothed Over 1000 Runs</figcaption>
     </figure>
   </div>
