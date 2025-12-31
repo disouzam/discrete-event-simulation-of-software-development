@@ -1,3 +1,4 @@
+i/lf    w/crlf  attr/text=auto        	.editorconfig
 i/lf    w/crlf  attr/text=auto        	.gitattributes
 i/lf    w/crlf  attr/text=auto        	.gitignore
 i/lf    w/crlf  attr/text=auto eol=lf 	CODE_OF_CONDUCT.md
@@ -6,6 +7,7 @@ i/lf    w/crlf  attr/text=auto eol=lf 	LICENSE.md
 i/lf    w/crlf  attr/text=auto        	Makefile
 i/lf    w/crlf  attr/text=auto eol=lf 	README.md
 i/lf    w/crlf  attr/text=auto eol=lf 	bibliography/index.md
+i/lf    w/none  attr/text=auto        	current-line-endings.txt
 i/lf    w/crlf  attr/text=auto        	des/Makefile
 i/lf    w/crlf  attr/text=auto eol=lf 	des/ask_for_work.py
 i/lf    w/crlf  attr/text=auto        	des/ask_for_work.txt
