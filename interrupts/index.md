@@ -280,8 +280,6 @@ class JobFragment(Job):
             return self.sim.do_nothing()
 ```
 
-<div class="callout" markdown="1">
-
 -   When `.complete` wants to put the original (regular) job back in the coder's queue,
     it would be natural to call `yield self.code.queue.put(…)`
 -   But what if it doesn't?
@@ -294,8 +292,6 @@ class Simulation(Environment):
     def do_nothing(self):
         return self.timeout(0)
 ```
-
-</div>
 
 -   `Coder.run` gets a job from the general "new work" queue or from its priority queue
     -   Gives preference to the latter so that interrupts and fragments are done before regular work

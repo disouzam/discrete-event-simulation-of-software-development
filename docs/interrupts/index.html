@@ -336,7 +336,6 @@ class JobInterrupt(Job):
         else:
             return self.sim.do_nothing()
 </code></pre>
-<div class="callout">
 <ul>
 <li>When <code>.complete</code> wants to put the original (regular) job back in the coder's queue,
     it would be natural to call <code>yield self.code.queue.put(…)</code></li>
@@ -351,7 +350,6 @@ class JobInterrupt(Job):
     def do_nothing(self):
         return self.timeout(0)
 </code></pre>
-</div>
 <ul>
 <li><code>Coder.run</code> gets a job from the general "new work" queue or from its priority queue<ul>
 <li>Gives preference to the latter so that interrupts and fragments are done before regular work</li>
