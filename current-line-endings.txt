@@ -1,135 +1,135 @@
-i/lf    w/crlf  attr/text=auto        	.editorconfig
-i/lf    w/crlf  attr/text=auto        	.gitattributes
-i/lf    w/crlf  attr/text=auto        	.gitignore
-i/lf    w/crlf  attr/text=auto eol=lf 	CODE_OF_CONDUCT.md
-i/lf    w/crlf  attr/text=auto eol=lf 	CONTRIBUTING.md
-i/lf    w/crlf  attr/text=auto eol=lf 	LICENSE.md
-i/lf    w/crlf  attr/text=auto        	Makefile
-i/lf    w/crlf  attr/text=auto eol=lf 	README.md
-i/lf    w/crlf  attr/text=auto eol=lf 	bibliography/index.md
-i/lf    w/none  attr/text=auto        	current-line-endings.txt
-i/lf    w/crlf  attr/text=auto        	des/Makefile
-i/lf    w/crlf  attr/text=auto eol=lf 	des/ask_for_work.py
-i/lf    w/crlf  attr/text=auto        	des/ask_for_work.txt
-i/lf    w/crlf  attr/text=auto eol=lf 	des/exponential.py
-i/none  w/none  attr/text=auto        	des/exponential.svg
-i/lf    w/crlf  attr/text=auto eol=lf 	des/index.md
-i/lf    w/crlf  attr/text=auto        	des/introduce_structure.json
-i/lf    w/crlf  attr/text=auto eol=lf 	des/introduce_structure.py
-i/lf    w/crlf  attr/text=auto        	des/introduce_structure_df.sh
-i/lf    w/crlf  attr/text=auto        	des/introduce_structure_df.txt
-i/lf    w/crlf  attr/text=auto        	des/introduce_structure_json.json
-i/lf    w/crlf  attr/text=auto        	des/introduce_structure_json.sh
-i/lf    w/crlf  attr/text=auto eol=lf 	des/lognormal.py
-i/none  w/none  attr/text=auto        	des/lognormal.svg
-i/lf    w/crlf  attr/text=auto eol=lf 	des/random_interaction.py
-i/lf    w/crlf  attr/text=auto        	des/random_interaction.txt
-i/lf    w/crlf  attr/text=auto        	des/random_interaction_coder.txt
-i/lf    w/crlf  attr/text=auto        	des/random_interaction_manager.txt
-i/lf    w/crlf  attr/text=auto eol=lf 	des/simple_interaction.py
-i/lf    w/crlf  attr/text=auto        	des/simple_interaction.txt
-i/lf    w/crlf  attr/text=auto        	des/simple_interaction_coder.txt
-i/lf    w/crlf  attr/text=auto        	des/simple_interaction_manager.txt
-i/lf    w/crlf  attr/text=auto eol=lf 	des/uniform_interaction.py
-i/lf    w/crlf  attr/text=auto        	des/uniform_interaction.txt
-i/lf    w/crlf  attr/text=auto        	des/uniform_interaction_coder.txt
-i/lf    w/crlf  attr/text=auto        	des/uniform_interaction_manager.txt
-i/lf    w/crlf  attr/text=auto eol=lf 	des/util.py
-i/none  w/none  attr/text=auto        	docs/.nojekyll
-i/lf    w/crlf  attr/text=auto eol=lf 	docs/bibliography/index.html
-i/lf    w/crlf  attr/text=auto eol=lf 	docs/conduct/index.html
-i/lf    w/crlf  attr/text=auto eol=lf 	docs/contributing/index.html
-i/none  w/none  attr/text=auto        	docs/des/exponential.svg
-i/lf    w/crlf  attr/text=auto eol=lf 	docs/des/index.html
-i/lf    w/crlf  attr/text=auto        	docs/des/introduce_structure.json
-i/lf    w/crlf  attr/text=auto        	docs/des/introduce_structure_json.json
-i/none  w/none  attr/text=auto        	docs/des/lognormal.svg
-i/lf    w/crlf  attr/text=auto eol=lf 	docs/finale/index.html
-i/lf    w/crlf  attr/text=auto eol=lf 	docs/glossary/index.html
-i/lf    w/crlf  attr/text=auto eol=lf 	docs/index.html
-i/lf    w/crlf  attr/text=auto eol=lf 	docs/insight/index.html
-i/lf    w/crlf  attr/text=auto eol=lf 	docs/interrupts/index.html
-i/lf    w/crlf  attr/text=auto eol=lf 	docs/intro/index.html
-i/lf    w/crlf  attr/text=auto eol=lf 	docs/license/index.html
-i/none  w/none  attr/text=auto        	docs/metrics/four_metrics_backlog.svg
-i/none  w/none  attr/text=auto        	docs/metrics/four_metrics_delay.svg
-i/lf    w/crlf  attr/text=auto eol=lf 	docs/metrics/index.html
-i/none  w/none  attr/text=auto        	docs/metrics/job_arrival_narrow.svg
-i/none  w/none  attr/text=auto        	docs/metrics/job_arrival_wide.svg
-i/none  w/none  attr/text=auto        	docs/metrics/measure_delay_sweep.svg
-i/lf    w/crlf  attr/text=auto eol=lf 	docs/scenarios/index.html
-i/none  w/none  attr/text=auto        	docs/scenarios/job_priority_ages.svg
-i/none  w/none  attr/text=auto        	docs/scenarios/job_priority_backlog.svg
-i/lf    w/crlf  attr/text=auto        	docs/scenarios/rework_same.svg
-i/none  w/none  attr/text=auto        	docs/scenarios/smoothing_ages_1.svg
-i/none  w/none  attr/text=auto        	docs/scenarios/smoothing_ages_10.svg
-i/none  w/none  attr/text=auto        	docs/scenarios/smoothing_ages_100.svg
-i/none  w/none  attr/text=auto        	docs/scenarios/smoothing_ages_1000.svg
-i/-text w/-text attr/text=auto        	docs/static/favicon.ico
-i/lf    w/crlf  attr/text=auto eol=lf 	docs/static/page.css
-i/lf    w/crlf  attr/text=auto eol=lf 	docs/static/shower.js
-i/lf    w/crlf  attr/text=auto eol=lf 	docs/static/slides.css
-i/lf    w/crlf  attr/text=auto eol=lf 	extras/links.md
-i/lf    w/crlf  attr/text=auto eol=lf 	finale/index.md
-i/lf    w/crlf  attr/text=auto eol=lf 	glossary/index.md
-i/lf    w/crlf  attr/text=auto eol=lf 	insight/base.py
-i/lf    w/crlf  attr/text=auto eol=lf 	insight/coder.py
-i/lf    w/crlf  attr/text=auto eol=lf 	insight/index.md
-i/lf    w/crlf  attr/text=auto eol=lf 	insight/interrupter.py
-i/lf    w/crlf  attr/text=auto eol=lf 	insight/jobs.py
-i/lf    w/crlf  attr/text=auto eol=lf 	insight/log.py
-i/lf    w/crlf  attr/text=auto eol=lf 	insight/manager.py
-i/lf    w/crlf  attr/text=auto eol=lf 	insight/monitor.py
-i/lf    w/crlf  attr/text=auto eol=lf 	insight/params.py
-i/lf    w/crlf  attr/text=auto eol=lf 	insight/simulation.py
-i/lf    w/crlf  attr/text=auto eol=lf 	insight/tester.py
-i/lf    w/crlf  attr/text=auto eol=lf 	insight/util.py
-i/lf    w/crlf  attr/text=auto eol=lf 	interrupts/decomp.py
-i/lf    w/crlf  attr/text=auto eol=lf 	interrupts/discard.py
-i/lf    w/crlf  attr/text=auto eol=lf 	interrupts/index.md
-i/lf    w/crlf  attr/text=auto eol=lf 	interrupts/interrupts.py
-i/lf    w/crlf  attr/text=auto eol=lf 	interrupts/util.py
-i/lf    w/crlf  attr/text=auto eol=lf 	intro/index.md
-i/lf    w/crlf  attr/text=auto        	metrics/Makefile
-i/lf    w/crlf  attr/text=auto eol=lf 	metrics/four_metrics.py
-i/none  w/none  attr/text=auto        	metrics/four_metrics_backlog.svg
-i/none  w/none  attr/text=auto        	metrics/four_metrics_delay.svg
-i/lf    w/crlf  attr/text=auto        	metrics/four_metrics_throughput_utilization.txt
-i/lf    w/crlf  attr/text=auto eol=lf 	metrics/index.md
-i/lf    w/crlf  attr/text=auto eol=lf 	metrics/job_arrival.py
-i/none  w/none  attr/text=auto        	metrics/job_arrival_narrow.svg
-i/lf    w/crlf  attr/text=auto        	metrics/job_arrival_narrow.txt
-i/none  w/none  attr/text=auto        	metrics/job_arrival_wide.svg
-i/lf    w/crlf  attr/text=auto        	metrics/job_arrival_wide.txt
-i/lf    w/crlf  attr/text=auto eol=lf 	metrics/measure_delay.py
-i/lf    w/crlf  attr/text=auto        	metrics/measure_delay.txt
-i/lf    w/crlf  attr/text=auto        	metrics/measure_delay_defaults.txt
-i/none  w/none  attr/text=auto        	metrics/measure_delay_sweep.svg
-i/lf    w/crlf  attr/text=auto eol=lf 	metrics/util.py
-i/lf    w/crlf  attr/text=auto        	pyproject.toml
-i/lf    w/crlf  attr/text=auto        	scenarios/Makefile
-i/lf    w/crlf  attr/text=auto eol=lf 	scenarios/cost_of_sharing.py
-i/lf    w/crlf  attr/text=auto eol=lf 	scenarios/index.md
-i/lf    w/crlf  attr/text=auto eol=lf 	scenarios/job_priority.py
-i/lf    w/crlf  attr/text=auto        	scenarios/job_priority.txt
-i/none  w/none  attr/text=auto        	scenarios/job_priority_ages.svg
-i/none  w/none  attr/text=auto        	scenarios/job_priority_backlog.svg
-i/lf    w/crlf  attr/text=auto eol=lf 	scenarios/make_state_graph.py
-i/lf    w/crlf  attr/text=auto eol=lf 	scenarios/rework_any.py
-i/lf    w/crlf  attr/text=auto eol=lf 	scenarios/rework_same.py
-i/lf    w/crlf  attr/text=auto        	scenarios/rework_same.svg
-i/lf    w/crlf  attr/text=auto eol=lf 	scenarios/smoothing.py
-i/none  w/none  attr/text=auto        	scenarios/smoothing_ages_1.svg
-i/none  w/none  attr/text=auto        	scenarios/smoothing_ages_10.svg
-i/none  w/none  attr/text=auto        	scenarios/smoothing_ages_100.svg
-i/none  w/none  attr/text=auto        	scenarios/smoothing_ages_1000.svg
-i/lf    w/crlf  attr/text=auto eol=lf 	scenarios/util.py
-i/-text w/-text attr/text=auto        	static/favicon.ico
-i/lf    w/crlf  attr/text=auto eol=lf 	static/page.css
-i/lf    w/crlf  attr/text=auto eol=lf 	static/shower.js
-i/lf    w/crlf  attr/text=auto eol=lf 	static/slides.css
-i/lf    w/crlf  attr/text=auto eol=lf 	templates/page.html
-i/lf    w/crlf  attr/text=auto eol=lf 	templates/slides.html
-i/lf    w/crlf  attr/text=auto eol=lf 	unused/store.py
-i/lf    w/crlf  attr/text=auto eol=lf 	utilities/__init__.py
-i/lf    w/crlf  attr/text=auto        	uv.lock
+i/lf    w/lf    attr/text=auto eol=lf 	.editorconfig
+i/lf    w/lf    attr/text=auto eol=lf 	.gitattributes
+i/lf    w/lf    attr/text=auto eol=lf 	.gitignore
+i/lf    w/lf    attr/text=auto eol=lf 	CODE_OF_CONDUCT.md
+i/lf    w/lf    attr/text=auto eol=lf 	CONTRIBUTING.md
+i/lf    w/lf    attr/text=auto eol=lf 	LICENSE.md
+i/lf    w/lf    attr/text=auto eol=lf 	Makefile
+i/lf    w/lf    attr/text=auto eol=lf 	README.md
+i/lf    w/lf    attr/text=auto eol=lf 	bibliography/index.md
+i/lf    w/none  attr/text=auto eol=lf 	current-line-endings.txt
+i/lf    w/lf    attr/text=auto eol=lf 	des/Makefile
+i/lf    w/lf    attr/text=auto eol=lf 	des/ask_for_work.py
+i/lf    w/lf    attr/text=auto eol=lf 	des/ask_for_work.txt
+i/lf    w/lf    attr/text=auto eol=lf 	des/exponential.py
+i/none  w/none  attr/text=auto eol=lf 	des/exponential.svg
+i/lf    w/lf    attr/text=auto eol=lf 	des/index.md
+i/lf    w/lf    attr/text=auto eol=lf 	des/introduce_structure.json
+i/lf    w/lf    attr/text=auto eol=lf 	des/introduce_structure.py
+i/lf    w/lf    attr/text=auto eol=lf 	des/introduce_structure_df.sh
+i/lf    w/lf    attr/text=auto eol=lf 	des/introduce_structure_df.txt
+i/lf    w/lf    attr/text=auto eol=lf 	des/introduce_structure_json.json
+i/lf    w/lf    attr/text=auto eol=lf 	des/introduce_structure_json.sh
+i/lf    w/lf    attr/text=auto eol=lf 	des/lognormal.py
+i/none  w/none  attr/text=auto eol=lf 	des/lognormal.svg
+i/lf    w/lf    attr/text=auto eol=lf 	des/random_interaction.py
+i/lf    w/lf    attr/text=auto eol=lf 	des/random_interaction.txt
+i/lf    w/lf    attr/text=auto eol=lf 	des/random_interaction_coder.txt
+i/lf    w/lf    attr/text=auto eol=lf 	des/random_interaction_manager.txt
+i/lf    w/lf    attr/text=auto eol=lf 	des/simple_interaction.py
+i/lf    w/lf    attr/text=auto eol=lf 	des/simple_interaction.txt
+i/lf    w/lf    attr/text=auto eol=lf 	des/simple_interaction_coder.txt
+i/lf    w/lf    attr/text=auto eol=lf 	des/simple_interaction_manager.txt
+i/lf    w/lf    attr/text=auto eol=lf 	des/uniform_interaction.py
+i/lf    w/lf    attr/text=auto eol=lf 	des/uniform_interaction.txt
+i/lf    w/lf    attr/text=auto eol=lf 	des/uniform_interaction_coder.txt
+i/lf    w/lf    attr/text=auto eol=lf 	des/uniform_interaction_manager.txt
+i/lf    w/lf    attr/text=auto eol=lf 	des/util.py
+i/none  w/none  attr/text=auto eol=lf 	docs/.nojekyll
+i/lf    w/lf    attr/text=auto eol=lf 	docs/bibliography/index.html
+i/lf    w/lf    attr/text=auto eol=lf 	docs/conduct/index.html
+i/lf    w/lf    attr/text=auto eol=lf 	docs/contributing/index.html
+i/none  w/none  attr/text=auto eol=lf 	docs/des/exponential.svg
+i/lf    w/lf    attr/text=auto eol=lf 	docs/des/index.html
+i/lf    w/lf    attr/text=auto eol=lf 	docs/des/introduce_structure.json
+i/lf    w/lf    attr/text=auto eol=lf 	docs/des/introduce_structure_json.json
+i/none  w/none  attr/text=auto eol=lf 	docs/des/lognormal.svg
+i/lf    w/lf    attr/text=auto eol=lf 	docs/finale/index.html
+i/lf    w/lf    attr/text=auto eol=lf 	docs/glossary/index.html
+i/lf    w/lf    attr/text=auto eol=lf 	docs/index.html
+i/lf    w/lf    attr/text=auto eol=lf 	docs/insight/index.html
+i/lf    w/lf    attr/text=auto eol=lf 	docs/interrupts/index.html
+i/lf    w/lf    attr/text=auto eol=lf 	docs/intro/index.html
+i/lf    w/lf    attr/text=auto eol=lf 	docs/license/index.html
+i/none  w/none  attr/text=auto eol=lf 	docs/metrics/four_metrics_backlog.svg
+i/none  w/none  attr/text=auto eol=lf 	docs/metrics/four_metrics_delay.svg
+i/lf    w/lf    attr/text=auto eol=lf 	docs/metrics/index.html
+i/none  w/none  attr/text=auto eol=lf 	docs/metrics/job_arrival_narrow.svg
+i/none  w/none  attr/text=auto eol=lf 	docs/metrics/job_arrival_wide.svg
+i/none  w/none  attr/text=auto eol=lf 	docs/metrics/measure_delay_sweep.svg
+i/lf    w/lf    attr/text=auto eol=lf 	docs/scenarios/index.html
+i/none  w/none  attr/text=auto eol=lf 	docs/scenarios/job_priority_ages.svg
+i/none  w/none  attr/text=auto eol=lf 	docs/scenarios/job_priority_backlog.svg
+i/lf    w/lf    attr/text=auto eol=lf 	docs/scenarios/rework_same.svg
+i/none  w/none  attr/text=auto eol=lf 	docs/scenarios/smoothing_ages_1.svg
+i/none  w/none  attr/text=auto eol=lf 	docs/scenarios/smoothing_ages_10.svg
+i/none  w/none  attr/text=auto eol=lf 	docs/scenarios/smoothing_ages_100.svg
+i/none  w/none  attr/text=auto eol=lf 	docs/scenarios/smoothing_ages_1000.svg
+i/-text w/-text attr/text=auto eol=lf 	docs/static/favicon.ico
+i/lf    w/lf    attr/text=auto eol=lf 	docs/static/page.css
+i/lf    w/lf    attr/text=auto eol=lf 	docs/static/shower.js
+i/lf    w/lf    attr/text=auto eol=lf 	docs/static/slides.css
+i/lf    w/lf    attr/text=auto eol=lf 	extras/links.md
+i/lf    w/lf    attr/text=auto eol=lf 	finale/index.md
+i/lf    w/lf    attr/text=auto eol=lf 	glossary/index.md
+i/lf    w/lf    attr/text=auto eol=lf 	insight/base.py
+i/lf    w/lf    attr/text=auto eol=lf 	insight/coder.py
+i/lf    w/lf    attr/text=auto eol=lf 	insight/index.md
+i/lf    w/lf    attr/text=auto eol=lf 	insight/interrupter.py
+i/lf    w/lf    attr/text=auto eol=lf 	insight/jobs.py
+i/lf    w/lf    attr/text=auto eol=lf 	insight/log.py
+i/lf    w/lf    attr/text=auto eol=lf 	insight/manager.py
+i/lf    w/lf    attr/text=auto eol=lf 	insight/monitor.py
+i/lf    w/lf    attr/text=auto eol=lf 	insight/params.py
+i/lf    w/lf    attr/text=auto eol=lf 	insight/simulation.py
+i/lf    w/lf    attr/text=auto eol=lf 	insight/tester.py
+i/lf    w/lf    attr/text=auto eol=lf 	insight/util.py
+i/lf    w/lf    attr/text=auto eol=lf 	interrupts/decomp.py
+i/lf    w/lf    attr/text=auto eol=lf 	interrupts/discard.py
+i/lf    w/lf    attr/text=auto eol=lf 	interrupts/index.md
+i/lf    w/lf    attr/text=auto eol=lf 	interrupts/interrupts.py
+i/lf    w/lf    attr/text=auto eol=lf 	interrupts/util.py
+i/lf    w/lf    attr/text=auto eol=lf 	intro/index.md
+i/lf    w/lf    attr/text=auto eol=lf 	metrics/Makefile
+i/lf    w/lf    attr/text=auto eol=lf 	metrics/four_metrics.py
+i/none  w/none  attr/text=auto eol=lf 	metrics/four_metrics_backlog.svg
+i/none  w/none  attr/text=auto eol=lf 	metrics/four_metrics_delay.svg
+i/lf    w/lf    attr/text=auto eol=lf 	metrics/four_metrics_throughput_utilization.txt
+i/lf    w/lf    attr/text=auto eol=lf 	metrics/index.md
+i/lf    w/lf    attr/text=auto eol=lf 	metrics/job_arrival.py
+i/none  w/none  attr/text=auto eol=lf 	metrics/job_arrival_narrow.svg
+i/lf    w/lf    attr/text=auto eol=lf 	metrics/job_arrival_narrow.txt
+i/none  w/none  attr/text=auto eol=lf 	metrics/job_arrival_wide.svg
+i/lf    w/lf    attr/text=auto eol=lf 	metrics/job_arrival_wide.txt
+i/lf    w/lf    attr/text=auto eol=lf 	metrics/measure_delay.py
+i/lf    w/lf    attr/text=auto eol=lf 	metrics/measure_delay.txt
+i/lf    w/lf    attr/text=auto eol=lf 	metrics/measure_delay_defaults.txt
+i/none  w/none  attr/text=auto eol=lf 	metrics/measure_delay_sweep.svg
+i/lf    w/lf    attr/text=auto eol=lf 	metrics/util.py
+i/lf    w/lf    attr/text=auto eol=lf 	pyproject.toml
+i/lf    w/lf    attr/text=auto eol=lf 	scenarios/Makefile
+i/lf    w/lf    attr/text=auto eol=lf 	scenarios/cost_of_sharing.py
+i/lf    w/lf    attr/text=auto eol=lf 	scenarios/index.md
+i/lf    w/lf    attr/text=auto eol=lf 	scenarios/job_priority.py
+i/lf    w/lf    attr/text=auto eol=lf 	scenarios/job_priority.txt
+i/none  w/none  attr/text=auto eol=lf 	scenarios/job_priority_ages.svg
+i/none  w/none  attr/text=auto eol=lf 	scenarios/job_priority_backlog.svg
+i/lf    w/lf    attr/text=auto eol=lf 	scenarios/make_state_graph.py
+i/lf    w/lf    attr/text=auto eol=lf 	scenarios/rework_any.py
+i/lf    w/lf    attr/text=auto eol=lf 	scenarios/rework_same.py
+i/lf    w/lf    attr/text=auto eol=lf 	scenarios/rework_same.svg
+i/lf    w/lf    attr/text=auto eol=lf 	scenarios/smoothing.py
+i/none  w/none  attr/text=auto eol=lf 	scenarios/smoothing_ages_1.svg
+i/none  w/none  attr/text=auto eol=lf 	scenarios/smoothing_ages_10.svg
+i/none  w/none  attr/text=auto eol=lf 	scenarios/smoothing_ages_100.svg
+i/none  w/none  attr/text=auto eol=lf 	scenarios/smoothing_ages_1000.svg
+i/lf    w/lf    attr/text=auto eol=lf 	scenarios/util.py
+i/-text w/-text attr/text=auto eol=lf 	static/favicon.ico
+i/lf    w/lf    attr/text=auto eol=lf 	static/page.css
+i/lf    w/lf    attr/text=auto eol=lf 	static/shower.js
+i/lf    w/lf    attr/text=auto eol=lf 	static/slides.css
+i/lf    w/lf    attr/text=auto eol=lf 	templates/page.html
+i/lf    w/lf    attr/text=auto eol=lf 	templates/slides.html
+i/lf    w/lf    attr/text=auto eol=lf 	unused/store.py
+i/lf    w/lf    attr/text=auto eol=lf 	utilities/__init__.py
+i/lf    w/lf    attr/text=auto eol=lf 	uv.lock
