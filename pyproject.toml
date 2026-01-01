@@ -28,7 +28,6 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "genson>=1.3.0",
-    "mccole",
     "ruff>=0.1.0",
 ]
 
@@ -49,6 +48,3 @@ skips = [
     "utilities/**",
     "uv.lock"
 ]
-
-[tool.uv.sources]
-mccole = { path = "../mccole" }
