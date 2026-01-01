@@ -11,6 +11,10 @@ build:
 rimccole:
 	uv sync --reinstall-package mccole
 
+## rimccoletar: install mccole from a pre-built tar.gz file
+rimccoletar:
+	python -m pip install temp/mccole-1.3.4.tar.gz
+
 ## check: check project
 check:
 	@mccole check --src . --dst docs
