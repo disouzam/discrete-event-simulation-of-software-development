@@ -7,6 +7,10 @@ build:
 	@mccole build --src . --dst docs
 	@touch docs/.nojekyll
 
+## rimccole: re-install package mccole
+rimccole:
+	uv sync --reinstall-package mccole
+
 ## check: check project
 check:
 	@mccole check --src . --dst docs
