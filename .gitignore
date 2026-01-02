@@ -21,3 +21,6 @@ coverage.json
 
 # MacOS
 .DS_store
+
+# Temp folder to install tar.gz files
+temp/
