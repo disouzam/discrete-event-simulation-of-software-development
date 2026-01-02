@@ -234,7 +234,7 @@ wheels = [
 
 [[package]]
 name = "mccole"
-version = "1.3.4"
+version = "1.3.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "beautifulsoup4" },
@@ -245,9 +245,9 @@ dependencies = [
     { name = "mkdocstrings", extra = ["python"] },
     { name = "tomli" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b6/e7/6d621d9ca142d98febc96e410aad3a68afcfd98fbc4c8b46478afe5db1d8/mccole-1.3.4.tar.gz", hash = "sha256:451d59b1c2cfc4426d8f84a3e236e478780c414f486be9e042a28cde7996ace9", size = 41048, upload-time = "2025-12-31T21:05:11.745Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/06/4b/e5fcb0bef77c69676b2319f8bfb3169122751979f6006444f6ce9fe4f606/mccole-1.3.5.tar.gz", hash = "sha256:ed6763dbbf2af9a0d80237677f062d31874604b2303f30c7029552e9424aaaf2", size = 41105, upload-time = "2026-01-02T18:34:05.239Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/df/6c/f013c1c49a9d781519b5584a15d2ddc339032b2ddc87020d3cdf87b39068/mccole-1.3.4-py3-none-any.whl", hash = "sha256:5209bf4805ce665070cef1ec880337294b7cafda668f6987d0159985bf46fdf5", size = 43763, upload-time = "2025-12-31T21:05:10.4Z" },
+    { url = "https://files.pythonhosted.org/packages/e4/70/19832471f751bc166d4af3cf09faa6261913ca422c904052001672139c1f/mccole-1.3.5-py3-none-any.whl", hash = "sha256:7ecabbf5ac0e067fd6c9b05801ec45a829b3ae5a2cbb24edb474999333d002ab", size = 43813, upload-time = "2026-01-02T18:34:04.007Z" },
 ]
 
 [[package]]
@@ -760,7 +760,7 @@ requires-dist = [
     { name = "genson", marker = "extra == 'dev'", specifier = ">=1.3.0" },
     { name = "graphviz", specifier = ">=0.21" },
     { name = "kaleido", specifier = ">=1.2.0" },
-    { name = "mccole", marker = "extra == 'dev'", specifier = ">=1.3.4" },
+    { name = "mccole", marker = "extra == 'dev'", specifier = ">=1.3.5" },
     { name = "plotly", extras = ["express"], specifier = ">=6.5.0" },
     { name = "polars", specifier = ">=1.36.1" },
     { name = "prettytable", specifier = ">=3.17.0" },
