@@ -1,5 +1,7 @@
 # Discrete Event Simulation
 
+<p id="terms"></p>
+
 ## Our First Simulation
 
 -   Create a SimPy `Environment`

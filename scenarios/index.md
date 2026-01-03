@@ -1,5 +1,7 @@
 # Exploring Scenarios
 
+<p id="terms"></p>
+
 ## Smoothing Over Multiple Runs
 
 -   We have been showing results from individual runs

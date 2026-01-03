@@ -1,5 +1,7 @@
 # Insights
 
+<p id="terms"></p>
+
 ## A General-Purpose Simulator
 
 -   Combine pieces from previous chapters and clean up a little

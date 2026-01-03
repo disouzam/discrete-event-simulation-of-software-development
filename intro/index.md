@@ -1,5 +1,7 @@
 # Introduction
 
+<p id="terms"></p>
+
 -   [Discrete event simulation](g:des) models a system as a series of events,
     each of which occurs at a particular instant in time
     -   Don't advance a clock one tick at a time

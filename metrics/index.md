@@ -1,5 +1,7 @@
 # Simple Metrics
 
+<p id="terms"></p>
+
 ## Measuring Delay
 
 -   `Params`
