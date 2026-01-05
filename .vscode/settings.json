@@ -1,6 +1,6 @@
 {
     "makefile.configureOnOpen": false,
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": false,
     "ruff.nativeServer": "on",
     "ruff.interpreter": [
         "${workspaceFolder}/.venv/Scripts/python.exe"
