@@ -48,6 +48,7 @@ if __name__ == "__main__":
 ```{.txt data-file=ask_for_work.txt}
 0: Is there any work?
 8: Is there any work?
+14: There is a new task available for you, developer.
 16: Is there any work?
 24: Is there any work?
 ```
