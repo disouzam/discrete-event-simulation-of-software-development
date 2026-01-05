@@ -7,6 +7,7 @@
 -   Create a SimPy `Environment`
 -   Create one or more [generators](g:generator) for it to run
     -   These will almost always need the environment
+    -   **Environment works as event loop in Javascript ([Event discrete simulation with SimPy by Stefan Scherfke on EuroPython 2014](https://www.youtube.com/watch?v=Bk91DoAEcjY))**
 -   Pass each generator to `env.process(…)`
 -   Call `env.run(…)` and specify simulation duration
 
