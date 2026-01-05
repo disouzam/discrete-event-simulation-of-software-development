@@ -1,3 +1,12 @@
 {
-    "makefile.configureOnOpen": false
+    "makefile.configureOnOpen": false,
+    "editor.formatOnSave": true,
+    "ruff.nativeServer": "on",
+    "ruff.interpreter": [
+        "${workspaceFolder}/.venv/Scripts/python.exe"
+    ],
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    }
 }
