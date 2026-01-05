@@ -39,3 +39,7 @@ lint:
 ## serve: serve local website
 serve:
 	@python -m http.server --directory docs
+
+
+## buildNserve: build and serve local website
+buildNserve: build serve
