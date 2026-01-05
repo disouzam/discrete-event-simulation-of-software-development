@@ -25,20 +25,35 @@ T_WAIT = 8
 
 
 def coder(env):
+    """
+    A generator that emulates some behavior of a code such as asking for more available work
+    """
     while True:
         print(f"{env.now}: Is there any work?")
         yield env.timeout(T_WAIT)
 
 
 def scrum_master(env):
+    """
+    A generator that emulates some behavior of a Scrum Master such as making sure that
+    there is available work for the developers
+    (here concepts like Definition of Ready - DoR jumps in)
+    """
     yield env.timeout(14)
     print(f"{env.now}: There is a new task available for you, developer.")
 
 
 if __name__ == "__main__":
+    # Create a SimPy environment
     env = Environment()
+
+    # Create a process where coder is the generator function
     env.process(coder(env))
+
+    # Create a process where a scrum master is the generator function
     env.process(scrum_master(env))
+
+    # Run the simulation for the specified duration
     env.run(until=T_SIM)
 ```
 <p style="text-align: right"><strong>See content of this file at <a href="https://github.com/gvwilson/sim/blob/main/des/ask_for_work.py">ask_for_work.py</a><strong></p>

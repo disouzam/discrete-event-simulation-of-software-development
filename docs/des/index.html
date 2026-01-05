@@ -64,20 +64,35 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">coder</span><span class="p">(</span><span class="n">env</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    A generator that emulates some behavior of a code such as asking for more available work</span>
+<span class="sd">    """</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">: Is there any work?"</span><span class="p">)</span>
         <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">T_WAIT</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">scrum_master</span><span class="p">(</span><span class="n">env</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    A generator that emulates some behavior of a Scrum Master such as making sure that</span>
+<span class="sd">    there is available work for the developers</span>
+<span class="sd">    (here concepts like Definition of Ready - DoR jumps in)</span>
+<span class="sd">    """</span>
     <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">: There is a new task available for you, developer."</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="c1"># Create a SimPy environment</span>
     <span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">()</span>
+
+    <span class="c1"># Create a process where coder is the generator function</span>
     <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">coder</span><span class="p">(</span><span class="n">env</span><span class="p">))</span>
+
+    <span class="c1"># Create a process where a scrum master is the generator function</span>
     <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">scrum_master</span><span class="p">(</span><span class="n">env</span><span class="p">))</span>
+
+    <span class="c1"># Run the simulation for the specified duration</span>
     <span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">T_SIM</span><span class="p">)</span>
 </code></pre></div>
 <p style="text-align: right"><strong>See content of this file at <a href="https://github.com/gvwilson/sim/blob/main/des/ask_for_work.py">ask_for_work.py</a><strong></strong></strong></p>
