@@ -6,7 +6,7 @@
 
 -   `Params`
 
-```{data-file=measure_delay.py}
+```{.py data-file=measure_delay.py}
 @dataclass_json
 @dataclass
 class Params:
@@ -22,7 +22,7 @@ class Params:
 -   Jobs know how to convert themselves to JSON for persistence
     -   Use `util.rnd(…)` to round values to `PRECISION` decimal places
 
-```{data-file=measure_delay.py}
+```{.py data-file=measure_delay.py}
 class Job:
     SAVE_KEYS = ["t_create", "t_start", "t_complete"]
     _next_id = count()
@@ -50,7 +50,7 @@ class Job:
     -   Otherwise, data from multiple scenarios will pile up
     -   Yes, this is a design smell and we should fix it
 
-```{data-file=measure_delay.py}
+```{.py data-file=measure_delay.py}
 @dataclass
 class Simulation(Environment):
     def __init__(self):
@@ -68,7 +68,7 @@ class Simulation(Environment):
 
 -   `manager` and `coder` are straightforward
 
-```{data-file=measure_delay.py}
+```{.py data-file=measure_delay.py}
 def manager(sim):
     while True:
         job = Job(sim=sim)
@@ -86,7 +86,7 @@ def coder(sim):
 
 -   Output with default parameters
 
-```{data-file=measure_delay.txt}
+```{.txt data-file=measure_delay.txt}
 ## jobs
 shape: (8, 9)
 ┌──────────┬─────────┬────────────┬─────┬───┬───────────────┬────────────┬───────────┬───────┐
@@ -108,7 +108,7 @@ shape: (8, 9)
 -   Plot delays for three different simulation durations
     -   This is what we mean by parameter sweeping
 
-```{data-file=measure_delay_sweep.py}
+```{.py data-file=measure_delay_sweep.py}
 if __name__ == "__main__":
     args, results = util.run(Params, Simulation)
     jobs = util.as_frames(results)["jobs"]
@@ -138,7 +138,7 @@ if __name__ == "__main__":
     -   Reset IDs and object lists in between parameter sweeps
     -   Expect derived classes to define `SAVE_KEYS` to identify what to save as JSON
 
-```{data-file=four_metrics.py}
+```{.py data-file=four_metrics.py}
 class Recorder:
     _next_id = defaultdict(count)
     _all = defaultdict(list)
@@ -160,7 +160,7 @@ class Recorder:
 
 -   `Manager` doesn't really need to be a class, but consistency makes code easier to understand
 
-```{data-file=four_metrics.py}
+```{.py data-file=four_metrics.py}
 class Manager(Recorder):
     def run(self):
         while True:
@@ -171,7 +171,7 @@ class Manager(Recorder):
 
 -   `Coder` keeps track of how much time it has spent working
 
-```{data-file=four_metrics.py}
+```{.py data-file=four_metrics.py}
 class Coder(Recorder):
     SAVE_KEYS = ["t_work"]
 
@@ -191,7 +191,7 @@ class Coder(Recorder):
 -   `Monitor` records the length of the queue every few ticks
     -   SimPy `Store` keeps items in a list-like object `queue.items`
 
-```{data-file=four_metrics.py}
+```{.py data-file=four_metrics.py}
 class Monitor(Recorder):
     def run(self):
         while True:
@@ -204,9 +204,9 @@ class Monitor(Recorder):
 -   `Simulation` creates instances *and* calls their `.run()` methods
     -   After resetting all the recording
 
-```{data-file=four_metrics.py}
+```{.py data-file=four_metrics.py}
 class Simulation:
-    …
+    # …as before…
     def run(self):
         Recorder.reset()
         self.queue = Store(self.env)
@@ -218,9 +218,9 @@ class Simulation:
 
 -   Report results
 
-```{data-file=four_metrics.py}
+```{.py data-file=four_metrics.py}
 class Simulation:
-    …
+    # …as before…
     def result(self):
         return {
             "jobs": [job.json() for job in Recorder._all[Job]],

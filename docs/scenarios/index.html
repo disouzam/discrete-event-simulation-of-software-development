@@ -6,6 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Exploring Scenarios</title>
 <link href="../static/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="../static/pygments.css" rel="stylesheet" type="text/css"/>
 <link href="../static/page.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
@@ -96,25 +97,25 @@
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="job_priority.py">class Params:
-    …as before…
-    policy: str = "shortest"
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Params</span><span class="p">:</span>
+    <span class="c1"># …as before…</span>
+    <span class="n">policy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"shortest"</span>
 
-class Job(Recorder):
-    …as before…
-    def __lt__(self, other):
-        match self.sim.params.policy:
-            case "oldest":
-                return self.t_create &lt; other.t_create
-            case "newest":
-                return other.t_create &lt; self.t_create
-            case "shortest":
-                return self.duration &lt; other.duration
-            case "longest":
-                return other.duration &lt; self.duration
-            case _:
-                assert False, f"unknown policy {self.sim.params.policy}"
-</code></pre>
+<span class="k">class</span><span class="w"> </span><span class="nc">Job</span><span class="p">(</span><span class="n">Recorder</span><span class="p">):</span>
+    <span class="c1"># …as before…</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">match</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">policy</span><span class="p">:</span>
+            <span class="k">case</span> <span class="s2">"oldest"</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_create</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">t_create</span>
+            <span class="k">case</span> <span class="s2">"newest"</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">t_create</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_create</span>
+            <span class="k">case</span> <span class="s2">"shortest"</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">duration</span>
+            <span class="k">case</span> <span class="s2">"longest"</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">duration</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
+            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"unknown policy </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">policy</span><span class="si">}</span><span class="s2">"</span>
+</code></pre></div>
 <ul>
 <li>Look at effect on backlog over time</li>
 </ul>
@@ -214,36 +215,36 @@ class Job(Recorder):
 <li>In real life, testing often reveals bugs that need rework</li>
 <li>Start by modeling with a second queue and a group of testers</li>
 </ul>
-<pre class=""><code data-file="rework_any.py">class Params:
-    …as before…
-    n_tester: int = 1
-    p_rework: float = 0.5
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Params</span><span class="p">:</span>
+    <span class="c1"># …as before…</span>
+    <span class="n">n_tester</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">p_rework</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
 
-class Simulation(Environment):
-    def __init__(self):
-        …as before…
-        self.test_queue = None
+<span class="k">class</span><span class="w"> </span><span class="nc">Simulation</span><span class="p">(</span><span class="n">Environment</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># …as before…</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_queue</span> <span class="o">=</span> <span class="kc">None</span>
 
-    def simulate(self):
-        …as before…
-        self.test_queue = Store(self)
-        for _ in range(self.params.n_tester):
-            self.process(Tester(self).run())
+    <span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># …as before…</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_queue</span> <span class="o">=</span> <span class="n">Store</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">n_tester</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">Tester</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">())</span>
 
-class Tester(Recorder):
-    def __init__(self, sim):
-        super().__init__(sim)
-        self.t_work = 0
+<span class="k">class</span><span class="w"> </span><span class="nc">Tester</span><span class="p">(</span><span class="n">Recorder</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_work</span> <span class="o">=</span> <span class="mi">0</span>
 
-    def run(self):
-        while True:
-            job = yield self.sim.test_queue.get()
-            yield self.sim.timeout(job.duration)
-            if self.sim.rand_rework():
-                yield self.sim.code_queue.put(job)
-            else:
-                job.t_complete = self.sim.now
-</code></pre>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">test_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">rand_rework</span><span class="p">():</span>
+                <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">code_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">job</span><span class="o">.</span><span class="n">t_complete</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">now</span>
+</code></pre></div>
 <ul>
 <li>Any tester can test any job</li>
 <li>All jobs needing rework go back in the same queue as new work<ul>
@@ -253,40 +254,40 @@ class Tester(Recorder):
 <li>But this isn't realistic</li>
 <li>Give each <code>Coder</code> its own queue</li>
 </ul>
-<pre class=""><code data-file="rework_same.py">class Coder(Recorder):
-    def __init__(self, sim):
-        …as before…
-        self.queue = Store(self.sim)
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Coder</span><span class="p">(</span><span class="n">Recorder</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="c1"># …as before…</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">Store</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li>Have testers give work back to the coder who did the work<ul>
 <li>Need to add a <code>coder_id</code> field to jobs to keep track of this</li>
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="rework_same.py">class Tester(Recorder):
-    def run(self):
-        while True:
-            job = yield self.sim.test_queue.get()
-            assert job.coder_id is not None
-            yield self.sim.timeout(job.duration)
-            if self.sim.rand_rework():
-                yield self.sim.coders[job.coder_id].queue.put(job)
-            else:
-                job.t_complete = self.sim.now
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Tester</span><span class="p">(</span><span class="n">Recorder</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">test_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="n">job</span><span class="o">.</span><span class="n">coder_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">rand_rework</span><span class="p">():</span>
+                <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">coders</span><span class="p">[</span><span class="n">job</span><span class="o">.</span><span class="n">coder_id</span><span class="p">]</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">job</span><span class="o">.</span><span class="n">t_complete</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">now</span>
+</code></pre></div>
 <ul>
 <li>Now the hard part: coders selecting jobs</li>
 <li>Put it in a method of its own</li>
 <li>And use <code>yield from</code> to yield its results back to SimPy</li>
 </ul>
-<pre class=""><code data-file="rework_same.py">class Coder(Recorder):
-    def run(self):
-        while True:
-            job = yield from self.get()
-            yield self.sim.timeout(job.duration)
-            yield self.sim.test_queue.put(job)
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Coder</span><span class="p">(</span><span class="n">Recorder</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">test_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li>So how does <code>Coder.get(…)</code> work?<ul>
 <li>Create <em>but do not immediately <code>yield</code></em> a request for an item from each queue</li>
@@ -303,21 +304,21 @@ class Tester(Recorder):
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="rework_same.py">    def get(self):
-        new_req = self.sim.code_queue.get()
-        rework_req = self.queue.get()
-        result = yield (new_req | rework_req)
-        if (len(result.events) == 2) or (rework_req in result):
-            new_req.cancel()
-            job = result[rework_req]
-            assert job.coder_id == self.id
-        else:
-            rework_req.cancel()
-            job = result[new_req]
-            assert job.coder_id is None
-            job.coder_id = self.id
-        return job
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">new_req</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">code_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="n">rework_req</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">yield</span> <span class="p">(</span><span class="n">new_req</span> <span class="o">|</span> <span class="n">rework_req</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">events</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">rework_req</span> <span class="ow">in</span> <span class="n">result</span><span class="p">):</span>
+            <span class="n">new_req</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">rework_req</span><span class="p">]</span>
+            <span class="k">assert</span> <span class="n">job</span><span class="o">.</span><span class="n">coder_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rework_req</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">new_req</span><span class="p">]</span>
+            <span class="k">assert</span> <span class="n">job</span><span class="o">.</span><span class="n">coder_id</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="n">job</span><span class="o">.</span><span class="n">coder_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">return</span> <span class="n">job</span>
+</code></pre></div>
 <ul>
 <li>We can now build a graph showing the <a href="../glossary/#transition-probability">transition probabilities</a>
     for each state that a job might be in<ul>

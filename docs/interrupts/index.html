@@ -6,6 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Handling Interrupts</title>
 <link href="../static/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="../static/pygments.css" rel="stylesheet" type="text/css"/>
 <link href="../static/page.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
@@ -49,15 +50,15 @@
 </li>
 <li>Parameters and simulation class</li>
 </ul>
-<pre class="language-python"><code class="language-python" data-file="discard.py">class Params:
-    …as before…
-    t_interrupt_arrival: float = 5.0
+<div class="python codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Params</span><span class="p">:</span>
+    <span class="c1"># …as before…</span>
+    <span class="n">t_interrupt_arrival</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span>
 
-class Simulation(Environment):
-    …as before…
-    def rand_interrupt_arrival(self):
-        return random.expovariate(1.0 / self.params.t_interrupt_arrival)
-</code></pre>
+<span class="k">class</span><span class="w"> </span><span class="nc">Simulation</span><span class="p">(</span><span class="n">Environment</span><span class="p">):</span>
+    <span class="c1"># …as before…</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rand_interrupt_arrival</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">t_interrupt_arrival</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li>But we need a way to get at the coder's process (i.e., the generator) in order to interrupt it<ul>
 <li>The <code>Coder</code> instance is something we've built around the generator</li>
@@ -65,30 +66,30 @@ class Simulation(Environment):
 </ul>
 </li>
 </ul>
-<pre class="language-python"><code class="language-python" data-file="discard.py">class Simulation(Environment):
-    def simulate(self):
-        …queue, manager, and monitor as before…
+<div class="python codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Simulation</span><span class="p">(</span><span class="n">Environment</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># …queue, manager, and monitor as before…</span>
 
-        self.process(Interrupter(self).run())
+        <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">Interrupter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">())</span>
 
-        self.coders = []
-        for _ in range(self.params.n_coder):
-            coder = Coder(self)
-            coder.proc = self.process(coder.run())
-            self.coders.append(coder)
+        <span class="bp">self</span><span class="o">.</span><span class="n">coders</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">n_coder</span><span class="p">):</span>
+            <span class="n">coder</span> <span class="o">=</span> <span class="n">Coder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">coder</span><span class="o">.</span><span class="n">proc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">coder</span><span class="o">.</span><span class="n">run</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coder</span><span class="p">)</span>
 
-        self.run(until=self.params.t_sim)
-</code></pre>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">t_sim</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li>Our new <code>Interrupter</code> reaches inside a coder to get its process</li>
 </ul>
-<pre class=""><code data-file="discard.py">class Interrupter(Recorder):
-    def run(self):
-        while True:
-            yield self.sim.timeout(self.sim.rand_interrupt_arrival())
-            coder = random.choice(self.sim.coders)
-            coder.proc.interrupt()
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Interrupter</span><span class="p">(</span><span class="n">Recorder</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">rand_interrupt_arrival</span><span class="p">())</span>
+            <span class="n">coder</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">coders</span><span class="p">)</span>
+            <span class="n">coder</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">interrupt</span><span class="p">()</span>
+</code></pre></div>
 <div class="callout">
 <ul>
 <li>When we call <code>proc.interrupt()</code>, SimPy raises an <code>Interrupt</code> exception inside the generator</li>
@@ -108,23 +109,23 @@ class Simulation(Environment):
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="discard.py">from simpy import Interrupt
+<div class="codehilite"><pre class=""><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">simpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Interrupt</span>
 
-class Coder(Recorder):
-    def run(self):
-        while True:
-            try:
-                job = yield self.sim.queue.get()
-                job.t_start = self.sim.now
-                yield self.sim.timeout(job.duration)
-                job.t_end = self.sim.now
-                self.t_work += job.t_end - job.t_start
-            except Interrupt:
-                self.n_interrupt += 1
-                job.t_end = self.sim.now
-                job.discarded = True
-            self.t_work += job.t_end - job.t_start
-</code></pre>
+<span class="k">class</span><span class="w"> </span><span class="nc">Coder</span><span class="p">(</span><span class="n">Recorder</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">job</span> <span class="o">=</span> <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                <span class="n">job</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">now</span>
+                <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+                <span class="n">job</span><span class="o">.</span><span class="n">t_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">now</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">t_work</span> <span class="o">+=</span> <span class="n">job</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="n">job</span><span class="o">.</span><span class="n">t_start</span>
+            <span class="k">except</span> <span class="n">Interrupt</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_interrupt</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">job</span><span class="o">.</span><span class="n">t_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">now</span>
+                <span class="n">job</span><span class="o">.</span><span class="n">discarded</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_work</span> <span class="o">+=</span> <span class="n">job</span><span class="o">.</span><span class="n">t_end</span> <span class="o">-</span> <span class="n">job</span><span class="o">.</span><span class="n">t_start</span>
+</code></pre></div>
 <ul>
 <li>Exercise: how does the percentage of discarded jobs change as the interrupt rate changes?</li>
 </ul>
@@ -142,34 +143,34 @@ class Coder(Recorder):
 </li>
 <li>Notice that we're piling up a bunch of parameters whose values we probably don't know</li>
 </ul>
-<pre class=""><code data-file="interrupts.py">class Params:
-    …as before…
-    t_interrupt_arrival: float = 5.0
-    t_interrupt_mean: float = 0.2
-    t_interrupt_std: float = 0.1
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Params</span><span class="p">:</span>
+    <span class="c1"># …as before…</span>
+    <span class="n">t_interrupt_arrival</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span>
+    <span class="n">t_interrupt_mean</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">t_interrupt_std</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
 
-class JobRegular(Job):
-    def __init__(self, sim):
-        super().__init__(sim)
-        self.duration = self.sim.rand_job_duration()
+<span class="k">class</span><span class="w"> </span><span class="nc">JobRegular</span><span class="p">(</span><span class="n">Job</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">rand_job_duration</span><span class="p">()</span>
 
 
-class JobInterrupt(Job):
-    def __init__(self, sim):
-        super().__init__(sim)
-        self.duration = self.sim.rand_interrupt_duration()
-</code></pre>
+<span class="k">class</span><span class="w"> </span><span class="nc">JobInterrupt</span><span class="p">(</span><span class="n">Job</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">rand_interrupt_duration</span><span class="p">()</span>
+</code></pre></div>
 <ul>
 <li><code>Manager</code> creates <code>JobRegular</code>, <code>Interrupter</code> creates <code>JobInterrupt</code></li>
 <li>Note that <code>Interrupter</code> passes the new job to <code>.interrupt()</code> so that it becomes the exception's <code>.cause</code></li>
 </ul>
-<pre class=""><code data-file="interrupts.py">class Interrupter(Recorder):
-    def run(self):
-        while True:
-            yield self.sim.timeout(self.sim.rand_interrupt_arrival())
-            coder = random.choice(self.sim.coders)
-            coder.proc.interrupt(JobInterrupt(self.sim))
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Interrupter</span><span class="p">(</span><span class="n">Recorder</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">rand_interrupt_arrival</span><span class="p">())</span>
+            <span class="n">coder</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">coders</span><span class="p">)</span>
+            <span class="n">coder</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">interrupt</span><span class="p">(</span><span class="n">JobInterrupt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="p">))</span>
+</code></pre></div>
 <ul>
 <li>It took several tries to get the <code>Coder</code> right</li>
 <li>The problem is that interrupts can occur whenever the coder interacts with SimPy<ul>
@@ -190,43 +191,43 @@ class JobInterrupt(Job):
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="interrupts.py">class Coder(Recorder):
-    def __init__(self, sim):
-        super().__init__(sim)
-        self.proc = None
-        self.stack = []
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Coder</span><span class="p">(</span><span class="n">Recorder</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stack</span> <span class="o">=</span> <span class="p">[]</span>
 
-    def run(self):
-        while True:
-            started = None
-            try:
-                # No work in hand, so get a new job.
-                if len(self.stack) == 0:
-                    job = yield self.sim.code_queue.get()
-                    job.start()
-                    self.stack.append(job)
-                # Current job is incomplete, so try to finish it.
-                elif self.stack[-1].done &lt; self.stack[-1].duration:
-                    job = self.stack[-1]
-                    started = self.sim.now
-                    yield self.sim.timeout(job.duration - job.done)
-                    job.done = job.duration
-                # Current job is complete.
-                else:
-                    job = self.stack.pop()
-                    job.complete()
-            except Interrupt as exc:
-                # Some work has been done on the current job, so save it.
-                if (len(self.stack) &gt; 0) and (started is not None):
-                    now = self.sim.now
-                    job = self.stack[-1]
-                    job.interrupt()
-                    job.done += now - started
-                # Put the interrupting job on the stack.
-                job = exc.cause
-                job.start()
-                self.stack.append(job)
-</code></pre>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">started</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># No work in hand, so get a new job.</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">job</span> <span class="o">=</span> <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">code_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                    <span class="n">job</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+                <span class="c1"># Current job is incomplete, so try to finish it.</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">done</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">duration</span><span class="p">:</span>
+                    <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">started</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">now</span>
+                    <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">duration</span> <span class="o">-</span> <span class="n">job</span><span class="o">.</span><span class="n">done</span><span class="p">)</span>
+                    <span class="n">job</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">duration</span>
+                <span class="c1"># Current job is complete.</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                    <span class="n">job</span><span class="o">.</span><span class="n">complete</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">Interrupt</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="c1"># Some work has been done on the current job, so save it.</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">started</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+                    <span class="n">now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">now</span>
+                    <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">job</span><span class="o">.</span><span class="n">interrupt</span><span class="p">()</span>
+                    <span class="n">job</span><span class="o">.</span><span class="n">done</span> <span class="o">+=</span> <span class="n">now</span> <span class="o">-</span> <span class="n">started</span>
+                <span class="c1"># Put the interrupting job on the stack.</span>
+                <span class="n">job</span> <span class="o">=</span> <span class="n">exc</span><span class="o">.</span><span class="n">cause</span>
+                <span class="n">job</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li>This works, but the code is hard to understand, debug, and extend</li>
 </ul>
@@ -244,11 +245,11 @@ class JobInterrupt(Job):
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="decompose.py">class Priority:
-    HIGH = 0
-    MEDIUM = 1
-    LOW = 2
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Priority</span><span class="p">:</span>
+    <span class="n">HIGH</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">MEDIUM</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">LOW</span> <span class="o">=</span> <span class="mi">2</span>
+</code></pre></div>
 <ul>
 <li>Generic <code>Job</code> has a few <a href="../glossary/#lifecycle-method">lifecycle methods</a> for child classes to override<ul>
 <li><code>Job.start</code> is called when work starts on a job</li>
@@ -259,40 +260,40 @@ class JobInterrupt(Job):
 </li>
 <li>We will explain <code>sim.do_nothing()</code> shortly</li>
 </ul>
-<pre class=""><code data-file="decompose.py">class Job(Recorder):
-    def __init__(self, sim, priority):
-        super().__init__(sim)
-        self.priority = priority
-        self.t_create = self.sim.now
-        self.t_start = None
-        self.t_complete = None
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Job</span><span class="p">(</span><span class="n">Recorder</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">priority</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="n">priority</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_create</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">now</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_complete</span> <span class="o">=</span> <span class="kc">None</span>
 
-    def start(self):
-        self.t_start = self.sim.now
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">now</span>
 
-    def complete(self):
-        self.t_complete = self.sim.now
-        return self.sim.do_nothing()
+    <span class="k">def</span><span class="w"> </span><span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_complete</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">now</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">do_nothing</span><span class="p">()</span>
 
-    def is_complete(self):
-        return self.t_complete is not None
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_complete</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
-    def needs_decomp(self):
-        return False
+    <span class="k">def</span><span class="w"> </span><span class="nf">needs_decomp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
 
-    def __lt__(self, other):
-        if self.priority == other.priority:
-            return self.t_create &lt; other.t_create
-        return self.priority &lt; other.priority
-</code></pre>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">priority</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_create</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">t_create</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">priority</span>
+</code></pre></div>
 <ul>
 <li><code>JobInterrupt</code> is the simplest child class</li>
 </ul>
-<pre class=""><code data-file="decompose.py">class JobInterrupt(Job):
-    def __init__(self, sim):
-        super().__init__(sim, Priority.HIGH)
-        self.duration = self.sim.rand_interrupt_duration()
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">JobInterrupt</span><span class="p">(</span><span class="n">Job</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="n">Priority</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">rand_interrupt_duration</span><span class="p">()</span>
+</code></pre></div>
 <ul>
 <li><code>JobRegular</code> overrides <code>.needs_decomp()</code><ul>
 <li>If this job isn't complete <em>and</em> the time required is greater than the decomposition threshold</li>
@@ -300,14 +301,14 @@ class JobInterrupt(Job):
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="decompose.py">class JobRegular(Job):
-    def __init__(self, sim):
-        super().__init__(sim, Priority.LOW)
-        self.duration = self.sim.rand_job_duration()
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">JobRegular</span><span class="p">(</span><span class="n">Job</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="n">Priority</span><span class="o">.</span><span class="n">LOW</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">rand_job_duration</span><span class="p">()</span>
 
-    def needs_decomp(self):
-        return (not self.is_complete()) and (self.duration &gt; self.sim.params.t_decomposition)
-</code></pre>
+    <span class="k">def</span><span class="w"> </span><span class="nf">needs_decomp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_complete</span><span class="p">())</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">t_decomposition</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li><code>JobFragment</code> is the most complex<ul>
 <li>Duration is specified by its creator (part of the total time required by a regular job)</li>
@@ -320,23 +321,23 @@ class JobInterrupt(Job):
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="decompose.py">class JobFragment(Job):
-    def __init__(self, coder, placeholder, duration):
-        super().__init__(coder.sim, Priority.MEDIUM)
-        self.coder = coder
-        self.placeholder = placeholder
-        self.duration = duration
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">JobFragment</span><span class="p">(</span><span class="n">Job</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coder</span><span class="p">,</span> <span class="n">placeholder</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">coder</span><span class="o">.</span><span class="n">sim</span><span class="p">,</span> <span class="n">Priority</span><span class="o">.</span><span class="n">MEDIUM</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coder</span> <span class="o">=</span> <span class="n">coder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">=</span> <span class="n">placeholder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span>
 
-    def complete(self):
-        super().complete()
-        self.placeholder.count -= 1
-        if self.placeholder.count == 0:
-            self.placeholder.job.complete()
-            self.placeholder.job.priority = Priority.MEDIUM
-            return self.coder.queue.put(self.placeholder.job)
-        else:
-            return self.sim.do_nothing()
-</code></pre>
+    <span class="k">def</span><span class="w"> </span><span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">complete</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span><span class="o">.</span><span class="n">count</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span><span class="o">.</span><span class="n">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">complete</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="n">Priority</span><span class="o">.</span><span class="n">MEDIUM</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coder</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">placeholder</span><span class="o">.</span><span class="n">job</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">do_nothing</span><span class="p">()</span>
+</code></pre></div>
 <ul>
 <li>When <code>.complete</code> wants to put the original (regular) job back in the coder's queue,
     it would be natural to call <code>yield self.code.queue.put(…)</code></li>
@@ -347,10 +348,10 @@ class JobInterrupt(Job):
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="decompose.py">class Simulation(Environment):
-    def do_nothing(self):
-        return self.timeout(0)
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Simulation</span><span class="p">(</span><span class="n">Environment</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">do_nothing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li><code>Coder.run</code> gets a job from the general "new work" queue or from its priority queue<ul>
 <li>Gives preference to the latter so that interrupts and fragments are done before regular work</li>
@@ -358,16 +359,16 @@ class JobInterrupt(Job):
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="decompose.py">    def run(self):
-        while True:
-            job = yield from self.get()
-            job.start()
-            if job.needs_decomp():
-                yield from self.decompose(job)
-            elif not job.is_complete():
-                yield self.sim.timeout(job.duration)
-                yield job.complete()
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="n">job</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">needs_decomp</span><span class="p">():</span>
+                <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">decompose</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">job</span><span class="o">.</span><span class="n">is_complete</span><span class="p">():</span>
+                <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+                <span class="k">yield</span> <span class="n">job</span><span class="o">.</span><span class="n">complete</span><span class="p">()</span>
+</code></pre></div>
 <ul>
 <li>To decompose a job:<ul>
 <li>Figure out the durations of the fragments</li>
@@ -376,15 +377,15 @@ class JobInterrupt(Job):
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="decompose.py">    def decompose(self, job):
-        size = self.sim.params.t_decomposition
-        num = int(job.duration / size)
-        extra = job.duration - (num * size)
-        durations = [extra, *[size for _ in range(num)]]
-        placeholder = Placeholder(job=job, count=len(durations))
-        for d in durations:
-            yield self.queue.put(JobFragment(self, placeholder, d))
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code>    <span class="k">def</span><span class="w"> </span><span class="nf">decompose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">t_decomposition</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">duration</span> <span class="o">/</span> <span class="n">size</span><span class="p">)</span>
+        <span class="n">extra</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">duration</span> <span class="o">-</span> <span class="p">(</span><span class="n">num</span> <span class="o">*</span> <span class="n">size</span><span class="p">)</span>
+        <span class="n">durations</span> <span class="o">=</span> <span class="p">[</span><span class="n">extra</span><span class="p">,</span> <span class="o">*</span><span class="p">[</span><span class="n">size</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">)]]</span>
+        <span class="n">placeholder</span> <span class="o">=</span> <span class="n">Placeholder</span><span class="p">(</span><span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">durations</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">durations</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">JobFragment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">placeholder</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
+</code></pre></div>
 <ul>
 <li>So is this better than using interrupts?<ul>
 <li>250 lines for decomposition vs. 212 for interrupts</li>

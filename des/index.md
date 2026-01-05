@@ -10,7 +10,7 @@
 -   Pass each generator to `env.process(…)`
 -   Call `env.run(…)` and specify simulation duration
 
-```{data-file=ask_for_work.py}
+```{.py data-file=ask_for_work.py}
 from simpy import Environment
 
 T_SIM = 30
@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
 -   Output
 
-```{data-file=ask_for_work.txt}
+```{.txt data-file=ask_for_work.txt}
 0: Is there any work?
 8: Is there any work?
 16: Is there any work?
@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
 -   Parameters
 
-```{data-file=simple_interaction.py}
+```{.py data-file=simple_interaction.py}
 T_CREATE = 6
 T_JOB = 8
 T_SIM = 20
@@ -65,7 +65,7 @@ T_SIM = 20
 
 -   `Job` class
 
-```{data-file=simple_interaction.py}
+```{.py data-file=simple_interaction.py}
 from itertools import count
 
 class Job:
@@ -81,7 +81,7 @@ class Job:
 
 -   `manager` process
 
-```{data-file=simple_interaction.py}
+```{.py data-file=simple_interaction.py}
 def manager(env, queue):
     while True:
         job = Job()
@@ -92,7 +92,7 @@ def manager(env, queue):
 
 -   `coder` process
 
-```{data-file=simple_interaction.py}
+```{.py data-file=simple_interaction.py}
 def coder(env, queue):
     while True:
         print(f"coder waits at {env.now}")
@@ -104,7 +104,7 @@ def coder(env, queue):
 
 -   Set up and run
 
-```{data-file=simple_interaction.py}
+```{.py data-file=simple_interaction.py}
 if __name__ == "__main__":
     env = Environment()
     queue = Store(env)
@@ -115,7 +115,7 @@ if __name__ == "__main__":
 
 -   Output
 
-```{data-file=simple_interaction.txt}
+```{.txt data-file=simple_interaction.txt}
 manager creates job-0 at 0
 coder waits at 0
 coder gets job-0 at 0
@@ -134,7 +134,7 @@ manager creates job-3 at 18
 
 <div class="row">
   <div class="col-5" markdown="1">
-```{data-file=simple_interaction_manager.txt}
+```{.txt data-file=simple_interaction_manager.txt}
 manager creates job-0 at 0
 manager creates job-1 at 6
 manager creates job-2 at 12
@@ -144,7 +144,7 @@ manager creates job-3 at 18
   <div class="col-1">
   </div>
   <div class="col-5" markdown="1">
-```{data-file=simple_interaction_coder.txt}
+```{.txt data-file=simple_interaction_coder.txt}
 coder waits at 0
 coder gets job-0 at 0
 coder waits at 8
@@ -161,7 +161,7 @@ coder gets job-2 at 16
 
 -   Use ranges for creation times and job durations
 
-```{data-file=uniform_interaction.py}
+```{.py data-file=uniform_interaction.py}
 RNG_SEED = 98765
 T_CREATE = (6, 10)
 T_JOB = (8, 12)
@@ -170,7 +170,7 @@ T_SIM = 20
 
 -   `Job` has a random duration
 
-```{data-file=uniform_interaction.py}
+```{.py data-file=uniform_interaction.py}
 class Job:
     def __init__(self):
         self.id = next(Job._next_id)
@@ -180,7 +180,7 @@ class Job:
 -   `manager` waits a random time before creating the next job
     -   Format time to two decimal places for readability
 
-```{data-file=uniform_interaction.py}
+```{.py data-file=uniform_interaction.py}
 def manager(env, queue):
     while True:
         job = Job()
@@ -192,15 +192,15 @@ def manager(env, queue):
 -   Always initialize the random number generator to ensure reproducibility
     -   Hard to debug if the program behaves differently each time we run it
 
-```{data-file=uniform_interaction.py}
+```{.py data-file=uniform_interaction.py}
 if __name__ == "__main__":
     random.seed(RNG_SEED)
-    …as before…
+    # …as before…
 ```
 
 <div class="row">
   <div class="col-5" markdown="1">
-```{data-file=uniform_interaction_manager.txt}
+```{.txt data-file=uniform_interaction_manager.txt}
 manager creates job-0 at 0.00
 manager creates job-1 at 8.36
 manager creates job-2 at 14.73
@@ -209,7 +209,7 @@ manager creates job-2 at 14.73
   <div class="col-1">
   </div>
   <div class="col-5" markdown="1">
-```{data-file=uniform_interaction_coder.txt}
+```{.txt data-file=uniform_interaction_coder.txt}
 coder waits at 0.00
 coder gets job-0 at 0.00
 coder waits at 8.52
@@ -243,7 +243,7 @@ coder gets job-1 at 8.52
 
 -   Parameters and randomization functions
 
-```{data-file=random_interaction.py}
+```{.py data-file=random_interaction.py}
 …other parameters as before…
 T_JOB_ARRIVAL = 2.0
 T_JOB_MEAN = 0.5
@@ -258,7 +258,7 @@ def rand_job_duration():
 
 -   Corresponding changes to `Job` and `manager`
 
-```{data-file=random_interaction.py}
+```{.py data-file=random_interaction.py}
 class Job:
     def __init__(self):
         self.id = next(Job._next_id)
@@ -277,7 +277,7 @@ def manager(env, queue):
 
 <div class="row">
   <div class="col-5" markdown="1">
-```{data-file=random_interaction_manager.txt}
+```{.txt data-file=random_interaction_manager.txt}
 manager creates job-0 at 0.00 waits for 7.96
 manager creates job-1 at 7.96 waits for 0.60
 manager creates job-2 at 8.56 waits for 3.70
@@ -286,7 +286,7 @@ manager creates job-2 at 8.56 waits for 3.70
   <div class="col-1">
   </div>
   <div class="col-5" markdown="1">
-```{data-file=random_interaction_coder.txt}
+```{.txt data-file=random_interaction_coder.txt}
 coder waits at 0.00
 coder gets job-0 at 0.00
 coder waits at 0.65
@@ -310,7 +310,7 @@ coder gets job-2 at 8.75
         without knowing anything about specific parameters
     -   Use `@dataclass_json` decorator so that utilities can [serialize](g:serialize) as JSON
 
-```{data-file=introduce_structure.py}
+```{.py data-file=introduce_structure.py}
 @dataclass_json
 @dataclass
 class Params:
@@ -327,7 +327,7 @@ class Params:
     -   May have other structures (e.g., a log to record output)
     -   Give it a `.result()` method that returns simulation result (e.g., the log)
 
-```{data-file=introduce_structure.py}
+```{.py data-file=introduce_structure.py}
 class Simulation(Environment):
     """Complete simulation."""
 
@@ -344,7 +344,7 @@ class Simulation(Environment):
     -   `sim.whatever` for elements of the SimPy `Environment`
     -   `sim.params.whatever` for parameters
 
-```{data-file=introduce_structure.py}
+```{.py data-file=introduce_structure.py}
 def coder(sim):
     """Simulate a single coder."""
 
@@ -356,7 +356,7 @@ def coder(sim):
 -   Define a `Simulation.simulate` method that creates processes and runs the simulation
     -   Can't call it `run` because we need that method from the parent class `Environment`
 
-```{data-file=introduce_structure.py}
+```{.py data-file=introduce_structure.py}
 class Simulation
     def simulate(self):
         self.process(coder(self))
@@ -366,7 +366,7 @@ class Simulation
 -   Use `util.run(…)` to run scenarios with varying parameters and get result as JSON
     -   Look in project's `utilities` directory for implementation
 
-```{data-file=introduce_structure.py}
+```{.py data-file=introduce_structure.py}
 if __name__ == "__main__":
     args, results = util.run(Params, Simulation)
     if args.json:
@@ -380,13 +380,13 @@ if __name__ == "__main__":
 
 -   Sample command line invocation
 
-```{data-file=introduce_structure_json.sh}
+```{.sh data-file=introduce_structure_json.sh}
 python introduce_structure.py --json t_wait=12,20 t_sim=20,30
 ```
 
 -   Output
 
-```{data-file=introduce_structure_json.json}
+```{.json data-file=introduce_structure_json.json}
 {
   "results": [
     {
@@ -424,11 +424,11 @@ python introduce_structure.py --json t_wait=12,20 t_sim=20,30
 -   Convert to [Polars][polars] dataframes)
     -   Include all parameters in each dataframe to simplify later analysis
 
-```{data-file=introduce_structure_df.sh}
+```{.sh data-file=introduce_structure_df.sh}
 python introduce_structure.py --tables t_wait=12,20 t_sim=20,30
 ```
 
-```{data-file=introduce_structure_df.txt}
+```{.txt data-file=introduce_structure_df.txt}
 ## log
 shape: (8, 5)
 ## log

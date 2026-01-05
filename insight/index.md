@@ -11,7 +11,7 @@
     -   Automatically schedules the process to be run
     -   Provides a `.log` method for recording events
 
-```{data-file=base.py}
+```{.py data-file=base.py}
 class Actor(Recorder):
     def __init__(self, sim):
         super().__init__(sim)
@@ -28,7 +28,7 @@ class Actor(Recorder):
 
 -   Define a `Log` class to store collected data
 
-```{data-file=log.py}
+```{.py data-file=log.py}
 @dataclass
 class Log:
     env: Environment | None = None
@@ -51,7 +51,7 @@ class Log:
 
 -   There are now 15 parameters controlling the behavior of our simulation
 
-```{data-file=params.py}
+```{.py data-file=params.py}
 class Params:
     t_code_arrival: float = 2.0
     t_code_mean: float = 0.5

@@ -53,13 +53,13 @@
     -   Adding `__lt__` to `Job` for comparison
     -   Actual comparison depends on policy
 
-```{data-file=job_priority.py}
+```{.py data-file=job_priority.py}
 class Params:
-    …as before…
+    # …as before…
     policy: str = "shortest"
 
 class Job(Recorder):
-    …as before…
+    # …as before…
     def __lt__(self, other):
         match self.sim.params.policy:
             case "oldest":
@@ -119,19 +119,19 @@ class Job(Recorder):
 -   In real life, testing often reveals bugs that need rework
 -   Start by modeling with a second queue and a group of testers
 
-```{data-file=rework_any.py}
+```{.py data-file=rework_any.py}
 class Params:
-    …as before…
+    # …as before…
     n_tester: int = 1
     p_rework: float = 0.5
 
 class Simulation(Environment):
     def __init__(self):
-        …as before…
+        # …as before…
         self.test_queue = None
 
     def simulate(self):
-        …as before…
+        # …as before…
         self.test_queue = Store(self)
         for _ in range(self.params.n_tester):
             self.process(Tester(self).run())
@@ -157,17 +157,17 @@ class Tester(Recorder):
 -   But this isn't realistic
 -   Give each `Coder` its own queue
 
-```{data-file=rework_same.py}
+```{.py data-file=rework_same.py}
 class Coder(Recorder):
     def __init__(self, sim):
-        …as before…
+        # …as before…
         self.queue = Store(self.sim)
 ```
 
 -   Have testers give work back to the coder who did the work
     -   Need to add a `coder_id` field to jobs to keep track of this
 
-```{data-file=rework_same.py}
+```{.py data-file=rework_same.py}
 class Tester(Recorder):
     def run(self):
         while True:
@@ -184,7 +184,7 @@ class Tester(Recorder):
 -   Put it in a method of its own
 -   And use `yield from` to yield its results back to SimPy
 
-```{data-file=rework_same.py}
+```{.py data-file=rework_same.py}
 class Coder(Recorder):
     def run(self):
         while True:
@@ -204,7 +204,7 @@ class Coder(Recorder):
     -   Yes, this took a while to figure out
     -   And yes, it's safe to cancel a request that wasn't satisfied
 
-```{data-file=rework_same.py}
+```{.py data-file=rework_same.py}
     def get(self):
         new_req = self.sim.code_queue.get()
         rework_req = self.queue.get()

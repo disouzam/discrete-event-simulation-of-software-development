@@ -6,6 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Insights</title>
 <link href="../static/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="../static/pygments.css" rel="stylesheet" type="text/css"/>
 <link href="../static/page.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
@@ -50,34 +51,34 @@
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="base.py">class Actor(Recorder):
-    def __init__(self, sim):
-        super().__init__(sim)
-        self.post_init()
-        proc = self.run()
-        self.sim.process(proc)
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Actor</span><span class="p">(</span><span class="n">Recorder</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">post_init</span><span class="p">()</span>
+        <span class="n">proc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span>
 
-    def post_init(self):
-        pass
+    <span class="k">def</span><span class="w"> </span><span class="nf">post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
 
-    def log(self, state):
-        self.sim.log.actor(self.__class__.__name__, self.id, state)
-</code></pre>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">actor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li>Define a <code>Log</code> class to store collected data</li>
 </ul>
-<pre class=""><code data-file="log.py">@dataclass
-class Log:
-    env: Environment | None = None
-    queue_events: list = field(default_factory=list)
-    actor_events: list = field(default_factory=list)
+<div class="codehilite"><pre class=""><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Log</span><span class="p">:</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">Environment</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">queue_events</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">actor_events</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
-    def queue(self, name, length):
-        self.queue_events.append({"time": self.env.now, "name": name, "length": length})
+    <span class="k">def</span><span class="w"> </span><span class="nf">queue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">length</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue_events</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"time"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">"length"</span><span class="p">:</span> <span class="n">length</span><span class="p">})</span>
 
-    def actor(self, kind, id, state):
-        self.actor_events.append({"time": self.env.now, "kind": kind, "id": id, "state": state})
-</code></pre>
+    <span class="k">def</span><span class="w"> </span><span class="nf">actor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actor_events</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"time"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="s2">"kind"</span><span class="p">:</span> <span class="n">kind</span><span class="p">,</span> <span class="s2">"id"</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span> <span class="s2">"state"</span><span class="p">:</span> <span class="n">state</span><span class="p">})</span>
+</code></pre></div>
 <ul>
 <li>Use job fragmentation as discussed in <a href="../interrupts/">previous chapter</a></li>
 <li>Testers can send jobs back for rework</li>
@@ -90,23 +91,23 @@ class Log:
 <ul>
 <li>There are now 15 parameters controlling the behavior of our simulation</li>
 </ul>
-<pre class=""><code data-file="params.py">class Params:
-    t_code_arrival: float = 2.0
-    t_code_mean: float = 0.5
-    t_code_std: float = 0.6
-    t_decomposition: float = 0.5
-    t_integration: float = 0.2
-    t_interrupt_arrival: float = 5.0
-    t_interrupt_mean: float = 0.2
-    t_interrupt_std: float = 0.1
-    t_queue_monitor: float = 5.0
-    t_sim: float = 20
-    n_coders: int = 2
-    n_iter: int = 1
-    n_seed: int = 97531
-    n_testers: int = 2
-    p_rework: float = 0.5
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Params</span><span class="p">:</span>
+    <span class="n">t_code_arrival</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span>
+    <span class="n">t_code_mean</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">t_code_std</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span>
+    <span class="n">t_decomposition</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">t_integration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">t_interrupt_arrival</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span>
+    <span class="n">t_interrupt_mean</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">t_interrupt_std</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">t_queue_monitor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span>
+    <span class="n">t_sim</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">n_coders</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">n_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">n_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">97531</span>
+    <span class="n">n_testers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">p_rework</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+</code></pre></div>
 <ul>
 <li>Some are completely synthetic (number of testers, queue monitoring interval, etc.)</li>
 <li>But job and interrupt arrival rates, rework probability, integration times, etc. are not</li>

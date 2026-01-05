@@ -6,6 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Discrete Event Simulation</title>
 <link href="../static/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="../static/pygments.css" rel="stylesheet" type="text/css"/>
 <link href="../static/page.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
@@ -49,31 +50,31 @@
 <li>Pass each generator to <code>env.process(…)</code></li>
 <li>Call <code>env.run(…)</code> and specify simulation duration</li>
 </ul>
-<pre class=""><code data-file="ask_for_work.py">from simpy import Environment
+<div class="codehilite"><pre class=""><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">simpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span>
 
-T_SIM = 30
-T_WAIT = 8
-
-
-def coder(env):
-    while True:
-        print(f"{env.now}: Is there any work?")
-        yield env.timeout(T_WAIT)
+<span class="n">T_SIM</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">T_WAIT</span> <span class="o">=</span> <span class="mi">8</span>
 
 
-if __name__ == "__main__":
-    env = Environment()
-    env.process(coder(env))
-    env.run(until=T_SIM)
-</code></pre>
+<span class="k">def</span><span class="w"> </span><span class="nf">coder</span><span class="p">(</span><span class="n">env</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">: Is there any work?"</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">T_WAIT</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">()</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">coder</span><span class="p">(</span><span class="n">env</span><span class="p">))</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">T_SIM</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li>Output</li>
 </ul>
-<pre class=""><code data-file="ask_for_work.txt">0: Is there any work?
-8: Is there any work?
-16: Is there any work?
-24: Is there any work?
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="mi">0</span><span class="o">:</span><span class="w"> </span><span class="n">Is</span><span class="w"> </span><span class="n">there</span><span class="w"> </span><span class="n">any</span><span class="w"> </span><span class="n">work</span><span class="o">?</span>
+<span class="mi">8</span><span class="o">:</span><span class="w"> </span><span class="n">Is</span><span class="w"> </span><span class="n">there</span><span class="w"> </span><span class="n">any</span><span class="w"> </span><span class="n">work</span><span class="o">?</span>
+<span class="mi">16</span><span class="o">:</span><span class="w"> </span><span class="n">Is</span><span class="w"> </span><span class="n">there</span><span class="w"> </span><span class="n">any</span><span class="w"> </span><span class="n">work</span><span class="o">?</span>
+<span class="mi">24</span><span class="o">:</span><span class="w"> </span><span class="n">Is</span><span class="w"> </span><span class="n">there</span><span class="w"> </span><span class="n">any</span><span class="w"> </span><span class="n">work</span><span class="o">?</span>
+</code></pre></div>
 <h2>Interaction</h2>
 <ul>
 <li>Manager creates jobs and puts them in a queue<ul>
@@ -97,60 +98,60 @@ if __name__ == "__main__":
 <ul>
 <li>Parameters</li>
 </ul>
-<pre class=""><code data-file="simple_interaction.py">T_CREATE = 6
-T_JOB = 8
-T_SIM = 20
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="n">T_CREATE</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">T_JOB</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">T_SIM</span> <span class="o">=</span> <span class="mi">20</span>
+</code></pre></div>
 <ul>
 <li><code>Job</code> class</li>
 </ul>
-<pre class=""><code data-file="simple_interaction.py">from itertools import count
+<div class="codehilite"><pre class=""><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">count</span>
 
-class Job:
-    _next_id = count()
+<span class="k">class</span><span class="w"> </span><span class="nc">Job</span><span class="p">:</span>
+    <span class="n">_next_id</span> <span class="o">=</span> <span class="n">count</span><span class="p">()</span>
 
-    def __init__(self):
-        self.id = next(Job._next_id)
-        self.duration = T_JOB
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">Job</span><span class="o">.</span><span class="n">_next_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">T_JOB</span>
 
-    def __str__(self):
-        return f"job-{self.id}"
-</code></pre>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"job-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span>
+</code></pre></div>
 <ul>
 <li><code>manager</code> process</li>
 </ul>
-<pre class=""><code data-file="simple_interaction.py">def manager(env, queue):
-    while True:
-        job = Job()
-        print(f"manager creates {job} at {env.now}")
-        yield queue.put(job)
-        yield env.timeout(T_CREATE)
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">manager</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"manager creates </span><span class="si">{</span><span class="n">job</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">T_CREATE</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li><code>coder</code> process</li>
 </ul>
-<pre class=""><code data-file="simple_interaction.py">def coder(env, queue):
-    while True:
-        print(f"coder waits at {env.now}")
-        job = yield queue.get()
-        print(f"coder gets {job} at {env.now}")
-        yield env.timeout(job.duration)
-        print(f"code completes {job} at {env.now}")
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">coder</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"coder waits at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">job</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"coder gets </span><span class="si">{</span><span class="n">job</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"code completes </span><span class="si">{</span><span class="n">job</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li>Set up and run</li>
 </ul>
-<pre class=""><code data-file="simple_interaction.py">if __name__ == "__main__":
-    env = Environment()
-    queue = Store(env)
-    env.process(manager(env, queue))
-    env.process(coder(env, queue))
-    env.run(until=T_SIM)
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">()</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="n">Store</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">manager</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">queue</span><span class="p">))</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">coder</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">queue</span><span class="p">))</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">T_SIM</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li>Output</li>
 </ul>
-<pre class=""><code data-file="simple_interaction.txt">manager creates job-0 at 0
+<div class="codehilite"><pre class=""><span></span><code>manager creates job-0 at 0
 coder waits at 0
 coder gets job-0 at 0
 manager creates job-1 at 6
@@ -162,28 +163,28 @@ code completes job-1 at 16
 coder waits at 16
 coder gets job-2 at 16
 manager creates job-3 at 18
-</code></pre>
+</code></pre></div>
 <ul>
 <li>Easier to see as columns</li>
 </ul>
 <div class="row">
 <div class="col-5">
-<pre class=""><code data-file="simple_interaction_manager.txt">manager creates job-0 at 0
+<div class="codehilite"><pre class=""><span></span><code>manager creates job-0 at 0
 manager creates job-1 at 6
 manager creates job-2 at 12
 manager creates job-3 at 18
-</code></pre>
+</code></pre></div>
 </div>
 <div class="col-1">
 </div>
 <div class="col-5">
-<pre class=""><code data-file="simple_interaction_coder.txt">coder waits at 0
+<div class="codehilite"><pre class=""><span></span><code>coder waits at 0
 coder gets job-0 at 0
 coder waits at 8
 coder gets job-1 at 8
 coder waits at 16
 coder gets job-2 at 16
-</code></pre>
+</code></pre></div>
 </div>
 </div>
 <ul>
@@ -193,57 +194,57 @@ coder gets job-2 at 16
 <ul>
 <li>Use ranges for creation times and job durations</li>
 </ul>
-<pre class=""><code data-file="uniform_interaction.py">RNG_SEED = 98765
-T_CREATE = (6, 10)
-T_JOB = (8, 12)
-T_SIM = 20
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="n">RNG_SEED</span> <span class="o">=</span> <span class="mi">98765</span>
+<span class="n">T_CREATE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">T_JOB</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+<span class="n">T_SIM</span> <span class="o">=</span> <span class="mi">20</span>
+</code></pre></div>
 <ul>
 <li><code>Job</code> has a random duration</li>
 </ul>
-<pre class=""><code data-file="uniform_interaction.py">class Job:
-    def __init__(self):
-        self.id = next(Job._next_id)
-        self.duration = random.uniform(*T_JOB)
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Job</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">Job</span><span class="o">.</span><span class="n">_next_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">*</span><span class="n">T_JOB</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li><code>manager</code> waits a random time before creating the next job<ul>
 <li>Format time to two decimal places for readability</li>
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="uniform_interaction.py">def manager(env, queue):
-    while True:
-        job = Job()
-        print(f"manager creates {job} at {env.now:.2f}")
-        yield queue.put(job)
-        yield env.timeout(random.uniform(*T_CREATE))
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">manager</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"manager creates </span><span class="si">{</span><span class="n">job</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">*</span><span class="n">T_CREATE</span><span class="p">))</span>
+</code></pre></div>
 <ul>
 <li>Always initialize the random number generator to ensure reproducibility<ul>
 <li>Hard to debug if the program behaves differently each time we run it</li>
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="uniform_interaction.py">if __name__ == "__main__":
-    random.seed(RNG_SEED)
-    …as before…
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">RNG_SEED</span><span class="p">)</span>
+    <span class="c1"># …as before…</span>
+</code></pre></div>
 <div class="row">
 <div class="col-5">
-<pre class=""><code data-file="uniform_interaction_manager.txt">manager creates job-0 at 0.00
+<div class="codehilite"><pre class=""><span></span><code>manager creates job-0 at 0.00
 manager creates job-1 at 8.36
 manager creates job-2 at 14.73
-</code></pre>
+</code></pre></div>
 </div>
 <div class="col-1">
 </div>
 <div class="col-5">
-<pre class=""><code data-file="uniform_interaction_coder.txt">coder waits at 0.00
+<div class="codehilite"><pre class=""><span></span><code>coder waits at 0.00
 coder gets job-0 at 0.00
 coder waits at 8.52
 coder gets job-1 at 8.52
-</code></pre>
+</code></pre></div>
 </div>
 </div>
 <h2>Better Random Distributions</h2>
@@ -274,53 +275,53 @@ coder gets job-1 at 8.52
 <ul>
 <li>Parameters and randomization functions</li>
 </ul>
-<pre class=""><code data-file="random_interaction.py">…other parameters as before…
-T_JOB_ARRIVAL = 2.0
-T_JOB_MEAN = 0.5
-T_JOB_STD = 0.6
+<div class="codehilite"><pre class=""><span></span><code><span class="err">…</span><span class="n">other</span> <span class="n">parameters</span> <span class="k">as</span> <span class="n">before</span><span class="err">…</span>
+<span class="n">T_JOB_ARRIVAL</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="n">T_JOB_MEAN</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">T_JOB_STD</span> <span class="o">=</span> <span class="mf">0.6</span>
 
-def rand_job_arrival():
-    return random.expovariate(1.0 / T_JOB_ARRIVAL)
+<span class="k">def</span><span class="w"> </span><span class="nf">rand_job_arrival</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">T_JOB_ARRIVAL</span><span class="p">)</span>
 
-def rand_job_duration():
-    return random.lognormvariate(T_JOB_MEAN, T_JOB_STD)
-</code></pre>
+<span class="k">def</span><span class="w"> </span><span class="nf">rand_job_duration</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">lognormvariate</span><span class="p">(</span><span class="n">T_JOB_MEAN</span><span class="p">,</span> <span class="n">T_JOB_STD</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li>Corresponding changes to <code>Job</code> and <code>manager</code></li>
 </ul>
-<pre class=""><code data-file="random_interaction.py">class Job:
-    def __init__(self):
-        self.id = next(Job._next_id)
-        self.duration = rand_job_duration()
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Job</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">Job</span><span class="o">.</span><span class="n">_next_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">rand_job_duration</span><span class="p">()</span>
 
-def manager(env, queue):
-    while True:
-        job = Job()
-        t_delay = rand_job_arrival()
-        print(f"manager creates {job} at {env.now:.2f} waits for {t_delay:.2f}")
-        yield queue.put(job)
-        yield env.timeout(t_delay)
-</code></pre>
+<span class="k">def</span><span class="w"> </span><span class="nf">manager</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">()</span>
+        <span class="n">t_delay</span> <span class="o">=</span> <span class="n">rand_job_arrival</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"manager creates </span><span class="si">{</span><span class="n">job</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> waits for </span><span class="si">{</span><span class="n">t_delay</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">t_delay</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li>Results</li>
 </ul>
 <div class="row">
 <div class="col-5">
-<pre class=""><code data-file="random_interaction_manager.txt">manager creates job-0 at 0.00 waits for 7.96
-manager creates job-1 at 7.96 waits for 0.60
-manager creates job-2 at 8.56 waits for 3.70
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="nv">manager</span><span class="w"> </span><span class="nv">creates</span><span class="w"> </span><span class="nv">job</span><span class="o">-</span><span class="mi">0</span><span class="w"> </span><span class="nv">at</span><span class="w"> </span><span class="mi">0</span>.<span class="mi">00</span><span class="w"> </span><span class="nv">waits</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="mi">7</span>.<span class="mi">96</span>
+<span class="nv">manager</span><span class="w"> </span><span class="nv">creates</span><span class="w"> </span><span class="nv">job</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="nv">at</span><span class="w"> </span><span class="mi">7</span>.<span class="mi">96</span><span class="w"> </span><span class="nv">waits</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="mi">0</span>.<span class="mi">60</span>
+<span class="nv">manager</span><span class="w"> </span><span class="nv">creates</span><span class="w"> </span><span class="nv">job</span><span class="o">-</span><span class="mi">2</span><span class="w"> </span><span class="nv">at</span><span class="w"> </span><span class="mi">8</span>.<span class="mi">56</span><span class="w"> </span><span class="nv">waits</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="mi">3</span>.<span class="mi">70</span>
+</code></pre></div>
 </div>
 <div class="col-1">
 </div>
 <div class="col-5">
-<pre class=""><code data-file="random_interaction_coder.txt">coder waits at 0.00
+<div class="codehilite"><pre class=""><span></span><code>coder waits at 0.00
 coder gets job-0 at 0.00
 coder waits at 0.65
 coder gets job-1 at 7.96
 coder waits at 8.75
 coder gets job-2 at 8.75
-</code></pre>
+</code></pre></div>
 </div>
 </div>
 <ul>
@@ -341,15 +342,15 @@ coder gets job-2 at 8.75
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="introduce_structure.py">@dataclass_json
-@dataclass
-class Params:
-    """Simulation parameters."""
+<div class="codehilite"><pre class=""><span></span><code><span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Params</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Simulation parameters."""</span>
 
-    n_seed: int = 13579
-    t_sim: float = 30
-    t_wait: float = 8
-</code></pre>
+    <span class="n">n_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">13579</span>
+    <span class="n">t_sim</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span>
+    <span class="n">t_wait</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">8</span>
+</code></pre></div>
 <ul>
 <li>Define another class to store the entire simulation<ul>
 <li>Derive from SimPy <code>Environment</code></li>
@@ -359,17 +360,17 @@ class Params:
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="introduce_structure.py">class Simulation(Environment):
-    """Complete simulation."""
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Simulation</span><span class="p">(</span><span class="n">Environment</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Complete simulation."""</span>
 
-    def __init__(self):
-        super().__init__()
-        self.params = Params()
-        self.log = []
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">Params</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="p">[]</span>
 
-    def result(self):
-        return {"log": self.log}
-</code></pre>
+    <span class="k">def</span><span class="w"> </span><span class="nf">result</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"log"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">}</span>
+</code></pre></div>
 <ul>
 <li>All of the simulation process generator functions take an instance of the simulation class as an argument<ul>
 <li><code>sim.whatever</code> for elements of the SimPy <code>Environment</code></li>
@@ -377,92 +378,92 @@ class Params:
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="introduce_structure.py">def coder(sim):
-    """Simulate a single coder."""
+<div class="codehilite"><pre class=""><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">coder</span><span class="p">(</span><span class="n">sim</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Simulate a single coder."""</span>
 
-    while True:
-        sim.log.append(f"{sim.now}: Is there any work?")
-        yield sim.timeout(sim.params.t_wait)
-</code></pre>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">sim</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sim</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">: Is there any work?"</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">sim</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">t_wait</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li>Define a <code>Simulation.simulate</code> method that creates processes and runs the simulation<ul>
 <li>Can't call it <code>run</code> because we need that method from the parent class <code>Environment</code></li>
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="introduce_structure.py">class Simulation
-    def simulate(self):
-        self.process(coder(self))
-        self.run(until=self.params.t_sim)
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Simulation</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">coder</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">t_sim</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li>Use <code>util.run(…)</code> to run scenarios with varying parameters and get result as JSON<ul>
 <li>Look in project's <code>utilities</code> directory for implementation</li>
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="introduce_structure.py">if __name__ == "__main__":
-    args, results = util.run(Params, Simulation)
-    if args.json:
-        json.dump(results, sys.stdout, indent=2)
-    else:
-        results = util.as_frames(results)
-        for key, frame in results.items():
-            print(f"## {key}")
-            print(frame)
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">args</span><span class="p">,</span> <span class="n">results</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Params</span><span class="p">,</span> <span class="n">Simulation</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">json</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">as_frames</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"## </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+</code></pre></div>
 <ul>
 <li>Sample command line invocation</li>
 </ul>
-<pre class=""><code data-file="introduce_structure_json.sh">python introduce_structure.py --json t_wait=12,20 t_sim=20,30
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code>python<span class="w"> </span>introduce_structure.py<span class="w"> </span>--json<span class="w"> </span><span class="nv">t_wait</span><span class="o">=</span><span class="m">12</span>,20<span class="w"> </span><span class="nv">t_sim</span><span class="o">=</span><span class="m">20</span>,30
+</code></pre></div>
 <ul>
 <li>Output</li>
 </ul>
-<pre class=""><code data-file="introduce_structure_json.json">{
-  "results": [
-    {
-      "params": {"n_seed": 13579, "t_sim": 20, "t_wait": 12},
-      "log": [
-        {"time": 0, "message": "loop 0"},
-        {"time": 12, "message": "loop 1"}
-      ]
-    },
-    {
-      "params": {"n_seed": 13579, "t_sim": 30, "t_wait": 12},
-      "log": [
-        {"time": 0, "message": "loop 0"},
-        {"time": 12, "message": "loop 1"},
-        {"time": 24, "message": "loop 2"}
-      ]
-    },
-    {
-      "params": {"n_seed": 13579, "t_sim": 20, "t_wait": 20},
-      "log": [
-        {"time": 0, "message": "loop 0"}
-      ]
-    },
-    {
-      "params": {"n_seed": 13579, "t_sim": 30, "t_wait": 20},
-      "log": [
-        {"time": 0, "message": "loop 0"},
-        {"time": 20, "message": "loop 1"}
-      ]
-    }
-  ]
-}
-</code></pre>
+<div class="codehilite"><pre class=""><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"n_seed"</span><span class="p">:</span><span class="w"> </span><span class="mi">13579</span><span class="p">,</span><span class="w"> </span><span class="nt">"t_sim"</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="nt">"t_wait"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">},</span>
+<span class="w">      </span><span class="nt">"log"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"loop 0"</span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"loop 1"</span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"n_seed"</span><span class="p">:</span><span class="w"> </span><span class="mi">13579</span><span class="p">,</span><span class="w"> </span><span class="nt">"t_sim"</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="nt">"t_wait"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">},</span>
+<span class="w">      </span><span class="nt">"log"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"loop 0"</span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"loop 1"</span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">24</span><span class="p">,</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"loop 2"</span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"n_seed"</span><span class="p">:</span><span class="w"> </span><span class="mi">13579</span><span class="p">,</span><span class="w"> </span><span class="nt">"t_sim"</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="nt">"t_wait"</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">},</span>
+<span class="w">      </span><span class="nt">"log"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"loop 0"</span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"n_seed"</span><span class="p">:</span><span class="w"> </span><span class="mi">13579</span><span class="p">,</span><span class="w"> </span><span class="nt">"t_sim"</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="nt">"t_wait"</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">},</span>
+<span class="w">      </span><span class="nt">"log"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"loop 0"</span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"loop 1"</span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
 <ul>
 <li>Convert to <a href="https://pola.rs/">Polars</a> dataframes)<ul>
 <li>Include all parameters in each dataframe to simplify later analysis</li>
 </ul>
 </li>
 </ul>
-<pre class=""><code data-file="introduce_structure_df.sh">python introduce_structure.py --tables t_wait=12,20 t_sim=20,30
-</code></pre>
-<pre class=""><code data-file="introduce_structure_df.txt">## log
+<div class="codehilite"><pre class=""><span></span><code>python<span class="w"> </span>introduce_structure.py<span class="w"> </span>--tables<span class="w"> </span><span class="nv">t_wait</span><span class="o">=</span><span class="m">12</span>,20<span class="w"> </span><span class="nv">t_sim</span><span class="o">=</span><span class="m">20</span>,30
+</code></pre></div>
+<div class="codehilite"><pre class=""><span></span><code><span class="gu">##</span> log
 shape: (8, 5)
-## log
+<span class="gu">##</span> log
 shape: (8, 6)
 ┌──────┬─────────┬─────┬────────┬───────┬────────┐
 │ time ┆ message ┆ id  ┆ n_seed ┆ t_sim ┆ t_wait │
@@ -478,7 +479,7 @@ shape: (8, 6)
 │ 0    ┆ loop 0  ┆ 3   ┆ 13579  ┆ 30    ┆ 20     │
 │ 20   ┆ loop 1  ┆ 3   ┆ 13579  ┆ 30    ┆ 20     │
 └──────┴─────────┴─────┴────────┴───────┴────────┘
-</code></pre>
+</code></pre></div>
 </main>
 <footer>
 <div class="row">

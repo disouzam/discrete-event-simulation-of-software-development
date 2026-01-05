@@ -10,13 +10,13 @@
     -   We'll fix this later
 -   Parameters and simulation class
 
-```{.python data-file=discard.py}
+```{.py .python data-file=discard.py}
 class Params:
-    …as before…
+    # …as before…
     t_interrupt_arrival: float = 5.0
 
 class Simulation(Environment):
-    …as before…
+    # …as before…
     def rand_interrupt_arrival(self):
         return random.expovariate(1.0 / self.params.t_interrupt_arrival)
 ```
@@ -25,10 +25,10 @@ class Simulation(Environment):
     -   The `Coder` instance is something we've built around the generator
     -   `Environment.process(…)` returns the generator, so we can store that
 
-```{.python data-file=discard.py}
+```{.py .python data-file=discard.py}
 class Simulation(Environment):
     def simulate(self):
-        …queue, manager, and monitor as before…
+        # …queue, manager, and monitor as before…
 
         self.process(Interrupter(self).run())
 
@@ -43,7 +43,7 @@ class Simulation(Environment):
 
 -   Our new `Interrupter` reaches inside a coder to get its process
 
-```{data-file=discard.py}
+```{.py data-file=discard.py}
 class Interrupter(Recorder):
     def run(self):
         while True:
@@ -65,7 +65,7 @@ class Interrupter(Recorder):
 -   Write a `Coder` that throws away whatever job it's doing when it is interrupted
     -   Not realistic, but it gives us a chance to learn about interrupts
 
-```{data-file=discard.py}
+```{.py data-file=discard.py}
 from simpy import Interrupt
 
 class Coder(Recorder):
@@ -96,9 +96,9 @@ class Coder(Recorder):
     -   Subclass `Job` so that we can call different methods for defining duration
 -   Notice that we're piling up a bunch of parameters whose values we probably don't know
 
-```{data-file=interrupts.py}
+```{.py data-file=interrupts.py}
 class Params:
-    …as before…
+    # …as before…
     t_interrupt_arrival: float = 5.0
     t_interrupt_mean: float = 0.2
     t_interrupt_std: float = 0.1
@@ -118,7 +118,7 @@ class JobInterrupt(Job):
 -   `Manager` creates `JobRegular`, `Interrupter` creates `JobInterrupt`
 -   Note that `Interrupter` passes the new job to `.interrupt()` so that it becomes the exception's `.cause`
 
-```{data-file=interrupts.py}
+```{.py data-file=interrupts.py}
 class Interrupter(Recorder):
     def run(self):
         while True:
@@ -140,7 +140,7 @@ class Interrupter(Recorder):
     -   Push the new job on the stack
     -   Note: the new job arrives as the `Interrupt` exception's cause
 
-```{data-file=interrupts.py}
+```{.py data-file=interrupts.py}
 class Coder(Recorder):
     def __init__(self, sim):
         super().__init__(sim)
@@ -191,7 +191,7 @@ class Coder(Recorder):
     -   Medium: fragments of regular job
     -   Low: regular jobs
 
-```{data-file=decompose.py}
+```{.py data-file=decompose.py}
 class Priority:
     HIGH = 0
     MEDIUM = 1
@@ -205,7 +205,7 @@ class Priority:
     -   `Job.needs_decomp` tells us whether the job needs to be decomposed
 -   We will explain `sim.do_nothing()` shortly
 
-```{data-file=decompose.py}
+```{.py data-file=decompose.py}
 class Job(Recorder):
     def __init__(self, sim, priority):
         super().__init__(sim)
@@ -235,7 +235,7 @@ class Job(Recorder):
 
 -   `JobInterrupt` is the simplest child class
 
-```{data-file=decompose.py}
+```{.py data-file=decompose.py}
 class JobInterrupt(Job):
     def __init__(self, sim):
         super().__init__(sim, Priority.HIGH)
@@ -246,7 +246,7 @@ class JobInterrupt(Job):
     -   If this job isn't complete *and* the time required is greater than the decomposition threshold
     -   The latter parameter is another completely arbitrary number
 
-```{data-file=decompose.py}
+```{.py data-file=decompose.py}
 class JobRegular(Job):
     def __init__(self, sim):
         super().__init__(sim, Priority.LOW)
@@ -263,7 +263,7 @@ class JobRegular(Job):
     -   If so, it bumps the priority of the completed job to medium and puts it back in the coder's queue
     -   If not, it does nothing
 
-```{data-file=decompose.py}
+```{.py data-file=decompose.py}
 class JobFragment(Job):
     def __init__(self, coder, placeholder, duration):
         super().__init__(coder.sim, Priority.MEDIUM)
@@ -289,7 +289,7 @@ class JobFragment(Job):
     -   `.complete` always returns something that can be yielded
     -   Either "put this job in queue" *or* "wait for 0 ticks"
 
-```{data-file=decompose.py}
+```{.py data-file=decompose.py}
 class Simulation(Environment):
     def do_nothing(self):
         return self.timeout(0)
@@ -299,7 +299,7 @@ class Simulation(Environment):
     -   Gives preference to the latter so that interrupts and fragments are done before regular work
     -   Always yields result of `job.complete()`
 
-```{data-file=decompose.py}
+```{.py data-file=decompose.py}
     def run(self):
         while True:
             job = yield from self.get()
@@ -316,7 +316,7 @@ class Simulation(Environment):
     -   Create a placeholder to keep track of them and the original job
     -   Put the fragments in the coder's priority queue
 
-```{data-file=decompose.py}
+```{.py data-file=decompose.py}
     def decompose(self, job):
         size = self.sim.params.t_decomposition
         num = int(job.duration / size)
