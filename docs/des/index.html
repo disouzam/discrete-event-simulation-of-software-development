@@ -45,12 +45,17 @@
 <li>Create a SimPy <code>Environment</code></li>
 <li>Create one or more <a href="../glossary/#generator">generators</a> for it to run<ul>
 <li>These will almost always need the environment</li>
+<li><strong>Environment works as event loop in Javascript (<a href="https://www.youtube.com/watch?v=Bk91DoAEcjY">Event discrete simulation with SimPy by Stefan Scherfke on EuroPython 2014</a>)</strong></li>
 </ul>
 </li>
 <li>Pass each generator to <code>env.process(…)</code></li>
 <li>Call <code>env.run(…)</code> and specify simulation duration</li>
 </ul>
-<div class="codehilite"><pre class=""><span></span><code><span class="sd">"""Ask for work at regular intervals."""</span>
+<div class="codehilite"><pre class=""><span></span><code><span class="sd">"""</span>
+<span class="sd">A developer ask for work at regular intervals.</span>
+<span class="sd">A Scrum Master answers one single time informing there is available and ready work.</span>
+<span class="sd">There is no interaction between them at this moment.</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">simpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span>
 
@@ -63,9 +68,11 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">: Is there any work?"</span><span class="p">)</span>
         <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">T_WAIT</span><span class="p">)</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">scrum_master</span><span class="p">(</span><span class="n">env</span><span class="p">):</span>
     <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">: There is a new task available for you, developer."</span><span class="p">)</span>
+
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">()</span>
