@@ -11,6 +11,8 @@
 -   Call `env.run(…)` and specify simulation duration
 
 ```{.py data-file=ask_for_work.py}
+"""Ask for work at regular intervals."""
+
 from simpy import Environment
 
 T_SIM = 30
@@ -22,10 +24,14 @@ def coder(env):
         print(f"{env.now}: Is there any work?")
         yield env.timeout(T_WAIT)
 
+def scrum_master(env):
+    yield env.timeout(14)
+    print(f"{env.now}: There is a new task available for you, developer.")
 
 if __name__ == "__main__":
     env = Environment()
     env.process(coder(env))
+    env.process(scrum_master(env))
     env.run(until=T_SIM)
 ```
 <p style="text-align: right"><strong>See content of this file at <a href="https://github.com/gvwilson/sim/blob/main/des/ask_for_work.py">ask_for_work.py</a><strong></p>
