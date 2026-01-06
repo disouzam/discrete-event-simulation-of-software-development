@@ -21,7 +21,11 @@ There is no interaction between them at this moment.
 
 from simpy import Environment
 
+# Duration of simulation is 30 units of time
 T_SIM = 30
+
+# Time between coder asks for more available work. 8 units of time
+# if unit of time is hour, it means that coder asks once per day
 T_WAIT = 8
 
 

@@ -60,7 +60,11 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">simpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span>
 
+<span class="c1"># Duration of simulation is 30 units of time</span>
 <span class="n">T_SIM</span> <span class="o">=</span> <span class="mi">30</span>
+
+<span class="c1"># Time between coder asks for more available work. 8 units of time</span>
+<span class="c1"># if unit of time is hour, it means that coder asks once per day</span>
 <span class="n">T_WAIT</span> <span class="o">=</span> <span class="mi">8</span>
 
 
