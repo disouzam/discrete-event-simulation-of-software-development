@@ -11,6 +11,7 @@
 -   Pass each generator to `env.process(…)`
 -   Call `env.run(…)` and specify simulation duration
 
+[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_KA9jrHF8iGGMvgZ1DL1DF5)
 ```{.py data-file=ask_for_work.py}
 """
 A developer ask for work at regular intervals.
