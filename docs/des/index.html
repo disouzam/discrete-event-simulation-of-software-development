@@ -109,12 +109,17 @@
 <h2>Interaction</h2>
 <ul>
 <li>Manager creates jobs and puts them in a queue<ul>
+<li><strong>Maybe it would be good to be explicit of how jobs are organized (pooled for a sprint in Scrum process or pulled by devs in a continuous queue)</strong></li>
 <li>Jobs arrive at regular intervals</li>
 <li>Each job has a duration</li>
+<li><strong>Is there any wish to emulate a planning poker to give estimated duration of jobs?</strong></li>
 <li>Give each job an ID for tracking</li>
 </ul>
 </li>
-<li>Coder takes jobs from the queue in order and does them</li>
+<li>Coder takes jobs from the queue in order and does them<ul>
+<li><strong>How should we handle coder specialization / seniority to decide if a job should be assigned or not to a given coder?</strong></li>
+</ul>
+</li>
 <li>Queue is implemented as a SimPy <code>Store</code> with <code>.put()</code> and <code>.get()</code> methods</li>
 </ul>
 <div class="callout">
