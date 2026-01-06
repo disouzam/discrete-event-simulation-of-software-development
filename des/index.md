@@ -72,10 +72,13 @@ if __name__ == "__main__":
 ## Interaction
 
 -   Manager creates jobs and puts them in a queue
+    -   **Maybe it would be good to be explicit of how jobs are organized (pooled for a sprint in Scrum process or pulled by devs in a continuous queue)**
     -   Jobs arrive at regular intervals
     -   Each job has a duration
+    -   **Is there any wish to emulate a planning poker to give estimated duration of jobs?**
     -   Give each job an ID for tracking
 -   Coder takes jobs from the queue in order and does them
+    -   **How should we handle coder specialization / seniority to decide if a job should be assigned or not to a given coder?**
 -   Queue is implemented as a SimPy `Store` with `.put()` and `.get()` methods
 
 <div class="callout" markdown="1">
