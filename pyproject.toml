@@ -19,6 +19,7 @@ dependencies = [
     "dataclasses-json>=0.6.7",
     "graphviz>=0.21",
     "kaleido>=1.2.0",
+    "marimo>=0.19.6",
     "matplotlib>=3.10.8",
     "pandas>=3.0.0",
     "plotly[express]>=6.5.0",
