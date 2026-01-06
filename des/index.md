@@ -142,6 +142,7 @@ def coder(env, queue):
 
 -   Set up and run
 
+[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_JRMhYdHfvtGDLSvEuQsFdR)
 ```{.py data-file=simple_interaction.py}
 if __name__ == "__main__":
     env = Environment()
