@@ -64,11 +64,16 @@ def manager_process(Job, T_CREATE):
 def coder(env, queue):
     while True:
         wait_starts = env.now
-        print(f"At {wait_starts:>2}, coder waits")
         job = yield queue.get()
 
         get_job_at = env.now
-        print(f"At {get_job_at:>2}, coder gets job {job}")
+
+        if get_job_at - wait_starts > 0:
+            print(f"At {wait_starts:>2}, coder waits")
+            print(f"At {get_job_at:>2}, coder gets job {job}")
+        else:
+            print(f"At {get_job_at:>2}, coder gets job {job} without waiting")
+            
         yield env.timeout(job.duration)
 
         completed_job_at = env.now
