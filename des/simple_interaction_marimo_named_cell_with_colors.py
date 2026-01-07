@@ -23,7 +23,14 @@ def imports():
     # Necessary imports
     from itertools import count
     from simpy import Environment, Store
-    return Environment, Store, count
+    import colored as cd
+    return Environment, Store, cd, count
+
+
+@app.cell
+def _(cd):
+    WHITE_ON_BLACK = f"{cd.fore_rgb(255,255,255)}{cd.back_rgb(0,0,0)}"
+    return (WHITE_ON_BLACK,)
 
 
 @app.cell
@@ -50,38 +57,40 @@ def job_class(T_JOB, count):
 
 
 @app.cell
-def manager_process(Job, T_CREATE):
+def manager_process(Job, T_CREATE, WHITE_ON_BLACK, cd):
     def manager(env, queue):
         while True:
             job = Job()
-            print(f"At {env.now:>2}, manager creates {job}")
+            print(f"At {WHITE_ON_BLACK} {env.now:>2} {cd.Style.reset}, manager creates {job}")
             yield queue.put(job)
             yield env.timeout(T_CREATE)
     return (manager,)
 
 
-@app.function
-def coder(env, queue):
-    while True:
-        wait_starts = env.now
-        job = yield queue.get()
+@app.cell
+def _(WHITE_ON_BLACK, cd):
+    def coder(env, queue):
+        while True:
+            wait_starts = env.now
+            job = yield queue.get()
 
-        get_job_at = env.now
+            get_job_at = env.now
 
-        if get_job_at - wait_starts > 0:
-            print(f"At {wait_starts:>2}, coder waits")
-            print(f"At {get_job_at:>2}, coder gets job {job}")
-        else:
-            print(f"At {get_job_at:>2}, coder gets job {job} without waiting")
-            
-        yield env.timeout(job.duration)
+            if get_job_at - wait_starts > 0:
+                print(f"At {WHITE_ON_BLACK} {wait_starts:>2} {cd.Style.reset}, coder waits")
+                print(f"At {WHITE_ON_BLACK} {get_job_at:>2} {cd.Style.reset}, coder gets job {job}")
+            else:
+                print(f"At {WHITE_ON_BLACK} {get_job_at:>2} {cd.Style.reset}, coder gets job {job} without waiting")
 
-        completed_job_at = env.now
-        print(f"At {completed_job_at:>2}, code completes job {job}")
+            yield env.timeout(job.duration)
+
+            completed_job_at = env.now
+            print(f"At {WHITE_ON_BLACK} {completed_job_at:>2} {cd.Style.reset}, code completes job {job}")
+    return (coder,)
 
 
 @app.cell
-def entry_point(Environment, Store, T_SIM, manager):
+def entry_point(Environment, Store, T_SIM, coder, manager):
     def main():
         env = Environment()
         queue = Store(env)
