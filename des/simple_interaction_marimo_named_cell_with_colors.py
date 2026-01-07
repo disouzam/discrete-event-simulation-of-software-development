@@ -66,19 +66,29 @@ def coder(env, queue):
         wait_starts = env.now
         print(f"At {wait_starts:>2}, coder waits")
         job = yield queue.get()
-        print(f"At {env.now:>2}, coder gets job {job}")
+
+        get_job_at = env.now
+        print(f"At {get_job_at:>2}, coder gets job {job}")
         yield env.timeout(job.duration)
-        print(f"At {env.now:>2}, code completes job {job}")
+
+        completed_job_at = env.now
+        print(f"At {completed_job_at:>2}, code completes job {job}")
 
 
 @app.cell
 def entry_point(Environment, Store, T_SIM, manager):
-    if __name__ == "__main__":
+    def main():
         env = Environment()
         queue = Store(env)
         env.process(manager(env, queue))
         env.process(coder(env, queue))
         env.run(until=T_SIM)
+    return (main,)
+
+
+@app.cell
+def _(main):
+    main()
     return
 
 
