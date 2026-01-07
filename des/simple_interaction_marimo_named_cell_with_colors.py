@@ -45,7 +45,7 @@ def job_class(T_JOB, count):
             self.duration = T_JOB
 
         def __str__(self):
-            return f"job-{self.id}"
+            return f"job {self.id}"
     return (Job,)
 
 
@@ -54,7 +54,7 @@ def manager_process(Job, T_CREATE):
     def manager(env, queue):
         while True:
             job = Job()
-            print(f"manager creates {job} at {env.now}")
+            print(f"At {env.now:>2}, manager creates {job}")
             yield queue.put(job)
             yield env.timeout(T_CREATE)
     return (manager,)
@@ -63,11 +63,12 @@ def manager_process(Job, T_CREATE):
 @app.function
 def coder(env, queue):
     while True:
-        print(f"coder waits at {env.now}")
+        wait_starts = env.now
+        print(f"At {wait_starts:>2}, coder waits")
         job = yield queue.get()
-        print(f"coder gets {job} at {env.now}")
+        print(f"At {env.now:>2}, coder gets job {job}")
         yield env.timeout(job.duration)
-        print(f"code completes {job} at {env.now}")
+        print(f"At {env.now:>2}, code completes job {job}")
 
 
 @app.cell
