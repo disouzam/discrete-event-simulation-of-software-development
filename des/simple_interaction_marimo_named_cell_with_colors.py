@@ -30,7 +30,8 @@ def imports():
 @app.cell
 def _(cd):
     WHITE_ON_BLACK = f"{cd.fore_rgb(255,255,255)}{cd.back_rgb(0,0,0)}"
-    return (WHITE_ON_BLACK,)
+    WHITE_ON_RED = f"{cd.fore_rgb(255,255,255)}{cd.back_rgb(255,0,0)}"
+    return WHITE_ON_BLACK, WHITE_ON_RED
 
 
 @app.cell
@@ -64,7 +65,7 @@ def manager_process(Job, WHITE_ON_BLACK, cd):
 
 
 @app.cell
-def _(WHITE_ON_BLACK, cd):
+def _(WHITE_ON_BLACK, WHITE_ON_RED, cd):
     def coder(env, queue):
         while True:
             wait_starts = env.now
@@ -74,7 +75,7 @@ def _(WHITE_ON_BLACK, cd):
             get_job_at = env.now
 
             if get_job_at - wait_starts > 0:
-                print(f"At {WHITE_ON_BLACK} {wait_starts:>2}  {cd.Style.reset}, coder waits")
+                print(f"{WHITE_ON_RED}At {WHITE_ON_BLACK} {wait_starts:>2}  {WHITE_ON_RED}, coder waits{cd.Style.reset}")
                 print(f"At {WHITE_ON_BLACK} {get_job_at:>2}  {cd.Style.reset}, coder gets {job}")
             else:
                 print(
@@ -104,6 +105,26 @@ def _(run_simulation):
     # Simulation constants for a standard simulation
     _T_CREATE = 6
     _T_JOB = 8
+    _T_SIM = 20
+    run_simulation(_T_CREATE, _T_JOB, _T_SIM)
+    return
+
+
+@app.cell
+def _(run_simulation):
+    # Simulation constants for a job creation FASTER than job completion
+    _T_CREATE = 2
+    _T_JOB = 8
+    _T_SIM = 20
+    run_simulation(_T_CREATE, _T_JOB, _T_SIM)
+    return
+
+
+@app.cell
+def _(run_simulation):
+    # Simulation constants for a job creation SLOWER than job completion
+    _T_CREATE = 8
+    _T_JOB = 2
     _T_SIM = 20
     run_simulation(_T_CREATE, _T_JOB, _T_SIM)
     return
