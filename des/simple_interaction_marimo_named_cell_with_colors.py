@@ -89,28 +89,23 @@ def _(WHITE_ON_BLACK, cd):
 
 
 @app.cell
-def entry_point(Environment, Store, T_SIM, coder, manager):
-    def run_simulation(time_between_new_tasks, job_duration):
+def entry_point(Environment, Store, coder, manager):
+    def run_simulation(time_between_new_tasks, job_duration, simulation_time):
         env = Environment()
         queue = Store(env)
         env.process(manager(env, queue, time_between_new_tasks, job_duration))
         env.process(coder(env, queue))
-        env.run(until=T_SIM)
+        env.run(until=simulation_time)
     return (run_simulation,)
 
 
 @app.cell
-def _():
-    # Simulation constants
-    T_CREATE = 6
-    T_JOB = 8
-    T_SIM = 20
-    return T_CREATE, T_JOB, T_SIM
-
-
-@app.cell
-def _(T_CREATE, T_JOB, run_simulation):
-    run_simulation(T_CREATE, T_JOB)
+def _(run_simulation):
+    # Simulation constants for a standard simulation
+    _T_CREATE = 6
+    _T_JOB = 8
+    _T_SIM = 20
+    run_simulation(_T_CREATE, _T_JOB, _T_SIM)
     return
 
 
