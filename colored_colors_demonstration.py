@@ -1,4 +1,6 @@
 import colored as cd
+from colored_colors import foreground_colors_dict as fg
+from colored_colors import background_colors_dict as bg
 
 
 def print_foreground_colors(message):
@@ -519,6 +521,16 @@ def print_background_colors(message):
     print(f"{cd.Back.grey_93}{message}{cd.Style.reset}")
 
 
+def combine_fore_and_background_colors(message):
+    print("\n\n\ncombine_fore_and_background_colors")
+    for kf, vf in fg.items():
+        for kb, vb in bg.items():
+            if kf == kb:
+                print(f"SAME COLORS: {vf}{vb}{message}{cd.Style.reset}")
+            else:
+                print(f"{vf}{vb}{message}{cd.Style.reset}")
+
+
 if __name__ == "__main__":
     sample_message = (
         "This is a sample text to check how colors from colored work in console"
@@ -526,3 +538,5 @@ if __name__ == "__main__":
 
     print_foreground_colors(sample_message)
     print_background_colors(sample_message)
+    combine_fore_and_background_colors(sample_message)
+    print("Demonstration of colored colors has finished!")
