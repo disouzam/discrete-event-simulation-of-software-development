@@ -28,8 +28,8 @@ def imports():
 
 
 @app.cell
-def _(cd):
-    WHITE_ON_BLACK = f"{cd.fore_rgb(255, 255, 255)}{cd.back_rgb(0, 0, 0)}"
+def _(bg_colors, fg_colors):
+    WHITE_ON_BLACK = f"{fg_colors[15]}{bg_colors[0]}"
     return (WHITE_ON_BLACK,)
 
 
@@ -43,37 +43,31 @@ def sim_constants():
 
 
 @app.cell
-def _(cd):
-    color_names = list(cd.library.Library.COLORS.keys())
-    color_codes = list(cd.library.Library.COLORS.values())
-    swapped_codes = list(zip(color_codes, color_names))
-
-    job_colors = {int(color_code): color_name for color_code, color_name in swapped_codes}
-    return (job_colors,)
-
-
-@app.cell
-def job_class(T_JOB, cd, count):
+def job_class(T_JOB, count):
     class Job:
-        _next_id = count()
+        _next_id = count(start=0)
 
-        def __init__(self, job_colors):
+        def __init__(self):
             self.id = next(Job._next_id)
             self.duration = T_JOB
-            self.job_colors = job_colors
 
         def __str__(self):
-            return f"job {cd.fore(self.job_colors[self.id])}{cd.Back.black}{self.id}{cd.Style.reset}"
+            # return f"job {fg_colors[self.id]}{bg_colors[self.id + 15]} {cd.Style.bold}{self.id} {cd.Style.reset}"
+            return f"job {self.id}"
+
+        def __repr__(self):
+            return self.__str__()
     return (Job,)
 
 
 @app.cell
 def manager_process(Job, T_CREATE, WHITE_ON_BLACK, cd):
-    def manager(env, queue, job_colors):
+    def manager(env, queue):
         while True:
-            job = Job(job_colors)
-            print(f"At {WHITE_ON_BLACK} {env.now:>2} {cd.Style.reset}, manager creates {job}")
-            yield queue.put(job)
+            job = Job()
+            print(f"\nQueue items before manager creates one more job: {queue.items}")
+            print(f"At {WHITE_ON_BLACK} {env.now:>2}  {cd.Style.reset}, manager creates {job}")
+            yield queue.put(job)        
             yield env.timeout(T_CREATE)
     return (manager,)
 
@@ -83,34 +77,32 @@ def _(WHITE_ON_BLACK, cd):
     def coder(env, queue):
         while True:
             wait_starts = env.now
+            print(f"\nQueue items before coder takes one job: {queue.items}")
             job = yield queue.get()
-            print(queue)
 
             get_job_at = env.now
 
             if get_job_at - wait_starts > 0:
-                print(f"At {WHITE_ON_BLACK} {wait_starts:>2} {cd.Style.reset}, coder waits")
-                print(f"At {WHITE_ON_BLACK} {get_job_at:>2} {cd.Style.reset}, coder gets job {job}")
+                print(f"At {WHITE_ON_BLACK} {wait_starts:>2}  {cd.Style.reset}, coder waits")
+                print(f"At {WHITE_ON_BLACK} {get_job_at:>2}  {cd.Style.reset}, coder gets {job}")
             else:
                 print(
-                    f"At {WHITE_ON_BLACK} {get_job_at:>2} {cd.Style.reset}, coder gets job {job} without waiting"
+                    f"At {WHITE_ON_BLACK} {get_job_at:>2}  {cd.Style.reset}, coder gets {job} without waiting"
                 )
 
             yield env.timeout(job.duration)
 
             completed_job_at = env.now
-            print(
-                f"At {WHITE_ON_BLACK} {completed_job_at:>2} {cd.Style.reset}, code completes job {job}"
-            )
+            print(f"At {WHITE_ON_BLACK} {completed_job_at:>2}  {cd.Style.reset}, code completes {job}")
     return (coder,)
 
 
 @app.cell
-def entry_point(Environment, Store, T_SIM, coder, job_colors, manager):
+def entry_point(Environment, Store, T_SIM, coder, manager):
     def main():
         env = Environment()
         queue = Store(env)
-        env.process(manager(env, queue, job_colors))
+        env.process(manager(env, queue))
         env.process(coder(env, queue))
         env.run(until=T_SIM)
     return (main,)
