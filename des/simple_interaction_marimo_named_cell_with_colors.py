@@ -100,17 +100,12 @@ def entry_point(Environment, Store, coder, manager):
 
 
 @app.cell
-def _():
-    # Simulation constants
-    T_CREATE = 6
-    T_JOB = 8
-    T_SIM = 20
-    return T_CREATE, T_JOB, T_SIM
-
-
-@app.cell
-def _(T_CREATE, T_JOB, T_SIM, run_simulation):
-    run_simulation(T_CREATE, T_JOB, T_SIM)
+def _(run_simulation):
+    # Simulation constants for a standard simulation
+    _T_CREATE = 6
+    _T_JOB = 8
+    _T_SIM = 20
+    run_simulation(_T_CREATE, _T_JOB, _T_SIM)
     return
 
 
