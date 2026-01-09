@@ -170,7 +170,7 @@ def _(cd):
         if calculateLuminosity(r, g, b) > LUMINOSITY_LIMIT:
             return cd.back_rgb(0, 0, 0)
 
-        return cd.back_rgb(255, 255, 255)
+        return cd.back_rgb(230, 230, 230)
     return (getContrastColor,)
 
 
