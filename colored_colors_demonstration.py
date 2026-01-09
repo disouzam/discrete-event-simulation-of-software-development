@@ -531,6 +531,13 @@ def combine_fore_and_background_colors(message):
                 print(f"{vf}{vb}{message}{cd.Style.reset}")
 
 
+def combine_white_on_foreground_with_other_colors(message):
+    for kb, vb in bg.items():
+        print(
+            f"{cd.Fore.white}{vb}{message}{cd.Style.reset} - Background color: {kb}-{str(vb)}"
+        )
+
+
 if __name__ == "__main__":
     sample_message = (
         "This is a sample text to check how colors from colored work in console"
@@ -539,4 +546,5 @@ if __name__ == "__main__":
     print_foreground_colors(sample_message)
     print_background_colors(sample_message)
     combine_fore_and_background_colors(sample_message)
+    combine_white_on_foreground_with_other_colors(sample_message)
     print("Demonstration of colored colors has finished!")
