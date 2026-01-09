@@ -112,32 +112,44 @@ def entry_point(Environment, Store, coder, manager):
 
 
 @app.cell
-def _(run_simulation):
+def _(mo, run_simulation):
     # Simulation constants for a standard simulation
     _T_CREATE = 6
     _T_JOB = 8
     _T_SIM = 20
-    run_simulation(_T_CREATE, _T_JOB, _T_SIM)
+
+    with mo.capture_stdout() as output_1:
+        run_simulation(_T_CREATE, _T_JOB, _T_SIM)
+
+    print(output_1.getvalue())
     return
 
 
 @app.cell
-def _(run_simulation):
+def _(mo, run_simulation):
     # Simulation constants for a job creation FASTER than job completion
     _T_CREATE = 2
     _T_JOB = 8
     _T_SIM = 20
-    run_simulation(_T_CREATE, _T_JOB, _T_SIM)
+
+    with mo.capture_stdout() as output_2:
+        run_simulation(_T_CREATE, _T_JOB, _T_SIM)
+
+    print(output_2.getvalue())
     return
 
 
 @app.cell
-def _(run_simulation):
+def _(mo, run_simulation):
     # Simulation constants for a job creation SLOWER than job completion
     _T_CREATE = 8
     _T_JOB = 2
     _T_SIM = 20
-    run_simulation(_T_CREATE, _T_JOB, _T_SIM)
+
+    with mo.capture_stdout() as output_3:
+        run_simulation(_T_CREATE, _T_JOB, _T_SIM)
+
+    print(output_3.getvalue())
     return
 
 
