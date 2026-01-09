@@ -101,13 +101,18 @@ def _(WHITE_ON_BLACK, WHITE_ON_RED, cd):
 
 
 @app.cell
-def entry_point(Environment, Store, coder, manager):
+def entry_point(Environment, Store, cd, coder, manager):
     def run_simulation(time_between_new_tasks, job_duration, simulation_time):
         env = Environment()
         queue = Store(env)
         env.process(manager(env, queue, time_between_new_tasks, job_duration))
         env.process(coder(env, queue))
-        env.run(until=simulation_time)
+
+        until = simulation_time
+        while env.peek() < until:
+            print(f"{cd.Fore.yellow}{cd.Back.black}{cd.Style.bold}Environment time: {env.now} - Queue items: {cd.Style.reset}{queue.items}")
+        
+            env.step()
     return (run_simulation,)
 
 
