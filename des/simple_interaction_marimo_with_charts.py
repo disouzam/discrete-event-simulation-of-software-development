@@ -24,7 +24,9 @@ def imports():
     from itertools import count
     from simpy import Environment, Store
     import colored as cd
-    return Environment, Store, cd, count
+    import plotly.express as px
+    import pandas as pd
+    return Environment, Store, cd, count, pd, px
 
 
 @app.cell
@@ -101,7 +103,7 @@ def _(WHITE_ON_BLACK, WHITE_ON_RED, cd):
 
 
 @app.cell
-def entry_point(Environment, Store, cd, coder, manager):
+def entry_point(Environment, Store, cd, coder, manager, plot_state_chart):
     def run_simulation(time_between_new_tasks, job_duration, simulation_time):
         env = Environment()
         queue = Store(env)
@@ -109,11 +111,32 @@ def entry_point(Environment, Store, cd, coder, manager):
         env.process(coder(env, queue))
 
         until = simulation_time
+        fig = None
+        fig = plot_state_chart(queue, fig)
         while env.peek() < until:
-            print(f"{cd.Fore.yellow}{cd.Back.black}{cd.Style.bold}Environment time: {env.now} - Queue items: {cd.Style.reset}{queue.items}")
-        
+            print(
+                f"{cd.Fore.yellow}{cd.Back.black}{cd.Style.bold}Environment time: {env.now} - Queue items: {cd.Style.reset}{queue.items}"
+            )
+            if fig is not None:
+                fig.layout = {}
+                fig = plot_state_chart(queue, None)
+                fig.show()
             env.step()
     return (run_simulation,)
+
+
+@app.cell
+def _(pd, px):
+    def plot_state_chart(queue, fig):
+        data = [len(queue.items)]
+        series = pd.Series(data)
+        series.index.name = "Backlog items"
+        if fig is not None:
+            pass
+    
+        fig = px.bar(series)
+        return fig
+    return (plot_state_chart,)
 
 
 @app.cell
@@ -126,7 +149,7 @@ def _(mo, run_simulation):
     with mo.capture_stdout() as output_1:
         run_simulation(_T_CREATE, _T_JOB, _T_SIM)
 
-    print(output_1.getvalue())
+    # print(output_1.getvalue())
     return
 
 
