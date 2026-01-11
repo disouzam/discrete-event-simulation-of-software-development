@@ -53,52 +53,62 @@ def _(WHITE_ON_BLACK, WHITE_ON_RED, cd, count, getContrastColor):
         def __repr__(self):
             return self.__str__()
 
-    def manager(env, queue, time_between_new_tasks, job_duration):
+    def manager(env, queue, time_between_new_tasks, job_duration, tracing=True):
         while True:
             job = Job(job_duration)
-            print(f"\nQueue items before manager creates one more job: {queue.items}")
-            print(f"At {WHITE_ON_BLACK} {env.now:>2}  {cd.Style.reset}, manager creates {job}")
+
+            if tracing:
+                print(f"\nQueue items before manager creates one more job: {queue.items}")
+                print(f"At {WHITE_ON_BLACK} {env.now:>2}  {cd.Style.reset}, manager creates {job}")
+            
             yield queue.put(job)
             yield env.timeout(time_between_new_tasks)
 
-    def coder(env, queue):
+    def coder(env, queue, tracing=True):
         while True:
             wait_starts = env.now
-            print(f"\nQueue items before coder takes one job: {queue.items}")
+
+            if tracing:
+                print(f"\nQueue items before coder takes one job: {queue.items}")
+            
             job = yield queue.get()
 
             get_job_at = env.now
 
-            if get_job_at - wait_starts > 0:
-                print(
-                    f"{WHITE_ON_RED}At {WHITE_ON_BLACK} {wait_starts:>2}  {WHITE_ON_RED}, coder waits{cd.Style.reset}"
-                )
-                print(f"At {WHITE_ON_BLACK} {get_job_at:>2}  {cd.Style.reset}, coder gets {job}")
-            else:
-                print(
-                    f"At {WHITE_ON_BLACK} {get_job_at:>2}  {cd.Style.reset}, coder gets {job} without waiting"
-                )
+            if tracing:
+                if get_job_at - wait_starts > 0:
+                    print(
+                        f"{WHITE_ON_RED}At {WHITE_ON_BLACK} {wait_starts:>2}  {WHITE_ON_RED}, coder waits{cd.Style.reset}"
+                    )
+                    print(f"At {WHITE_ON_BLACK} {get_job_at:>2}  {cd.Style.reset}, coder gets {job}")
+                else:
+                    print(
+                        f"At {WHITE_ON_BLACK} {get_job_at:>2}  {cd.Style.reset}, coder gets {job} without waiting"
+                    )
 
             yield env.timeout(job.duration)
 
             completed_job_at = env.now
-            print(f"At {WHITE_ON_BLACK} {completed_job_at:>2}  {cd.Style.reset}, code completes {job}")
+
+            if tracing:
+                print(f"At {WHITE_ON_BLACK} {completed_job_at:>2}  {cd.Style.reset}, code completes {job}")
     return coder, manager
 
 
 @app.cell
 def _(Environment, Store, cd, coder, manager):
-    def run_simulation(time_between_new_tasks, job_duration, simulation_time):
+    def run_simulation(time_between_new_tasks, job_duration, simulation_time, tracing=True):
         env = Environment()
         queue = Store(env)
-        env.process(manager(env, queue, time_between_new_tasks, job_duration))
-        env.process(coder(env, queue))
+        env.process(manager(env, queue, time_between_new_tasks, job_duration, tracing))
+        env.process(coder(env, queue,tracing))
 
         until = simulation_time
         while env.peek() < until:
-            print(
-                f"{cd.Fore.yellow}{cd.Back.black}{cd.Style.bold}Environment time: {env.now} - Queue items: {cd.Style.reset}{queue.items}"
-            )
+            if tracing:
+                print(
+                    f"{cd.Fore.yellow}{cd.Back.black}{cd.Style.bold}Environment time: {env.now} - Queue items: {cd.Style.reset}{queue.items}"
+                )
             env.step()
     return (run_simulation,)
 
@@ -111,7 +121,7 @@ def _(mo, run_simulation):
     _T_SIM = 20
 
     with mo.capture_stdout() as output_1:
-        run_simulation(_T_CREATE, _T_JOB, _T_SIM)
+        run_simulation(_T_CREATE, _T_JOB, _T_SIM, tracing=False)
 
     print(output_1.getvalue())
     return
