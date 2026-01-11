@@ -21,6 +21,7 @@ dependencies = [
     "graphviz>=0.21",
     "kaleido>=1.2.0",
     "marimo>=0.18.4",
+    "matplotlib>=3.10.8",
     "pandas>=2.3.3",
     "plotly[express]>=6.5.0",
     "polars>=1.36.1",
