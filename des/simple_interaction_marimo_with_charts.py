@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.18.4"
+__generated_with = "0.19.1"
 app = marimo.App(width="full")
 
 
@@ -24,9 +24,10 @@ def imports():
     from itertools import count
     from simpy import Environment, Store
     import colored as cd
-    import plotly.express as px
+    import plotly
+    import plotly.graph_objects as go
     import pandas as pd
-    return Environment, Store, cd, count, pd, px
+    return Environment, Store, cd, count, go, pd
 
 
 @app.cell
@@ -103,7 +104,7 @@ def _(WHITE_ON_BLACK, WHITE_ON_RED, cd):
 
 
 @app.cell
-def entry_point(Environment, Store, cd, coder, manager, plot_state_chart):
+def entry_point(Environment, Store, cd, coder, go, manager, pd):
     def run_simulation(time_between_new_tasks, job_duration, simulation_time):
         env = Environment()
         queue = Store(env)
@@ -111,32 +112,33 @@ def entry_point(Environment, Store, cd, coder, manager, plot_state_chart):
         env.process(coder(env, queue))
 
         until = simulation_time
-        fig = None
-        fig = plot_state_chart(queue, fig)
         while env.peek() < until:
             print(
                 f"{cd.Fore.yellow}{cd.Back.black}{cd.Style.bold}Environment time: {env.now} - Queue items: {cd.Style.reset}{queue.items}"
             )
-            if fig is not None:
-                fig.layout = {}
-                fig = plot_state_chart(queue, None)
-                fig.show()
             env.step()
+            data = [len(queue.items)]
+            series = pd.Series(data)
+            series.index.name = "Backlog items"
+            figwidget = go.FigureWidget()
+            figwidget.show()
     return (run_simulation,)
 
 
 @app.cell
-def _(pd, px):
-    def plot_state_chart(queue, fig):
-        data = [len(queue.items)]
+def _(go, pd):
+    def plot_state_chart(queue):
+        data = [len(queue)]
         series = pd.Series(data)
         series.index.name = "Backlog items"
-        if fig is not None:
-            pass
-    
-        fig = px.bar(series)
-        return fig
-    return (plot_state_chart,)
+        figwidget = go.FigureWidget()
+        return figwidget
+
+
+    for i in range(10):
+        fig = plot_state_chart([1, 2, 3])
+        fig.show()
+    return
 
 
 @app.cell
@@ -153,7 +155,7 @@ def _(mo, run_simulation):
     return
 
 
-@app.cell
+@app.cell(disabled=True, hide_code=True)
 def _(mo, run_simulation):
     # Simulation constants for a job creation FASTER than job completion
     _T_CREATE = 2
@@ -167,7 +169,7 @@ def _(mo, run_simulation):
     return
 
 
-@app.cell
+@app.cell(disabled=True)
 def _(mo, run_simulation):
     # Simulation constants for a job creation SLOWER than job completion
     _T_CREATE = 8
