@@ -114,16 +114,18 @@ def _(Environment, Store, cd, coder, manager):
 
 
 @app.cell
-def _(mo, run_simulation):
+def _(run_simulation):
     # Simulation constants for a standard simulation
     _T_CREATE = 6
     _T_JOB = 8
     _T_SIM = 20
 
-    with mo.capture_stdout() as output_1:
-        run_simulation(_T_CREATE, _T_JOB, _T_SIM, tracing=False)
+    # with mo.capture_stdout() as output_1:
+    #     run_simulation(_T_CREATE, _T_JOB, _T_SIM, tracing=False)
 
-    print(output_1.getvalue())
+    # print(output_1.getvalue())
+
+    run_simulation(_T_CREATE, _T_JOB, _T_SIM, tracing=False)
     return
 
 
