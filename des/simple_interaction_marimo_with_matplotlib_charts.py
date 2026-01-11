@@ -1,7 +1,7 @@
 import marimo
 
 __generated_with = "0.19.1"
-app = marimo.App(width="full")
+app = marimo.App(width="full", auto_download=["ipynb", "html"])
 
 
 @app.cell
@@ -53,6 +53,7 @@ def _(WHITE_ON_BLACK, WHITE_ON_RED, cd, count, getContrastColor):
         def __repr__(self):
             return self.__str__()
 
+
     def manager(env, queue, time_between_new_tasks, job_duration, tracing=True):
         while True:
             job = Job(job_duration)
@@ -60,9 +61,10 @@ def _(WHITE_ON_BLACK, WHITE_ON_RED, cd, count, getContrastColor):
             if tracing:
                 print(f"\nQueue items before manager creates one more job: {queue.items}")
                 print(f"At {WHITE_ON_BLACK} {env.now:>2}  {cd.Style.reset}, manager creates {job}")
-            
+
             yield queue.put(job)
             yield env.timeout(time_between_new_tasks)
+
 
     def coder(env, queue, tracing=True):
         while True:
@@ -70,7 +72,7 @@ def _(WHITE_ON_BLACK, WHITE_ON_RED, cd, count, getContrastColor):
 
             if tracing:
                 print(f"\nQueue items before coder takes one job: {queue.items}")
-            
+
             job = yield queue.get()
 
             get_job_at = env.now
@@ -91,32 +93,58 @@ def _(WHITE_ON_BLACK, WHITE_ON_RED, cd, count, getContrastColor):
             completed_job_at = env.now
 
             if tracing:
-                print(f"At {WHITE_ON_BLACK} {completed_job_at:>2}  {cd.Style.reset}, code completes {job}")
+                print(
+                    f"At {WHITE_ON_BLACK} {completed_job_at:>2}  {cd.Style.reset}, code completes {job}"
+                )
     return coder, manager
 
 
 @app.cell
 def _(Environment, Store, cd, coder, manager):
+    import matplotlib
+    import matplotlib.pyplot as plt
+    import time
+
+    matplotlib.use("TkAgg")
+
+
     def run_simulation(time_between_new_tasks, job_duration, simulation_time, tracing=True):
         env = Environment()
         queue = Store(env)
         env.process(manager(env, queue, time_between_new_tasks, job_duration, tracing))
-        env.process(coder(env, queue,tracing))
+        env.process(coder(env, queue, tracing))
 
         until = simulation_time
+        fig, ax = plt.subplots()
+        times = []
+        queue_history = []
         while env.peek() < until:
             if tracing:
                 print(
                     f"{cd.Fore.yellow}{cd.Back.black}{cd.Style.bold}Environment time: {env.now} - Queue items: {cd.Style.reset}{queue.items}"
                 )
+            # make data:
+            print(f"Current env time: {env.now} - Queue size: {len(queue.items)}")
+
+            if env.now in times:
+                times.pop()
+                queue_history.pop()
+
+            times.append(env.now)
+            queue_history.append(len(queue.items))
+
+            # plot
+            ax.plot(times, queue_history, linewidth=0.7)
+
+            fig.show()
             env.step()
+            ax.cla()
     return (run_simulation,)
 
 
 @app.cell
 def _(run_simulation):
-    # Simulation constants for a standard simulation
-    _T_CREATE = 6
+    _T_CREATE = 2
     _T_JOB = 8
     _T_SIM = 20
 
@@ -125,7 +153,7 @@ def _(run_simulation):
 
     # print(output_1.getvalue())
 
-    run_simulation(_T_CREATE, _T_JOB, _T_SIM, tracing=False)
+    run_simulation(_T_CREATE, _T_JOB, _T_SIM, tracing=True)
     return
 
 
