@@ -26,3 +26,4 @@ coverage.json
 temp/
 
 __marimo__
+misc/data.csv
