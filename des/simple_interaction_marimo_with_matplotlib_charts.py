@@ -34,7 +34,6 @@ def _(WHITE_ON_BLACK, WHITE_ON_RED, cd, count, getContrastColor):
 
     rand = np.random.default_rng(seed=2026)
 
-
     class Job:
         _next_id = count(start=0)
 
@@ -48,23 +47,27 @@ def _(WHITE_ON_BLACK, WHITE_ON_RED, cd, count, getContrastColor):
             self.back = getContrastColor(red, green, blue)
 
         def __str__(self):
-            return f"job {self.fore}{self.back} {cd.Style.bold}{self.id} {cd.Style.reset}"
+            return (
+                f"job {self.fore}{self.back} {cd.Style.bold}{self.id} {cd.Style.reset}"
+            )
 
         def __repr__(self):
             return self.__str__()
-
 
     def manager(env, queue, time_between_new_tasks, job_duration, tracing=True):
         while True:
             job = Job(job_duration)
 
             if tracing:
-                print(f"\nQueue items before manager creates one more job: {queue.items}")
-                print(f"At {WHITE_ON_BLACK} {env.now:>2}  {cd.Style.reset}, manager creates {job}")
+                print(
+                    f"\nQueue items before manager creates one more job: {queue.items}"
+                )
+                print(
+                    f"At {WHITE_ON_BLACK} {env.now:>2}  {cd.Style.reset}, manager creates {job}"
+                )
 
             yield queue.put(job)
             yield env.timeout(time_between_new_tasks)
-
 
     def coder(env, queue, tracing=True):
         while True:
@@ -82,7 +85,9 @@ def _(WHITE_ON_BLACK, WHITE_ON_RED, cd, count, getContrastColor):
                     print(
                         f"{WHITE_ON_RED}At {WHITE_ON_BLACK} {wait_starts:>2}  {WHITE_ON_RED}, coder waits{cd.Style.reset}"
                     )
-                    print(f"At {WHITE_ON_BLACK} {get_job_at:>2}  {cd.Style.reset}, coder gets {job}")
+                    print(
+                        f"At {WHITE_ON_BLACK} {get_job_at:>2}  {cd.Style.reset}, coder gets {job}"
+                    )
                 else:
                     print(
                         f"At {WHITE_ON_BLACK} {get_job_at:>2}  {cd.Style.reset}, coder gets {job} without waiting"
@@ -107,43 +112,45 @@ def _(Environment, Store, cd, coder, manager):
 
     matplotlib.use("TkAgg")
 
-
-    def run_simulation(time_between_new_tasks, job_duration, simulation_time, tracing=True):
+    def run_simulation(
+        time_between_new_tasks, job_duration, simulation_time, tracing=True
+    ):
         env = Environment()
         queue = Store(env)
         env.process(manager(env, queue, time_between_new_tasks, job_duration, tracing))
         env.process(coder(env, queue, tracing))
 
         until = simulation_time
-        fig, ax = plt.subplots()
-        times = []
-        queue_history = []
+        # fig, ax = plt.subplots()
+        # times = []
+        # queue_history = []
         while env.peek() < until:
             if tracing:
                 print(
                     f"{cd.Fore.yellow}{cd.Back.black}{cd.Style.bold}Environment time: {env.now} - Queue items: {cd.Style.reset}{queue.items}"
                 )
             # make data:
-            print(f"Current env time: {env.now} - Queue size: {len(queue.items)}")
+            # print(f"Current env time: {env.now} - Queue size: {len(queue.items)}")
 
-            if env.now in times:
-                times.pop()
-                queue_history.pop()
+            # if env.now in times:
+            #     times.pop()
+            #     queue_history.pop()
 
-            times.append(env.now)
-            queue_history.append(len(queue.items))
+            # times.append(env.now)
+            # queue_history.append(len(queue.items))
 
-            # plot
-            ax.plot(times, queue_history, linewidth=0.7)
+            # # plot
+            # ax.plot(times, queue_history, linewidth=0.7)
 
-            fig.show()
+            # fig.show()
             env.step()
-            ax.cla()
-    return (run_simulation,)
+            yield queue.items
+            # ax.cla()
+    return plt, run_simulation
 
 
 @app.cell
-def _(run_simulation):
+def _(plt, run_simulation):
     _T_CREATE = 2
     _T_JOB = 8
     _T_SIM = 20
@@ -153,7 +160,11 @@ def _(run_simulation):
 
     # print(output_1.getvalue())
 
-    run_simulation(_T_CREATE, _T_JOB, _T_SIM, tracing=True)
+    sim_gen = run_simulation(_T_CREATE, _T_JOB, _T_SIM, tracing=True)
+    queue_items = next(sim_gen)
+
+    fig, ax = plt.subplots()
+    ax.plot([0], [len(queue_items)], linewidth=0.7)
     return
 
 
@@ -180,7 +191,6 @@ def _(cd):
 
     import math
 
-
     def calculateLight(colorItem: int):
         c = colorItem / 255
 
@@ -191,10 +201,12 @@ def _(cd):
 
         return c
 
-
     def calculateLuminosity(r: int, g: int, b: int):
-        return 0.2126 * calculateLight(r) + 0.7152 * calculateLight(g) + 0.0722 * calculateLight(b)
-
+        return (
+            0.2126 * calculateLight(r)
+            + 0.7152 * calculateLight(g)
+            + 0.0722 * calculateLight(b)
+        )
 
     def getContrastColor(r: int, g: int, b: int):
         LUMINOSITY_LIMIT = 0.579  # This is the Contrast Threshold, the higher it is, the more likely text will be white
