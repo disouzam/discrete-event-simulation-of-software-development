@@ -24,3 +24,5 @@ coverage.json
 
 # Temp folder to install tar.gz files
 temp/
+
+__marimo__
