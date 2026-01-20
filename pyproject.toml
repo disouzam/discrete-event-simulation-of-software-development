@@ -69,3 +69,4 @@ fix = {help = "fix code issues", cmd = "ruff check --fix ."}
 format = {help = "format code", cmd = "ruff format ."}
 lint = {help = "check code", cmd = "ruff check ."}
 serve = {help = "serve HTML", cmd = "python -m http.server -d docs"}
+buildNserve = {help = "build AND serve HTML", cmd = "task build && task serve"}
