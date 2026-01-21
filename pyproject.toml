@@ -18,12 +18,13 @@ dependencies = [
     "dataclasses-json>=0.6.7",
     "graphviz>=0.21",
     "kaleido>=1.2.0",
+    "pip>=25.3",
     "plotly[express]>=6.5.0",
     "polars>=1.36.1",
     "prettytable>=3.17.0",
     "scipy>=1.16.3",
     "simpy>=4.0.1",
-    "taskipy>=1.14.1"
+    "taskipy>=1.14.1",
 ]
 
 [project.optional-dependencies]
