@@ -15,6 +15,10 @@ rimccole:
 rimccoletar:
 	python -m pip install temp/mccole-1.3.7.tar.gz
 
+## rimccolewhl: install mccole from a whl file
+rimccolewhl:
+	uv add temp/mccole-1.3.7-py3-none-any.whl
+
 ## check: check project
 check:
 	@mccole check --src . --dst docs
