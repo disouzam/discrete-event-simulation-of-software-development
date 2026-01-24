@@ -62,12 +62,7 @@ find . -path './.venv' -prune -o -type d -name '__pycache__' -exec rm -rf {} + &
 find . -path './.venv' -prune -o -type d -name '.ruff_cache' -exec rm -rf {} + &&
 find . -path './.venv' -prune -o -type f -name '*~' -exec rm {} +
 """}
-examples = {help = "re-create examples", cmd = """
-for mf in */Makefile
-do
-    make -C $(dirname $mf) all
-done
-"""}
+examples = {help = "re-create examples", cmd = "bash recreate-examples.sh"}
 fix = {help = "fix code issues", cmd = "ruff check --fix ."}
 format = {help = "format code", cmd = "ruff format ."}
 lint = {help = "check code", cmd = "ruff check ."}
