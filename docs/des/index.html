@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Discrete Event Simulation</title>
+<title>Our First Simulations</title>
 <link href="../static/favicon.ico" rel="icon" type="image/x-icon"/>
 <link href="../static/pygments.css" rel="stylesheet" type="text/css"/>
 <link href="../static/page.css" rel="stylesheet" type="text/css"/>
@@ -17,7 +17,7 @@
 <a href="#">Lessons</a>
 <span class="dropdown-content" id="nav-lessons">
 <a href="../intro/">Introduction</a>
-<a href="../des/">Discrete Event Simulation</a>
+<a href="../des/">Our First Simulations</a>
 <a href="../metrics/">Simple Metrics</a>
 <a href="../scenarios/">Exploring Scenarios</a>
 <a href="../interrupts/">Handling Interrupts</a>
@@ -38,9 +38,9 @@
 </span>
 </nav>
 <main>
-<h1>Discrete Event Simulation</h1>
+<h1>Our First Simulations</h1>
 <p id="terms">Terms defined: <a class="term-defined" href="dataclass">dataclass</a>, <a class="term-defined" href="random-exponential">exponential random distribution</a>, <a class="term-defined" href="generator">generator</a>, <a class="term-defined" href="random-log-normal">log-normal random distribution</a>, <a class="term-defined" href="median">median</a>, <a class="term-defined" href="parameter-sweeping">parameter sweeping</a>, <a class="term-defined" href="serialize">serialize</a></p>
-<h2>Our First Simulation</h2>
+<h2>Our goals</h2>
 <ul>
 <li>Create a SimPy <code>Environment</code></li>
 <li>Create one or more <a href="../glossary/#generator">generators</a> for it to run<ul>
@@ -50,6 +50,16 @@
 </li>
 <li>Pass each generator to <code>env.process(…)</code></li>
 <li>Call <code>env.run(…)</code> and specify simulation duration</li>
+</ul>
+<h2>A simplified process without interaction</h2>
+<ul>
+<li>The process includes only one coder and a scrum master or manager</li>
+<li>Coder asks for work to be done</li>
+<li>Scrum master creates a new task</li>
+<li>There is no interaction between them<ul>
+<li>Task stays unpicked in the backlog</li>
+</ul>
+</li>
 </ul>
 <p><a href="https://molab.marimo.io/notebooks/nb_KA9jrHF8iGGMvgZ1DL1DF5"><img alt="Open in molab" src="https://molab.marimo.io/molab-shield.svg"/></a></p>
 <div class="codehilite"><pre class=""><span></span><code><span class="sd">"""</span>

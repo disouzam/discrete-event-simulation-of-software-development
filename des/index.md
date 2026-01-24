@@ -1,8 +1,8 @@
-# Discrete Event Simulation
+# Our First Simulations
 
 <p id="terms"></p>
 
-## Our First Simulation
+## Our goals
 
 -   Create a SimPy `Environment`
 -   Create one or more [generators](g:generator) for it to run
@@ -10,6 +10,14 @@
     -   **Environment works as event loop in Javascript ([Event discrete simulation with SimPy by Stefan Scherfke on EuroPython 2014](https://www.youtube.com/watch?v=Bk91DoAEcjY))**
 -   Pass each generator to `env.process(…)`
 -   Call `env.run(…)` and specify simulation duration
+
+## A simplified process without interaction
+
+- The process includes only one coder and a scrum master or manager
+- Coder asks for work to be done
+- Scrum master creates a new task
+- There is no interaction between them
+    - Task stays unpicked in the backlog
 
 [![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_KA9jrHF8iGGMvgZ1DL1DF5)
 ```{.py data-file=ask_for_work.py}
