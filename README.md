@@ -15,6 +15,7 @@
 1.  [Introduction](@/intro/): who this is for and what it covers.
 1.  [Our First Simulations](@/des/): presents basic concepts through very simple simulations.
 1.  [Probabilistic Distributions](@/probdist/): shows how sampling from probabilistic distribution happens.
+1.  [Introducing structure](@/struct/): proposes structure to the code and data to enable serialization and other features
 1.  [Simple Metrics](@/metrics/): analyzing simple metrics.
 1.  [Exploring Scenarios](@/scenarios/): exploring other scenarios.
 1.  [Handling Interrupts](@/interrupts/): because that's just how life is.

@@ -1,0 +1,69 @@
+{
+  "seed": 13579,
+  "results": [
+    {
+      "params": {
+        "t_sim": 20,
+        "t_wait": 12
+      },
+      "log": [
+        {
+          "time": 0,
+          "message": "loop 0"
+        },
+        {
+          "time": 12,
+          "message": "loop 1"
+        }
+      ]
+    },
+    {
+      "params": {
+        "t_sim": 30,
+        "t_wait": 12
+      },
+      "log": [
+        {
+          "time": 0,
+          "message": "loop 0"
+        },
+        {
+          "time": 12,
+          "message": "loop 1"
+        },
+        {
+          "time": 24,
+          "message": "loop 2"
+        }
+      ]
+    },
+    {
+      "params": {
+        "t_sim": 20,
+        "t_wait": 20
+      },
+      "log": [
+        {
+          "time": 0,
+          "message": "loop 0"
+        }
+      ]
+    },
+    {
+      "params": {
+        "t_sim": 30,
+        "t_wait": 20
+      },
+      "log": [
+        {
+          "time": 0,
+          "message": "loop 0"
+        },
+        {
+          "time": 20,
+          "message": "loop 1"
+        }
+      ]
+    }
+  ]
+}

@@ -19,6 +19,7 @@
 <a href="../intro/">Introduction</a>
 <a href="../des/">Our First Simulations</a>
 <a href="../probdist/">Probabilistic Distributions</a>
+<a href="../struct/">Introducing structure</a>
 <a href="../metrics/">Simple Metrics</a>
 <a href="../scenarios/">Exploring Scenarios</a>
 <a href="../interrupts/">Handling Interrupts</a>
@@ -40,7 +41,7 @@
 </nav>
 <main>
 <h1>Our First Simulations</h1>
-<p id="terms">Terms defined: <a class="term-defined" href="dataclass">dataclass</a>, <a class="term-defined" href="generator">generator</a>, <a class="term-defined" href="parameter-sweeping">parameter sweeping</a>, <a class="term-defined" href="serialize">serialize</a></p>
+<p id="terms">Terms defined: <a class="term-defined" href="generator">generator</a></p>
 <h2>Our goals</h2>
 <ul>
 <li>Create a SimPy <code>Environment</code></li>
@@ -264,159 +265,6 @@ At  16  , coder gets job  2  without waiting
 
 Queue items before manager creates one more job: []
 At  18  , manager creates job  3
-</code></pre></div>
-<h2>Introduce Structure</h2>
-<ul>
-<li>Requirements<ul>
-<li>Save results as JSON to simplify analysis</li>
-<li>Simulation may have several pieces, so put them in one object</li>
-<li>Support <a href="../glossary/#parameter-sweeping">parameter sweeping</a></li>
-</ul>
-</li>
-<li>Store parameters in a <a href="../glossary/#dataclass">dataclass</a><ul>
-<li>Each parameter must have a default value so utilities can construct instances
-    without knowing anything about specific parameters</li>
-<li>Use <code>@dataclass_json</code> decorator so that utilities can <a href="../glossary/#serialize">serialize</a> as JSON</li>
-</ul>
-</li>
-</ul>
-<div class="codehilite"><pre class=""><span></span><code><span class="nd">@dataclass_json</span>
-<span class="nd">@dataclass</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">Params</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Simulation parameters."""</span>
-
-    <span class="n">n_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">13579</span>
-    <span class="n">t_sim</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span>
-    <span class="n">t_wait</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">8</span>
-</code></pre></div>
-<ul>
-<li>Define another class to store the entire simulation<ul>
-<li>Derive from SimPy <code>Environment</code></li>
-<li>Store simulation parameters as <code>.params</code></li>
-<li>May have other structures (e.g., a log to record output)</li>
-<li>Give it a <code>.result()</code> method that returns simulation result (e.g., the log)</li>
-</ul>
-</li>
-</ul>
-<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Simulation</span><span class="p">(</span><span class="n">Environment</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Complete simulation."""</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">Params</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">result</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">"log"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">}</span>
-</code></pre></div>
-<ul>
-<li>All of the simulation process generator functions take an instance of the simulation class as an argument<ul>
-<li><code>sim.whatever</code> for elements of the SimPy <code>Environment</code></li>
-<li><code>sim.params.whatever</code> for parameters</li>
-</ul>
-</li>
-</ul>
-<div class="codehilite"><pre class=""><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">coder</span><span class="p">(</span><span class="n">sim</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Simulate a single coder."""</span>
-
-    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">sim</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sim</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">: Is there any work?"</span><span class="p">)</span>
-        <span class="k">yield</span> <span class="n">sim</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">t_wait</span><span class="p">)</span>
-</code></pre></div>
-<ul>
-<li>Define a <code>Simulation.simulate</code> method that creates processes and runs the simulation<ul>
-<li>Can't call it <code>run</code> because we need that method from the parent class <code>Environment</code></li>
-</ul>
-</li>
-</ul>
-<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Simulation</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">coder</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">t_sim</span><span class="p">)</span>
-</code></pre></div>
-<ul>
-<li>Use <code>util.run(…)</code> to run scenarios with varying parameters and get result as JSON<ul>
-<li>Look in project's <code>utilities</code> directory for implementation</li>
-</ul>
-</li>
-</ul>
-<div class="codehilite"><pre class=""><span></span><code><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
-    <span class="n">args</span><span class="p">,</span> <span class="n">results</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">Params</span><span class="p">,</span> <span class="n">Simulation</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">json</span><span class="p">:</span>
-        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">as_frames</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"## </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
-</code></pre></div>
-<ul>
-<li>Sample command line invocation</li>
-</ul>
-<div class="codehilite"><pre class=""><span></span><code>python<span class="w"> </span>introduce_structure.py<span class="w"> </span>--json<span class="w"> </span><span class="nv">t_wait</span><span class="o">=</span><span class="m">12</span>,20<span class="w"> </span><span class="nv">t_sim</span><span class="o">=</span><span class="m">20</span>,30
-</code></pre></div>
-<ul>
-<li>Output</li>
-</ul>
-<div class="codehilite"><pre class=""><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">"params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"n_seed"</span><span class="p">:</span><span class="w"> </span><span class="mi">13579</span><span class="p">,</span><span class="w"> </span><span class="nt">"t_sim"</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="nt">"t_wait"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">},</span>
-<span class="w">      </span><span class="nt">"log"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">{</span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"loop 0"</span><span class="p">},</span>
-<span class="w">        </span><span class="p">{</span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"loop 1"</span><span class="p">}</span>
-<span class="w">      </span><span class="p">]</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">"params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"n_seed"</span><span class="p">:</span><span class="w"> </span><span class="mi">13579</span><span class="p">,</span><span class="w"> </span><span class="nt">"t_sim"</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="nt">"t_wait"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">},</span>
-<span class="w">      </span><span class="nt">"log"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">{</span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"loop 0"</span><span class="p">},</span>
-<span class="w">        </span><span class="p">{</span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"loop 1"</span><span class="p">},</span>
-<span class="w">        </span><span class="p">{</span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">24</span><span class="p">,</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"loop 2"</span><span class="p">}</span>
-<span class="w">      </span><span class="p">]</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">"params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"n_seed"</span><span class="p">:</span><span class="w"> </span><span class="mi">13579</span><span class="p">,</span><span class="w"> </span><span class="nt">"t_sim"</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="nt">"t_wait"</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">},</span>
-<span class="w">      </span><span class="nt">"log"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">{</span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"loop 0"</span><span class="p">}</span>
-<span class="w">      </span><span class="p">]</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">"params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"n_seed"</span><span class="p">:</span><span class="w"> </span><span class="mi">13579</span><span class="p">,</span><span class="w"> </span><span class="nt">"t_sim"</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="nt">"t_wait"</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">},</span>
-<span class="w">      </span><span class="nt">"log"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">{</span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"loop 0"</span><span class="p">},</span>
-<span class="w">        </span><span class="p">{</span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"loop 1"</span><span class="p">}</span>
-<span class="w">      </span><span class="p">]</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">]</span>
-<span class="p">}</span>
-</code></pre></div>
-<ul>
-<li>Convert to <a href="https://pola.rs/">Polars</a> dataframes)<ul>
-<li>Include all parameters in each dataframe to simplify later analysis</li>
-</ul>
-</li>
-</ul>
-<div class="codehilite"><pre class=""><span></span><code>python<span class="w"> </span>introduce_structure.py<span class="w"> </span>--tables<span class="w"> </span><span class="nv">t_wait</span><span class="o">=</span><span class="m">12</span>,20<span class="w"> </span><span class="nv">t_sim</span><span class="o">=</span><span class="m">20</span>,30
-</code></pre></div>
-<div class="codehilite"><pre class=""><span></span><code><span class="gu">##</span> log
-shape: (8, 5)
-<span class="gu">##</span> log
-shape: (8, 6)
-┌──────┬─────────┬─────┬────────┬───────┬────────┐
-│ time ┆ message ┆ id  ┆ n_seed ┆ t_sim ┆ t_wait │
-│ ---  ┆ ---     ┆ --- ┆ ---    ┆ ---   ┆ ---    │
-│ i64  ┆ str     ┆ i32 ┆ i32    ┆ i32   ┆ i32    │
-╞══════╪═════════╪═════╪════════╪═══════╪════════╡
-│ 0    ┆ loop 0  ┆ 0   ┆ 13579  ┆ 20    ┆ 12     │
-│ 12   ┆ loop 1  ┆ 0   ┆ 13579  ┆ 20    ┆ 12     │
-│ 0    ┆ loop 0  ┆ 1   ┆ 13579  ┆ 30    ┆ 12     │
-│ 12   ┆ loop 1  ┆ 1   ┆ 13579  ┆ 30    ┆ 12     │
-│ 24   ┆ loop 2  ┆ 1   ┆ 13579  ┆ 30    ┆ 12     │
-│ 0    ┆ loop 0  ┆ 2   ┆ 13579  ┆ 20    ┆ 20     │
-│ 0    ┆ loop 0  ┆ 3   ┆ 13579  ┆ 30    ┆ 20     │
-│ 20   ┆ loop 1  ┆ 3   ┆ 13579  ┆ 30    ┆ 20     │
-└──────┴─────────┴─────┴────────┴───────┴────────┘
 </code></pre></div>
 </main>
 <footer>
