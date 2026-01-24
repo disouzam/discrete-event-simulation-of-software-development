@@ -76,15 +76,16 @@ def scrum_master(env):
 
 
 @app.cell
-def _(Environment, coder):
+def _(Environment, coder, mo):
     # Create a SimPy environment
     env = Environment()
 
     # Create a process where coder is the generator function
     env.process(coder(env))
 
-    # Create a process where a scrum master is the generator function
-    env.process(scrum_master(env))
+    with mo.capture_stdout() as output:
+        # Create a process where a scrum master is the generator function
+        env.process(scrum_master(env))
     return (env,)
 
 
