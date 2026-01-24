@@ -7,6 +7,7 @@ app = marimo.App(width="full")
 @app.cell
 def _():
     import marimo as mo
+
     return
 
 
@@ -21,7 +22,6 @@ def _():
     T_JOB = 8
     T_SIM = 20
 
-
     class Job:
         _next_id = count()
 
@@ -32,14 +32,12 @@ def _():
         def __str__(self):
             return f"job-{self.id}"
 
-
     def manager(env, queue):
         while True:
             job = Job()
             print(f"manager creates {job} at {env.now}")
             yield queue.put(job)
             yield env.timeout(T_CREATE)
-
 
     def coder(env, queue):
         while True:

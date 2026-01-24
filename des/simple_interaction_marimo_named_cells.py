@@ -7,6 +7,7 @@ app = marimo.App(width="full")
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -23,6 +24,7 @@ def imports():
     # Necessary imports
     from itertools import count
     from simpy import Environment, Store
+
     return Environment, Store, count
 
 
@@ -46,6 +48,7 @@ def job_class(T_JOB, count):
 
         def __str__(self):
             return f"job-{self.id}"
+
     return (Job,)
 
 
@@ -57,6 +60,7 @@ def manager_process(Job, T_CREATE):
             print(f"manager creates {job} at {env.now}")
             yield queue.put(job)
             yield env.timeout(T_CREATE)
+
     return (manager,)
 
 
