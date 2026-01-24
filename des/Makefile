@@ -18,7 +18,7 @@ simple_interaction_manager.txt: simple_interaction.txt
 	grep manager $< > $@
 
 simple_interaction_marimo_alternative_output_2.txt: simple_interaction_marimo_alternative_output.txt
-	bash strip.sh $< $@
+	bash sanitize-colorized-output $< $@
 
 clean:
 	@rm -rf *~ __pycache__
