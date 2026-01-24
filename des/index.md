@@ -93,14 +93,15 @@ if __name__ == "__main__":
 
 </div>
 
--   [Parameters🔗](https://ta-01ke8f656edty2nb7tw8ke9nw7-2718.wo-r8b4yh4kjywbxvr74dnkt9xpn.w.modal.host/#scrollTo=sim_constants)
+-   Parameters
+
 ```{.py data-file=simple_interaction.py}
 T_CREATE = 6
 T_JOB = 8
 T_SIM = 20
 ```
 
--   [`Job` class🔗](https://ta-01ke8f656edty2nb7tw8ke9nw7-2718.wo-r8b4yh4kjywbxvr74dnkt9xpn.w.modal.host/#scrollTo=job_class)
+-   `Job` class
 
 ```{.py data-file=simple_interaction.py}
 from itertools import count
@@ -116,7 +117,7 @@ class Job:
         return f"job-{self.id}"
 ```
 
--   [`manager` process🔗](https://ta-01ke8f656edty2nb7tw8ke9nw7-2718.wo-r8b4yh4kjywbxvr74dnkt9xpn.w.modal.host/#scrollTo=manager_process)
+-   `manager` process
 
 ```{.py data-file=simple_interaction.py}
 def manager(env, queue):
@@ -127,7 +128,7 @@ def manager(env, queue):
         yield env.timeout(T_CREATE)
 ```
 
--   [`coder` process🔗](https://ta-01ke8f656edty2nb7tw8ke9nw7-2718.wo-r8b4yh4kjywbxvr74dnkt9xpn.w.modal.host/#scrollTo=*coder)
+-   `coder` process
 
 ```{.py data-file=simple_interaction.py}
 def coder(env, queue):
@@ -143,7 +144,6 @@ def coder(env, queue):
 
 [![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_JRMhYdHfvtGDLSvEuQsFdR)
 
-[Setup and run🔗](https://ta-01ke8f656edty2nb7tw8ke9nw7-2718.wo-r8b4yh4kjywbxvr74dnkt9xpn.w.modal.host/#scrollTo=entry_point)
 ```{.py data-file=simple_interaction.py}
 if __name__ == "__main__":
     env = Environment()
@@ -197,7 +197,7 @@ coder gets job-2 at 16
 
 -   But even this is hard to read
 
-Alternative way of presenting:
+**Alternative way of presenting**:
 ```
 Queue items before manager creates one more job: []
 At   0  , manager creates job  0
