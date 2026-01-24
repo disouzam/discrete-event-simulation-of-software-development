@@ -166,7 +166,7 @@ def _():
 
     _T_CREATE = 2
     _T_JOB = 8
-    _T_SIM = 40
+    _T_SIM = 16
 
     run_simulation(_T_CREATE, _T_JOB, _T_SIM, tracing=True)
     return
