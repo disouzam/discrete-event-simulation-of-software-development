@@ -18,6 +18,7 @@
 <span class="dropdown-content" id="nav-lessons">
 <a href="../intro/">Introduction</a>
 <a href="../des/">Our First Simulations</a>
+<a href="../probdist/">Probabilistic Distributions</a>
 <a href="../metrics/">Simple Metrics</a>
 <a href="../scenarios/">Exploring Scenarios</a>
 <a href="../interrupts/">Handling Interrupts</a>
@@ -39,7 +40,7 @@
 </nav>
 <main>
 <h1>Our First Simulations</h1>
-<p id="terms">Terms defined: <a class="term-defined" href="dataclass">dataclass</a>, <a class="term-defined" href="random-exponential">exponential random distribution</a>, <a class="term-defined" href="generator">generator</a>, <a class="term-defined" href="random-log-normal">log-normal random distribution</a>, <a class="term-defined" href="median">median</a>, <a class="term-defined" href="parameter-sweeping">parameter sweeping</a>, <a class="term-defined" href="serialize">serialize</a></p>
+<p id="terms">Terms defined: <a class="term-defined" href="dataclass">dataclass</a>, <a class="term-defined" href="generator">generator</a>, <a class="term-defined" href="parameter-sweeping">parameter sweeping</a>, <a class="term-defined" href="serialize">serialize</a></p>
 <h2>Our goals</h2>
 <ul>
 <li>Create a SimPy <code>Environment</code></li>
@@ -264,143 +265,6 @@ At  16  , coder gets job  2  without waiting
 Queue items before manager creates one more job: []
 At  18  , manager creates job  3
 </code></pre></div>
-<h2>Uniform Rates</h2>
-<ul>
-<li>Use ranges for creation times and job durations</li>
-</ul>
-<div class="codehilite"><pre class=""><span></span><code><span class="n">RNG_SEED</span> <span class="o">=</span> <span class="mi">98765</span>
-<span class="n">T_CREATE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">T_JOB</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
-<span class="n">T_SIM</span> <span class="o">=</span> <span class="mi">20</span>
-</code></pre></div>
-<ul>
-<li><code>Job</code> has a random duration</li>
-</ul>
-<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Job</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">Job</span><span class="o">.</span><span class="n">_next_id</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">*</span><span class="n">T_JOB</span><span class="p">)</span>
-</code></pre></div>
-<ul>
-<li><code>manager</code> waits a random time before creating the next job<ul>
-<li>Format time to two decimal places for readability</li>
-</ul>
-</li>
-</ul>
-<div class="codehilite"><pre class=""><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">manager</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
-    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"manager creates </span><span class="si">{</span><span class="n">job</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="k">yield</span> <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
-        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">*</span><span class="n">T_CREATE</span><span class="p">))</span>
-</code></pre></div>
-<ul>
-<li>Always initialize the random number generator to ensure reproducibility<ul>
-<li>Hard to debug if the program behaves differently each time we run it</li>
-</ul>
-</li>
-</ul>
-<div class="codehilite"><pre class=""><span></span><code><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
-    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">RNG_SEED</span><span class="p">)</span>
-    <span class="c1"># …as before…</span>
-</code></pre></div>
-<div class="row">
-<div class="col-5">
-<div class="codehilite"><pre class=""><span></span><code>manager creates job-0 at 0.00
-manager creates job-1 at 8.36
-manager creates job-2 at 14.73
-</code></pre></div>
-</div>
-<div class="col-1">
-</div>
-<div class="col-5">
-<div class="codehilite"><pre class=""><span></span><code>coder waits at 0.00
-coder gets job-0 at 0.00
-coder waits at 8.52
-coder gets job-1 at 8.52
-</code></pre></div>
-</div>
-</div>
-<h2>Better Random Distributions</h2>
-<ul>
-<li>Assume probability of manager generating a new job in any instant is fixed<ul>
-<li>I.e., doesn't depend on how long since the last job was generated</li>
-</ul>
-</li>
-<li>If the arrival rate (jobs per tick) is λ,
-    the time until the next job is an <a href="../glossary/#random-exponential">exponential</a> random variable
-    with mean 1/λ</li>
-</ul>
-<div class="center">
-<img alt="exponential distribution" src="exponential.svg"/>
-</div>
-<ul>
-<li>Use a <a href="../glossary/#random-log-normal">log-normal</a> random variable to model job lengths<ul>
-<li>All job lengths are positive</li>
-<li>Most jobs are short but there are a few outliers</li>
-<li>If parameters are μ and σ, the <a href="../glossary/#median">median</a> is e<sup>μ</sup></li>
-</ul>
-</li>
-</ul>
-<div class="center">
-<img alt="log-normal distribution" src="lognormal.svg"/>
-</div>
-<h2>Better Random Interaction</h2>
-<ul>
-<li>Parameters and randomization functions</li>
-</ul>
-<div class="codehilite"><pre class=""><span></span><code><span class="err">…</span><span class="n">other</span> <span class="n">parameters</span> <span class="k">as</span> <span class="n">before</span><span class="err">…</span>
-<span class="n">T_JOB_INTERVAL</span> <span class="o">=</span> <span class="mf">2.0</span>
-<span class="n">T_JOB_MEAN</span> <span class="o">=</span> <span class="mf">0.5</span>
-<span class="n">T_JOB_STD</span> <span class="o">=</span> <span class="mf">0.6</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">rand_job_arrival</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">T_JOB_INTERVAL</span><span class="p">)</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">rand_job_duration</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">lognormvariate</span><span class="p">(</span><span class="n">T_JOB_MEAN</span><span class="p">,</span> <span class="n">T_JOB_STD</span><span class="p">)</span>
-</code></pre></div>
-<ul>
-<li>Corresponding changes to <code>Job</code> and <code>manager</code></li>
-</ul>
-<div class="codehilite"><pre class=""><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Job</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">Job</span><span class="o">.</span><span class="n">_next_id</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">rand_job_duration</span><span class="p">()</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">manager</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
-    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">()</span>
-        <span class="n">t_delay</span> <span class="o">=</span> <span class="n">rand_job_arrival</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"manager creates </span><span class="si">{</span><span class="n">job</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> waits for </span><span class="si">{</span><span class="n">t_delay</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="k">yield</span> <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
-        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">t_delay</span><span class="p">)</span>
-</code></pre></div>
-<ul>
-<li>Results</li>
-</ul>
-<div class="row">
-<div class="col-5">
-<div class="codehilite"><pre class=""><span></span><code><span class="nv">manager</span><span class="w"> </span><span class="nv">creates</span><span class="w"> </span><span class="nv">job</span><span class="o">-</span><span class="mi">0</span><span class="w"> </span><span class="nv">at</span><span class="w"> </span><span class="mi">0</span>.<span class="mi">00</span><span class="w"> </span><span class="nv">waits</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="mi">7</span>.<span class="mi">96</span>
-<span class="nv">manager</span><span class="w"> </span><span class="nv">creates</span><span class="w"> </span><span class="nv">job</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="nv">at</span><span class="w"> </span><span class="mi">7</span>.<span class="mi">96</span><span class="w"> </span><span class="nv">waits</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="mi">0</span>.<span class="mi">60</span>
-<span class="nv">manager</span><span class="w"> </span><span class="nv">creates</span><span class="w"> </span><span class="nv">job</span><span class="o">-</span><span class="mi">2</span><span class="w"> </span><span class="nv">at</span><span class="w"> </span><span class="mi">8</span>.<span class="mi">56</span><span class="w"> </span><span class="nv">waits</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="mi">3</span>.<span class="mi">70</span>
-</code></pre></div>
-</div>
-<div class="col-1">
-</div>
-<div class="col-5">
-<div class="codehilite"><pre class=""><span></span><code>coder waits at 0.00
-coder gets job-0 at 0.00
-coder waits at 0.65
-coder gets job-1 at 7.96
-coder waits at 8.75
-coder gets job-2 at 8.75
-</code></pre></div>
-</div>
-</div>
-<ul>
-<li>But this is still hard to read and analyze</li>
-</ul>
 <h2>Introduce Structure</h2>
 <ul>
 <li>Requirements<ul>
@@ -566,7 +430,7 @@ shape: (8, 6)
 	  <a href="../#acknowledgments">the authors</a>
 </div>
 <div class="col-3 right">
-<a href="../metrics/">Simple Metrics</a> ⇒
+<a href="../probdist/">Probabilistic Distributions</a> ⇒
 	</div>
 </div>
 </footer>

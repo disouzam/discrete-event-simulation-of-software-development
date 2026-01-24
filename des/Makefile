@@ -3,14 +3,6 @@ TARGETS = \
   simple_interaction.txt \
   simple_interaction_coder.txt \
   simple_interaction_manager.txt \
-  uniform_interaction.txt \
-  uniform_interaction_coder.txt \
-  uniform_interaction_manager.txt \
-  random_interaction.txt \
-  random_interaction_coder.txt \
-  random_interaction_manager.txt \
-  exponential.svg \
-  lognormal.svg \
   introduce_structure_json.json \
   introduce_structure_df.txt
 
@@ -42,9 +34,6 @@ introduce_structure_json.json: introduce_structure_json.sh introduce_structure.p
 
 introduce_structure_df.txt: introduce_structure_df.sh introduce_structure.py
 	bash $< > $@
-
-%.svg: %.py
-	python $< $@
 
 clean:
 	@rm -rf *~ __pycache__

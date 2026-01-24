@@ -1,6 +1,8 @@
 coder waits at 0
 coder gets job-0 at 0
+coder completes job-0 at 8
 coder waits at 8
 coder gets job-1 at 8
+coder completes job-1 at 16
 coder waits at 16
 coder gets job-2 at 16
