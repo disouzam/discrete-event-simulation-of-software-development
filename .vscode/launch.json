@@ -10,6 +10,14 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal"
-        }
+        },
+        {
+            "name": "Debug introduce_structure.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "des/introduce_structure.py",
+            "console": "integratedTerminal",
+            "stopOnEntry": true
+        },
     ]
 }
