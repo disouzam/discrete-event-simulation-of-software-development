@@ -149,7 +149,11 @@ def coder(env, queue):
 
 -   Set up and run
 
-[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_JRMhYdHfvtGDLSvEuQsFdR)
+[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_BGq8nGuCZBEjgiP3G5MVes)
+
+Or this version with named cells:
+
+[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_cn8JWkbuZHxBFd8primLhG)
 
 ```{.py data-file=simple_interaction.py}
 if __name__ == "__main__":
@@ -205,6 +209,9 @@ coder gets job-2 at 16
 -   But even this is hard to read
 
 **Alternative way of presenting**:
+
+[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_8ZBjhiHtHB3J5ashmkWUV3)
+
 ```
 Queue items before manager creates one more job: []
 At   0  , manager creates job  0
