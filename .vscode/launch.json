@@ -1,0 +1,50 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "stopOnEntry": true
+        },
+        {
+            "name": "Debug introduce_structure.py - Default parameters - dataframe output",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "des/introduce_structure.py",
+            "args": [],
+            "console": "integratedTerminal",
+            "stopOnEntry": true
+        },
+        {
+            "name": "Debug introduce_structure.py - dataframe output",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "des/introduce_structure.py",
+            "args": [
+                "t_wait=12,20",
+                "t_sim=20,30"
+            ],
+            "console": "integratedTerminal",
+            "stopOnEntry": true
+        },
+        {
+            "name": "Debug introduce_structure.py with JSON output",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "des/introduce_structure.py",
+            "args": [
+                "--json",
+                "t_wait=12,20",
+                "t_sim=20,30"
+            ],
+            "console": "integratedTerminal",
+            "stopOnEntry": true
+        },
+    ]
+}
