@@ -69,7 +69,6 @@ if __name__ == "__main__":
     # Run the simulation for the specified duration
     env.run(until=T_SIM)
 ```
-<p style="text-align: right"><strong>See content of this file at <a href="https://github.com/gvwilson/sim/blob/main/des/ask_for_work.py">ask_for_work.py</a><strong></p>
 
 -   Output
 
