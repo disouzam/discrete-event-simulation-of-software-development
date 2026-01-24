@@ -19,7 +19,7 @@
 - There is no interaction between them
     - Task stays unpicked in the backlog
 
-[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_KA9jrHF8iGGMvgZ1DL1DF5)
+[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_aNfmQJNvbTDdqFHs6t6gSo)
 ```{.py data-file=ask_for_work.py}
 """
 A developer ask for work at regular intervals.
