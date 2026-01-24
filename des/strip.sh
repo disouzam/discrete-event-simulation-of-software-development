@@ -1,0 +1,1 @@
+cat simple_interaction_marimo_alternative_output.txt | sed 's/[^[:print:]]//g' | sed 's/\[[0-9]\+;[0-9]\+;[0-9]\+;[0-9]\+;[0-9]\+m//g' | sed 's/\[[0-9]\+;[0-9]\+;[0-9]\+m//g' | sed 's/\[0m//g' | sed 's/\[1m//g' | sed 's/  / /g'

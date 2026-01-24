@@ -37,11 +37,7 @@ def _():
 
 
     def calculateLuminosity(r: int, g: int, b: int):
-        return (
-            0.2126 * calculateLight(r)
-            + 0.7152 * calculateLight(g)
-            + 0.0722 * calculateLight(b)
-        )
+        return 0.2126 * calculateLight(r) + 0.7152 * calculateLight(g) + 0.0722 * calculateLight(b)
 
 
     def getContrastColor(r: int, g: int, b: int):
@@ -77,9 +73,7 @@ def _():
 
             if tracing:
                 print(f"\nQueue items before manager creates one more job: {queue.items}")
-                print(
-                    f"At {WHITE_ON_BLACK} {env.now:>2}  {cd.Style.reset}, manager creates {job}"
-                )
+                print(f"At {WHITE_ON_BLACK} {env.now:>2}  {cd.Style.reset}, manager creates {job}")
 
             yield queue.put(job)
             yield env.timeout(time_between_new_tasks)
@@ -101,9 +95,7 @@ def _():
                     print(
                         f"{WHITE_ON_RED}At {WHITE_ON_BLACK} {wait_starts:>2}  {WHITE_ON_RED}, coder waits{cd.Style.reset}"
                     )
-                    print(
-                        f"At {WHITE_ON_BLACK} {get_job_at:>2}  {cd.Style.reset}, coder gets {job}"
-                    )
+                    print(f"At {WHITE_ON_BLACK} {get_job_at:>2}  {cd.Style.reset}, coder gets {job}")
                 else:
                     print(
                         f"At {WHITE_ON_BLACK} {get_job_at:>2}  {cd.Style.reset}, coder gets {job} without waiting"
@@ -121,10 +113,6 @@ def _():
 
     def run_simulation(time_between_new_tasks, job_duration, simulation_time, tracing=True):
         fieldnames = ["time", "queue_length"]
-
-        with open("data.csv", "w") as csv_file:
-            csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-            csv_writer.writeheader()
 
         env = Environment()
         queue = Store(env)
@@ -153,13 +141,6 @@ def _():
             if new_len > prev_len:
                 new_data = True
 
-            if new_data:
-                with open("data.csv", "a") as csv_file:
-                    csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-
-                    info = {"time": time_list[-1], "queue_length": queue_length_list[-1]}
-
-                    csv_writer.writerow(info)
             env.step()
             time.sleep(2)
 
