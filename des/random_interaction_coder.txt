@@ -1,6 +1,8 @@
 coder waits at 0.00
 coder gets job-0 at 0.00
+coder completes job-0 at 0.65
 coder waits at 0.65
 coder gets job-1 at 7.96
+coder completes job-1 at 8.75
 coder waits at 8.75
 coder gets job-2 at 8.75
