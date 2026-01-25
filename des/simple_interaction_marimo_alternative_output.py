@@ -7,6 +7,7 @@ app = marimo.App(width="full")
 @app.cell
 def _():
     import marimo as mo
+
     return
 
 
@@ -24,7 +25,6 @@ def _():
     WHITE_ON_BLACK = f"{cd.fore_rgb(255, 255, 255)}{cd.back_rgb(0, 0, 0)}"
     WHITE_ON_RED = f"{cd.fore_rgb(255, 255, 255)}{cd.back_rgb(255, 0, 0)}"
 
-
     def calculateLight(colorItem: int):
         c = colorItem / 255
 
@@ -35,10 +35,12 @@ def _():
 
         return c
 
-
     def calculateLuminosity(r: int, g: int, b: int):
-        return 0.2126 * calculateLight(r) + 0.7152 * calculateLight(g) + 0.0722 * calculateLight(b)
-
+        return (
+            0.2126 * calculateLight(r)
+            + 0.7152 * calculateLight(g)
+            + 0.0722 * calculateLight(b)
+        )
 
     def getContrastColor(r: int, g: int, b: int):
         LUMINOSITY_LIMIT = 0.579  # This is the Contrast Threshold, the higher it is, the more likely text will be white
@@ -46,7 +48,6 @@ def _():
             return cd.back_rgb(0, 0, 0)
 
         return cd.back_rgb(230, 230, 230)
-
 
     class Job:
         _next_id = count(start=0)
@@ -61,23 +62,27 @@ def _():
             self.back = getContrastColor(red, green, blue)
 
         def __str__(self):
-            return f"job {self.fore}{self.back} {cd.Style.bold}{self.id} {cd.Style.reset}"
+            return (
+                f"job {self.fore}{self.back} {cd.Style.bold}{self.id} {cd.Style.reset}"
+            )
 
         def __repr__(self):
             return self.__str__()
-
 
     def manager(env, queue, time_between_new_tasks, job_duration, tracing=True):
         while True:
             job = Job(job_duration)
 
             if tracing:
-                print(f"\nQueue items before manager creates one more job: {queue.items}")
-                print(f"At {WHITE_ON_BLACK} {env.now:>2}  {cd.Style.reset}, manager creates {job}")
+                print(
+                    f"\nQueue items before manager creates one more job: {queue.items}"
+                )
+                print(
+                    f"At {WHITE_ON_BLACK} {env.now:>2}  {cd.Style.reset}, manager creates {job}"
+                )
 
             yield queue.put(job)
             yield env.timeout(time_between_new_tasks)
-
 
     def coder(env, queue, tracing=True):
         while True:
@@ -95,7 +100,9 @@ def _():
                     print(
                         f"{WHITE_ON_RED}At {WHITE_ON_BLACK} {wait_starts:>2}  {WHITE_ON_RED}, coder waits{cd.Style.reset}"
                     )
-                    print(f"At {WHITE_ON_BLACK} {get_job_at:>2}  {cd.Style.reset}, coder gets {job}")
+                    print(
+                        f"At {WHITE_ON_BLACK} {get_job_at:>2}  {cd.Style.reset}, coder gets {job}"
+                    )
                 else:
                     print(
                         f"At {WHITE_ON_BLACK} {get_job_at:>2}  {cd.Style.reset}, coder gets {job} without waiting"
@@ -110,8 +117,9 @@ def _():
                     f"At {WHITE_ON_BLACK} {completed_job_at:>2}  {cd.Style.reset}, coder completes {job}"
                 )
 
-
-    def run_simulation(time_between_new_tasks, job_duration, simulation_time, tracing=True):
+    def run_simulation(
+        time_between_new_tasks, job_duration, simulation_time, tracing=True
+    ):
         fieldnames = ["time", "queue_length"]
 
         env = Environment()
@@ -124,26 +132,20 @@ def _():
         queue_length_list = []
 
         while env.peek() < until:
-            if tracing:
-                print(
-                    f"{cd.Fore.yellow}{cd.Back.black}{cd.Style.bold}Environment time: {env.now} - Queue items: {cd.Style.reset}{queue.items}"
-                )
+            if env.now not in time_list:
+                time_list.append(env.now)
+                queue_length_list.append(queue.items)
 
-            new_data = False
-            prev_len = len(time_list)
-            if env.now in time_list:
-                time_list.pop()
-                queue_length_list.pop()
-            time_list.append(env.now)
-            queue_length_list.append(len(queue.items))
-            new_len = len(time_list)
-
-            if new_len > prev_len:
-                new_data = True
+                if tracing:
+                    print(
+                        f"\n{cd.Fore.yellow}{cd.Back.black}{cd.Style.bold}Environment time: {env.now} - Queue items: {cd.Style.reset}{queue.items}"
+                    )
 
             env.step()
-            time.sleep(2)
 
+        print(
+            f"\n\n{cd.Fore.blue}{cd.Back.green}{cd.Style.bold}Simulation completed at: {simulation_time} - Queue items: {cd.Style.reset}{queue.items}"
+        )
 
     _T_CREATE = 2
     _T_JOB = 8
