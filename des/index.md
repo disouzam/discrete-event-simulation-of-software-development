@@ -210,7 +210,7 @@ coder gets job-2 at 16
 
 **Alternative way of presenting**:
 
-[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_8ZBjhiHtHB3J5ashmkWUV3)
+[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/notebooks/nb_y6LJVZtWX4qTM591P2ndGd)
 
 ```{.txt data-file=simple_interaction_marimo_alternative_output.txt}
 Environment time: 0 - Queue items: []
